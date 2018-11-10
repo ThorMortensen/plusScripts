@@ -1,0 +1,27 @@
+#!/bin/bash
+
+cd ~/.ssh
+prompt="Please select a file:"
+options=( $(find -maxdepth 1 -name "*.pub" | xargs -0) )
+
+read -p 'Enter user on target: ' userTarget
+read -p 'Enter IP of target: ' ipTarget
+
+PS3="$prompt "
+select opt in "${options[@]}" "Quit" ; do
+    if (( REPLY == 1 + ${#options[@]} )) ; then
+        exit
+
+    elif (( REPLY > 0 && REPLY <= ${#options[@]} )) ; then
+        echo  "Key to transfer ~> $opt "
+        break
+
+    else
+        echo "Invalid option. Try another one."
+    fi
+done
+
+ssh-copy-id -i $opt $userTarget@$ipTarget
+# ssh -i ~/.ssh/mykey user@host
+
+echo "Done!"

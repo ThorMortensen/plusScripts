@@ -1,0 +1,14 @@
+#!/bin/bash
+
+../workes/globals
+
+cd $SCRIPTS_DIR
+
+ruby -W0 netScanner.rb $1
+
+
+# if [[ nmap -sP $1 ]]; then
+#   #statementsels
+# else
+  
+# fi

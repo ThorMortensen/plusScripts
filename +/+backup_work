@@ -1,0 +1,13 @@
+#!/bin/bash
+
+DATE=`date "+%d_%m_%Y"`
+folderName="bac_$DATE"
+backupPath="/media/thm/618f672b-6192-48a1-8773-4c98d7d9112d/$folderName"
+
+mkdir $backupPath
+
+rsync -a ~/workspace $backupPath
+rsync -a ~/workspace_257 $backupPath
+rsync -a ~/.bashrc $backupPath
+rsync -a ~/Documents $backupPath
+rsync -a ~/scripts $backupPath

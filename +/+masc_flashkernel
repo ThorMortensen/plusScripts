@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+. globals
+
+WORKING_DIR=$(pwd)
+
+cd $SCRIPTS_DIR
+
+. bash_helper_functions.sh
+
+checkAndSetIP_arg_masc $1
+
+MASC_IP=$(ruby ip_parser.rb masc getActiveIP)
+MASC_DEV=$(ruby ip_parser.rb masc getActiveDev)
+
+echo "Active IP is $MASC_IP"
+
+cd $WORKING_DIR
+
+_deployGeneric -tmasc -wkernel-FPU_preCompiledLib -slocal -b$MASC_DEV -i$MASC_DEV
+beep

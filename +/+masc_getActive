@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+. globals
+
+WORKING_DIR=$(pwd)
+
+cd $SCRIPTS_DIR
+
+. bash_helper_functions.sh
+
+MASC_IP=$(ruby ip_parser.rb masc getActiveIP)
+MASC_DEV=$(ruby ip_parser.rb masc getActiveDev)
+
+echo "Active IP  is [$MASC_IP]"
+echo "Active DEV is [$MASC_DEV]"

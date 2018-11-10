@@ -1,0 +1,27 @@
+#!/bin/bash
+
+. script.conf
+
+splitIp $ROV_IP_LAP_DESK
+
+until ssh -X rma@$IP_SPLIT_UPPER.$IP_SPLIT_LOWER
+do
+  read -p "Failed. Type last ip? " $IP_SPLIT_LOWER
+  echo $IP_SPLIT_LOWER
+done
+
+
+
+# #!/bin/bash
+
+# . script.conf
+
+# # splitIp $ROV_IP_LAP_DESK
+
+# ssh -X rma@10.0.100.104
+
+# # until 
+# # do
+# #   read -p "Failed. Type last ip? " $IP_SPLIT_LOWER
+# #   echo $IP_SPLIT_LOWER
+# # done

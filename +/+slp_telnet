@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# bash
+
+. globals
+cd $SCRIPTS_DIR
+
+. bash_helper_functions.sh
+
+checkAndSetIP_arg_masc $1 "slp"
+
+MASC_IP=$(ruby ip_parser.rb slp getActiveIP)
+MASC_DEV=$(ruby ip_parser.rb slp getActiveDev)
+
+echo "Active IP is $MASC_IP"
+
+_telnet $MASC_IP

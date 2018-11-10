@@ -1,0 +1,4 @@
+#!/bin/bash 
+
+sudo openconnect --juniper access.rovsing.dk
+

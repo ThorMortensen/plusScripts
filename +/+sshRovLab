@@ -1,0 +1,11 @@
+#!/bin/bash
+
+. script.conf
+
+splitIp $ROV_IP_LABTOP
+
+until ssh -X thm@$IP_SPLIT_UPPER.$IP_SPLIT_LOWER
+do
+  read -p "Failed. Type last ip? " $IP_SPLIT_LOWER
+  echo $IP_SPLIT_LOWER
+done

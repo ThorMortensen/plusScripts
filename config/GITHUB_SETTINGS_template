@@ -1,0 +1,17 @@
+###########################################################
+#
+#   This is the settings template for Github.
+#
+#   COPY THIS TO A NEW FILE CALLED " GITHUB_SETTINGS.yml "
+#
+#   Add a Github username and access token to the new file
+#   The token must have repo rights
+#
+#
+###########################################################
+
+
+GITHUB_ACCESS_TOKEN:
+
+GITHUB_USERNAME:
+

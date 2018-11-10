@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+. globals
+
+cd ~/workspace/223_SAS/
+cd $(ls -td -- */ | head -n 1)
+cd $(ls -td -- */ | head -n 1)
+cd $(ls -td -- */ | head -n 1)
+
+echo $(pwd)
+echo $(ls)
+
+masc_flashkernel
+
+beep
+
+

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# chmod -R +x \+*
+# chmod +x "+*"
+find ../+ -name "+*" -exec chmod +x {} \;
+chmod +x ../+/å
+chmod +x ../+/ø

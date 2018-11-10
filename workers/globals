@@ -1,0 +1,27 @@
+#!/bin/bash
+
+PS_DIR_WORKERS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PS_DIR=${PS_DIR_WORKERS%/*}
+PS_DIR_CONFIG=$PS_DIR/config
+PS_DIR_PLUS=$PS_DIR/+
+PS_DIR_INSTALL=$PS_DIR/install
+
+
+function beep() {
+  paplay /usr/share/sounds/ubuntu/stereo/dialog-information.ogg
+}
+
+
+function write_if_missing(){
+
+  LINE="$1"
+  FILE="$2"
+  grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
+
+
+}
+
+function create_and_write_if_missing(){
+  test -f $2 || touch $2
+  write_if_missing $1 $2
+}

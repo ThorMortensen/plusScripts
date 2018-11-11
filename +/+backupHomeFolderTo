@@ -3,6 +3,6 @@
 
 # DATE=`date "+%d_%m_%Y"`
 # folderName="bac_$DATE"
-. globals
+. plusScriptsPaths
 
 ruby -W0 $SCRIPTS_DIR'/backupFolderTo.rb' 

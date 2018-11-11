@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-. globals
+. plusScriptsPaths
 
 WORKING_DIR=$(pwd)
 

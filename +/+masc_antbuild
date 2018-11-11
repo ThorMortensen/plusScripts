@@ -1,6 +1,0 @@
-#!/bin/bash
-
-. globals
-
-ant -f ~/workspace/223_SAS/xml/MASC_SLP_SAS_FirmwareBuilder.xml
-beep

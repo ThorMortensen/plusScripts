@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. globals
+. plusScriptsPaths
 
-ruby -W0 $SCRIPTS_DIR'/autogit.rb'
+ruby -W0 $PS_DIR_WORKERS'/autogit.rb'
  

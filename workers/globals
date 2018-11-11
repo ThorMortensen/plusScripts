@@ -23,5 +23,7 @@ function write_if_missing(){
 
 function create_and_write_if_missing(){
   test -f $2 || touch $2
-  write_if_missing $1 $2
+  LINE="$1"
+  FILE="$2"
+  grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
 }

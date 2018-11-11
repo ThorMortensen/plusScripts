@@ -3,56 +3,139 @@
 source ../workers/globals
 
 
-# $PS_DIR_PLUS/+update
+install_dependancys() {
+  $PS_DIR_PLUS/+update
+  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap net-tools curl
+}
 
-# write_if_missing "source ~/scripts/zshrc_stuffasdad" ~/.zshrcasd
+install_bundler_gems() {
+  sudo gem install rake
+  sudo gem install bundler
+  bundler install
+}
 
+install_gnome_stuff() {
+  create_and_write_if_missing "" ~/Templates/new_file
+  create_and_write_if_missing '#!/bin/bash' ~/Templates/new_script
+  create_and_write_if_missing "subl ." ~/.local/share/nautilus/scripts/Open_In_Sublime
+  chmod +x ~/.local/share/nautilus/scripts/Open_In_Sublime
+}
 
-
-# sudo apt -y install build-essential git ruby sshfs ruby-dev fish nmap net-tools
-
-
-# sudo gem install rake
-# sudo gem install bundler
-# bundler install
-
-# # #### Install Oh my ZSH
-# # sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-# # git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-# # chsh -s $(which zsh)
-# # # Log in and out
-# chsh -s `which fish`
-# curl -L https://get.oh-my.fish | fish
-# touch ~/.config/fish/config.fish
-
-
-
-
-# # sed -e '/ZSH_THEME=/s/^/#/g' -i ~/.zshrc
-# # sed -e '/plugins=(/s/^/#/g' -i ~/.zshrc
-# # sed -e '/  git/s/^/#/g' -i ~/.zshrc
-# # sed -e '/)/s/^/#/g' -i ~/.zshrc
-# # sed -e '/source $ZSH\/oh-my-zsh.sh/s/^/#/g' -i ~/.zshrc
-
-
-create_and_write_if_missing "source $PS_DIR_CONFIG/fish_stuff" ~/.config/fish/config.fish
-
-
-
-# echo "####### To source QOL scripts ######" >> ~/.zshrc
-# echo "source ~/scripts/zshrc_stuff" >> ~/.zshrc
-# echo "source \$ZSH/oh-my-zsh.sh" >> ~/.zshrc
-
-# # Add bash rc stuff
-# echo "source ~/scripts/bashrc_stuff" >> ~/.bashrc
-
-# # Add common rc for both bash and zsh
-# echo "source ~/.common_rc" >> ~/.zshrc
-# echo "source ~/.common_rc" >> ~/.bashrc
-
-# # Add stuff for common
-# echo "PATH=\$PATH:~/scripts/" >> ~/.common_rc
-# echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >> ~/.common_rc
+install_zsh_termianl() {
+  
+  if (whiptail --title "Install ZSH" --yesno "Do you want to install ZSH and oh-my-zsh? (If already installed select NO and only the zshrc file will be updated)" 8 78); then
+    sudo apt -y install zsh
+    #### Install Oh my ZSH
+    sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+    git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+    chsh -s $(which zsh)
+    # Log in and out
+    sed -e '/ZSH_THEME=/s/^/#/g' -i ~/.zshrc
+    sed -e '/plugins=(/s/^/#/g' -i ~/.zshrc
+    sed -e '/  git/s/^/#/g' -i ~/.zshrc
+    sed -e '/)/s/^/#/g' -i ~/.zshrc
+    sed -e '/source $ZSH\/oh-my-zsh.sh/d' -i ~/.zshrc
+  fi
 
 
-# ~/.config/fish/config.fish
+  write_if_missing "####### To source QOL scripts ######" ~/.zshrc
+  write_if_missing "source $PS_DIR_CONFIG/zshrc_stuff" ~/.zshrc
+  write_if_missing "source \$ZSH/oh-my-zsh.sh" ~/.zshrc
+  write_if_missing "source ~/.common_rc" ~/.zshrc
+  gnome-session-quit
+}
+
+install_fish_termianl() {
+  sudo apt -y install fish
+  chsh -s `which fish`
+  curl -L https://get.oh-my.fish | fish
+  touch ~/.config/fish/config.fish
+  create_and_write_if_missing "source $PS_DIR_CONFIG/fish_stuff" ~/.config/fish/config.fish
+}
+
+add_bash_stuff(){
+  write_if_missing "####### To source QOL scripts ######" ~/.bashrc
+  write_if_missing "source $PS_DIR_CONFIG/bashrc_stuff" ~/.bashrc
+  write_if_missing "source ~/.common_rc" ~/.bashrc
+}
+
+add_common_stuff(){
+  create_and_write_if_missing "#### This rc file is shared between all terminals ###" ~/.common_rc
+  write_if_missing "#             Put all your rc stuff here" ~/.common_rc
+  write_if_missing "#####################################################" ~/.common_rc
+  write_if_missing "PATH=\$PATH:$PS_DIR_PLUS" ~/.common_rc
+  write_if_missing "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" ~/.common_rc
+}
+
+bundler_selection() {
+  if (whiptail --title "Bundler" --yesno "Do you want to run Bundler to install ruby gem dependences?" 8 78); then
+      install_bundler_gems
+  fi
+}
+
+dependences_selection(){
+  if (whiptail --title "Dependences" --yesno "Do you want to install dependences?" 8 78); then
+      install_dependancys
+  fi
+  bundler_selection
+}
+
+#####################################################
+# Main
+#####################################################
+
+
+WHAT_TO_INTALL=$(whiptail --title "Menu example" --menu "Choose an install option" 20 50 10 \
+                "All"         "Installs everything. (except fish)" \
+                "Bash stuff"  "Only adds +scripts to bashrc." \
+                "ZSH stuff"   "Only adds +scripts to ZSH." \
+                "Fish stuff"  "Only adds +scripts to fish." \
+                "Dependences" "Only installs dependences." 3>&1 1>&2 2>&3)
+
+if [ -z "$WHAT_TO_INTALL" ] 
+then
+  echo "Nothing was touched..."
+  exit
+fi
+
+install_gnome_stuff
+
+case $WHAT_TO_INTALL in
+    "All")
+      dependences_selection
+      add_common_stuff
+      add_bash_stuff
+      install_zsh_termianl
+    ;;
+    "Bash stuff")
+      dependences_selection
+      add_common_stuff
+      add_bash_stuff
+    ;;
+    "ZSH stuff")
+      dependences_selection
+      add_common_stuff
+      install_zsh_termianl
+    ;;
+    "Fish stuff")
+      dependences_selection
+      install_fish_termianl
+    ;;
+    "Dependences")
+      dependences_selection
+    ;;
+esac
+
+
+# ####### To source QOL scripts ######
+# source ~/.commonrc
+# source ~/scripts/zshrc_stuff
+# source $ZSH/oh-my-zsh.sh
+# PATH=$PATH:~/scripts/
+# PATH=$PATH:/home/thor/.cargo/bin
+# PATH=$PATH:~/home/thor/Vivado/2018.2/bin
+# source ~/Vivado/2018.2/.settings64-Vivado.sh
+# source ~/DocNav/.settings64-DocNav.sh
+# source ~/SDK/2018.2/.settings64-SDK_Core_Tools.sh
+# # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+# export PATH="$PATH:$HOME/.rvm/bin"

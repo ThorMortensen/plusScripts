@@ -1,10 +1,12 @@
 #!/bin/bash
 
-../workes/globals
+source ../workers/globals
 
-cd $SCRIPTS_DIR
+# cd $PS_DIR_WORKERS
+pwd
 
-ruby -W0 netScanner.rb $1
+
+# ruby -W0 netScanner.rb $1
 
 
 # if [[ nmap -sP $1 ]]; then

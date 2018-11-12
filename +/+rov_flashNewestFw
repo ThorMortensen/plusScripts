@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. globals
+. plusScriptsPaths
 
 cd ~/workspace/223_SAS/
 cd $(ls -td -- */ | head -n 1)

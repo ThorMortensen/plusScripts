@@ -1,3 +1,6 @@
 #!/bin/bash
 
-sudo route add -net 192.168.0.0 netmask 255.255.0.0 gw 192.168.255.1 dev enp4s0
+. plusScriptsPaths
+. $PS_DIR_WORKERS/globals
+
+sudo route add -net 192.168.0.0 netmask 255.255.0.0 gw 192.168.255.1 dev $ETHERNET_ADAPTER_NAME

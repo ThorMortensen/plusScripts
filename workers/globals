@@ -7,6 +7,9 @@ PS_DIR_PLUS=$PS_DIR/+
 PS_DIR_INSTALL=$PS_DIR/install
 
 
+ETHERNET_ADAPTER_NAME=$(ip link | awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2;getline}')
+
+
 function beep() {
   paplay /usr/share/sounds/ubuntu/stereo/dialog-information.ogg
 }
@@ -17,8 +20,6 @@ function write_if_missing(){
   LINE="$1"
   FILE="$2"
   grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
-
-
 }
 
 function create_and_write_if_missing(){

@@ -2,7 +2,7 @@
 # Author Thor Mortensen, THM (THM@rovsing.dk)
 #
 require 'tty'
-require_relative '../user_prompter'
+require_relative '../workers/user_prompter'
 require_relative 'cmd_handler'
 require_relative 'rubyHelpers'
 

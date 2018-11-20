@@ -45,6 +45,12 @@ install_zsh_termianl() {
   gnome-session-quit
 }
 
+install_z(){
+  # git clone git@github.com:rupa/z.git $PS_DIR_CONFIG/z
+  write_if_missing 'source $PS_DIR_CONFIG/z/z.sh' ~/.common_rc
+   # grep -qF "source $PS_DIR_CONFIG/z/z.sh" ~/.common_rc || echo "source $PS_DIR_CONFIG/z/z.sh" >> ~/.common_rc
+}
+
 install_fish_termianl() {
   sudo apt -y install fish
   chsh -s `which fish`
@@ -90,6 +96,7 @@ WHAT_TO_INTALL=$(whiptail --title "Menu example" --menu "Choose an install optio
                 "Bash stuff"  "Only adds +scripts to bashrc." \
                 "ZSH stuff"   "Only adds +scripts to ZSH." \
                 "Fish stuff"  "Only adds +scripts to fish." \
+                "Z"           "Install Z" \
                 "Dependences" "Only installs dependences." 3>&1 1>&2 2>&3)
 
 if [ -z "$WHAT_TO_INTALL" ] 
@@ -106,6 +113,7 @@ case $WHAT_TO_INTALL in
       add_common_stuff
       add_bash_stuff
       install_zsh_termianl
+      install_z
     ;;
     "Bash stuff")
       dependences_selection
@@ -120,6 +128,9 @@ case $WHAT_TO_INTALL in
     "Fish stuff")
       dependences_selection
       install_fish_termianl
+    ;;
+    "Z")
+      install_z
     ;;
     "Dependences")
       dependences_selection

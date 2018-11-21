@@ -45,11 +45,6 @@ install_zsh_termianl() {
   gnome-session-quit
 }
 
-install_z(){
-  # git clone git@github.com:rupa/z.git $PS_DIR_CONFIG/z
-  write_if_missing 'source $PS_DIR_CONFIG/z/z.sh' ~/.common_rc
-   # grep -qF "source $PS_DIR_CONFIG/z/z.sh" ~/.common_rc || echo "source $PS_DIR_CONFIG/z/z.sh" >> ~/.common_rc
-}
 
 install_fish_termianl() {
   sudo apt -y install fish
@@ -86,10 +81,15 @@ dependences_selection(){
   bundler_selection
 }
 
+install_z(){
+  git clone git@github.com:rupa/z.git $PS_DIR_CONFIG/z
+  write_if_missing "source $PS_DIR_CONFIG/z/z.sh" ~/.common_rc
+}
+
+
 #####################################################
 # Main
 #####################################################
-
 
 WHAT_TO_INTALL=$(whiptail --title "Menu example" --menu "Choose an install option" 20 50 10 \
                 "All"         "Installs everything. (except fish)" \
@@ -137,16 +137,3 @@ case $WHAT_TO_INTALL in
     ;;
 esac
 
-
-# ####### To source QOL scripts ######
-# source ~/.commonrc
-# source ~/scripts/zshrc_stuff
-# source $ZSH/oh-my-zsh.sh
-# PATH=$PATH:~/scripts/
-# PATH=$PATH:/home/thor/.cargo/bin
-# PATH=$PATH:~/home/thor/Vivado/2018.2/bin
-# source ~/Vivado/2018.2/.settings64-Vivado.sh
-# source ~/DocNav/.settings64-DocNav.sh
-# source ~/SDK/2018.2/.settings64-SDK_Core_Tools.sh
-# # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-# export PATH="$PATH:$HOME/.rvm/bin"

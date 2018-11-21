@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-. globals
-cd $SCRIPTS_DIR
+. plusScriptsPaths
+cd $PS_DIR_WORKERS
 
 . bash_helper_functions.sh
 

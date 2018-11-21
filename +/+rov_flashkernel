@@ -4,7 +4,7 @@
 
 WORKING_DIR=$(pwd)
 
-cd $SCRIPTS_DIR
+cd $PS_DIR_WORKERS
 
 . bash_helper_functions.sh
 

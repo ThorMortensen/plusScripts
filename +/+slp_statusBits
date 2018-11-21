@@ -1,8 +1,8 @@
 #!/bin/bash
 
-. globals
+. plusScriptsPaths
 
-ruby -W0 $SCRIPTS_DIR'/regParser.rb' statusBits $1
+ruby -W0 $PS_DIR_WORKERS'/regParser.rb' statusBits $1
 
 
 

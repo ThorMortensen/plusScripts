@@ -2,4 +2,4 @@
 
 . plusScriptsPaths
 
-ruby -W0 $SCRIPTS_DIR'/autogit.rb' add $1 $2
+ruby -W0 $PS_DIR_WORKERS'/autogit.rb' add $1 $2

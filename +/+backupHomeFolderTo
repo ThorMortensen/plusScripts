@@ -5,4 +5,4 @@
 # folderName="bac_$DATE"
 . plusScriptsPaths
 
-ruby -W0 $SCRIPTS_DIR'/backupFolderTo.rb' 
+ruby -W0 $PS_DIR_WORKERS'/backupFolderTo.rb' 

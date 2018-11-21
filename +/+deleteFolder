@@ -1,0 +1,25 @@
+#!/bin/bash
+
+. plusScriptsPaths
+
+. $PS_DIR_WORKERS/bashColor.sh
+
+
+# echo "\e[31mHello World\e[0m"
+if [ -z "$1" ]
+then
+  echo "Must specify folder to delete.."
+  exit 1
+fi
+
+echo -e "${BRed}Deleting following folder and all it's content:${Color_Off}"
+echo "$1"
+echo -e "${BRed}Are you sure? (y/N)${Color_Off}"
+read -p "" -n 1 -r
+echo
+if [[ $REPLY = "y" ]]
+then
+  rm -rf $1
+else 
+  echo "Nothing happen.."
+fi

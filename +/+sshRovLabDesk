@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. script.conf
+. plusScriptsPaths
 
 splitIp $ROV_IP_LAP_DESK
 
@@ -14,7 +14,7 @@ done
 
 # #!/bin/bash
 
-# . script.conf
+# . plusScriptsPaths
 
 # # splitIp $ROV_IP_LAP_DESK
 

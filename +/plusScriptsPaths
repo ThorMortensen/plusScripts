@@ -6,10 +6,3 @@ PS_DIR=${PS_DIR_PLUS%/*}
 PS_DIR_CONFIG=$PS_DIR/config
 PS_DIR_INSTALL=$PS_DIR/install
 PS_DIR_WORKERS=$PS_DIR/workers
-
-
-# PS_DIR_WORKERS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-# PS_DIR=${PS_DIR_WORKERS%/*}
-# PS_DIR_CONFIG=$PS_DIR/config
-# PS_DIR_PLUS=$PS_DIR/+
-# PS_DIR_INSTALL=$PS_DIR/install

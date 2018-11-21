@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. script.conf
+. plusScriptsPaths
 
 splitIp $ROV_IP_LABTOP
 

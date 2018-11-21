@@ -1,1 +1,5 @@
-test
+#!/bin/bash
+
+. plusScriptsPaths
+
+ruby -W0 $PS_DIR_WORKERS'/ip_history.rb'

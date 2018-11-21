@@ -9,13 +9,6 @@ require_relative 'rubyHelpers.rb'
 
 @ipRegex = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.)\d{1,3}/
 
-# diff = Differ.diff "foo", "boo"
-
-# puts diff.format_as :color
-
-# File.open(netScanDump, 'w') { |file| file.write("your text") }
-
-
 def scanIp(ipAddress)
   @spinner = TTY::Spinner.new("Scanning with \'nmap -sP #{ipAddress}/24\' ".brown + ":spinner".blue, format: :bouncing_ball)
   @spinner.auto_spin

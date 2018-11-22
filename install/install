@@ -34,10 +34,9 @@ install_zsh_termianl() {
     sed -e '/plugins=(/s/^/#/g' -i ~/.zshrc
     sed -e '/  git/s/^/#/g' -i ~/.zshrc
     sed -e '/)/s/^/#/g' -i ~/.zshrc
-    sed -e '/source $ZSH\/oh-my-zsh.sh/d' -i ~/.zshrc
   fi
 
-
+  sed -e '/source $ZSH\/oh-my-zsh.sh/d' -i ~/.zshrc
   write_if_missing "####### To source QOL scripts ######" ~/.zshrc
   write_if_missing "source $PS_DIR_CONFIG/zshrc_stuff" ~/.zshrc
   write_if_missing "source \$ZSH/oh-my-zsh.sh" ~/.zshrc

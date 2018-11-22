@@ -4,8 +4,6 @@ This is a collection of scripts and settings frequently used on Linux. This repo
 
 ### Installation
 ```
-git clone git@github.com:ThorMortensen/plusScripts.git
-cd plusScripts
-./run_install
+git clone git@github.com:ThorMortensen/plusScripts.git && cd plusScripts && ./run_install
 ```
 Follow instructions..

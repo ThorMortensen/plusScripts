@@ -34,6 +34,7 @@ install_zsh_termianl() {
     sed -e '/plugins=(/s/^/#/g' -i ~/.zshrc
     sed -e '/  git/s/^/#/g' -i ~/.zshrc
     sed -e '/)/s/^/#/g' -i ~/.zshrc
+    INSTALLED_ZSH="true"
   fi
 
   sed -e '/source $ZSH\/oh-my-zsh.sh/d' -i ~/.zshrc
@@ -41,7 +42,10 @@ install_zsh_termianl() {
   write_if_missing "source $PS_DIR_CONFIG/zshrc_stuff" ~/.zshrc
   write_if_missing "source \$ZSH/oh-my-zsh.sh" ~/.zshrc
   write_if_missing "source ~/.common_rc" ~/.zshrc
-  gnome-session-quit
+
+  if [ $INSTALLED_ZSH = "true" ]; then
+    gnome-session-quit
+  fi
 }
 
 
@@ -90,49 +94,57 @@ install_z(){
 # Main
 #####################################################
 
-WHAT_TO_INTALL=$(whiptail --title "Menu example" --menu "Choose an install option" 20 50 10 \
-                "All"         "Installs everything. (except fish)" \
-                "Bash stuff"  "Only adds +scripts to bashrc." \
-                "ZSH stuff"   "Only adds +scripts to ZSH." \
-                "Fish stuff"  "Only adds +scripts to fish." \
-                "Z"           "Install Z" \
-                "Dependences" "Only installs dependences." 3>&1 1>&2 2>&3)
+while true; do 
 
-if [ -z "$WHAT_TO_INTALL" ] 
-then
-  echo "Nothing was touched..."
-  exit
-fi
+  WHAT_TO_INTALL=$(whiptail --title "Menu example" --menu "Choose an install option" 20 50 10 \
+                  "All"         "Installs everything. (except fish)" \
+                  "Bash stuff"  "Only adds +scripts to bashrc." \
+                  "ZSH stuff"   "Only adds +scripts to ZSH." \
+                  "Fish stuff"  "Only adds +scripts to fish." \
+                  "Z"           "Install Z" \
+                  "Dependences" "Only installs dependences." 3>&1 1>&2 2>&3)
 
-install_gnome_stuff
+  if [ -z "$WHAT_TO_INTALL" ] 
+  then
+    echo "Nothing was touched..."
+    exit
+  fi
 
-case $WHAT_TO_INTALL in
-    "All")
-      dependences_selection
-      add_common_stuff
-      add_bash_stuff
-      install_zsh_termianl
-      install_z
-    ;;
-    "Bash stuff")
-      dependences_selection
-      add_common_stuff
-      add_bash_stuff
-    ;;
-    "ZSH stuff")
-      dependences_selection
-      add_common_stuff
-      install_zsh_termianl
-    ;;
-    "Fish stuff")
-      dependences_selection
-      install_fish_termianl
-    ;;
-    "Z")
-      install_z
-    ;;
-    "Dependences")
-      dependences_selection
-    ;;
-esac
+
+  case $WHAT_TO_INTALL in
+      "All")
+        dependences_selection
+        add_common_stuff
+        add_bash_stuff
+        install_zsh_termianl
+        install_z
+      ;;
+      "Bash stuff")
+        dependences_selection
+        add_common_stuff
+        add_bash_stuff
+      ;;
+      "ZSH stuff")
+        dependences_selection
+        add_common_stuff
+        install_zsh_termianl
+      ;;
+      "Fish stuff")
+        dependences_selection
+        install_fish_termianl
+      ;;
+      "Z")
+        install_z
+      ;;
+      "Dependences")
+        dependences_selection
+      ;;
+  esac
+
+  if (whiptail --title "Finished" --yesno "Done installing?" 8 78); then
+    install_gnome_stuff
+    exit 0
+  fi
+
+done
 

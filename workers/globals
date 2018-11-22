@@ -7,7 +7,7 @@ PS_DIR_PLUS=$PS_DIR/+
 PS_DIR_INSTALL=$PS_DIR/install
 
 
-ETHERNET_ADAPTER_NAME=$(ip link | awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2;getline}')
+ETHERNET_ADAPTER_NAME=$(ip link | awk -F: '$0 !~ "lo|vir|wl|ww|^[^0-9]"{print $2;getline}')
 
 
 function beep() {

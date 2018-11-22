@@ -1,17 +1,11 @@
-require 'readline'
 
-LIST = [
-  'search', 'download', 'open',
-  'help', 'history', 'quit',
-  'url', 'next', 'clear',
-  'prev', 'past'
-].sort
 
-comp = proc { |s| LIST.grep(/^#{Regexp.escape(s)}/) }
 
-Readline.completion_append_character = " "
-Readline.completion_proc = comp
 
-while line = Readline.readline('> ', true)
-  p line
-end
+
+
+
+system("stty raw -echo") #=> Raw mode, no echo
+char = STDIN.getc
+system("stty -raw echo") #=> Reset terminal mode
+puts char

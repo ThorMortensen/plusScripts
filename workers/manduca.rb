@@ -18,7 +18,6 @@ class Manduca
 
   def prompt
     c = 'f'
-    i = 0
     while c != 'q'
       STDIN.raw!
       c = STDIN.getc
@@ -38,12 +37,21 @@ class Manduca
         when :APPEND
           @inputStr << c
           print c
-        when :INSERT
-          i = @i+1
-          @inputStr.insert(i, c)
+        when :FIRST_INSERT
+          @inputStr.insert(@i, c)
           print @cur.clear_line
           print @inputStr
-          print @cur.column(i)
+          print @cur.column(@i+2)
+          @inputState = :INSERT
+          @i += 1
+        when :INSERT
+          # i = @i
+          @inputStr.insert(@i-1, c)
+          print @cur.clear_line
+          print @inputStr
+          print @cur.column(@i+1)
+          # puts
+          # puts i
       end
       @i += 1
     end
@@ -71,13 +79,13 @@ class Manduca
               if @i > 0
                 print @cur.backward
                 @i          -= 1
-                @inputState = :INSERT
+                @inputState = :FIRST_INSERT if @inputState != :INSERT
               end
             when :RIGHT
               if @i < @inputStr.length
                 print @cur.forward
                 @i          += 1
-                @inputState = :INSERT
+                @inputState = :FIRST_INSERT if @inputState != :INSERT
               else
                 @inputState = :APPEND
               end

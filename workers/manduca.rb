@@ -5,20 +5,35 @@ class Manduca
 
   attr_reader :inputStr
 
-  ARROW_KEYS = {68 => :LEFT, 65 => :UP, 67 => :RIGHT, 66 => :DOWN}
+  FUNC_KEYS = {
+      68  => :LEFT,
+      65  => :UP,
+      67  => :RIGHT,
+      66  => :DOWN,
+      126 => :DEL,
+      51  => :DEL_PRE,
+      70  => :END,
+      72  => :HOME
+  }
+
+  SPECIAL_KEYS = {
+      127 => :BACK_SPACE,
+      13 => :ENTER
+  }
 
   def initialize
     @cur          = TTY::Cursor
     @inputStr     = ""
     @keyCodeState = :NONE
-    @i            = 0
+    @i            = 1
     @inputState   = :APPEND
-
+    @promptRunning = false
   end
 
   def prompt
     c = 'f'
-    while c != 'q'
+    @promptRunning = true
+    while @promptRunning
       STDIN.raw!
       c = STDIN.getc
       STDIN.cooked!
@@ -33,69 +48,103 @@ class Manduca
 
     def addInput(c)
       return if c.nil?
+      @i += 1
+
       case @inputState
         when :APPEND
           @inputStr << c
           print c
-        when :FIRST_INSERT
-          @inputStr.insert(@i, c)
-          print @cur.clear_line
-          print @inputStr
-          print @cur.column(@i+2)
-          @inputState = :INSERT
-          @i += 1
         when :INSERT
-          # i = @i
-          @inputStr.insert(@i-1, c)
+          @inputStr.insert(@i - 2, c)
           print @cur.clear_line
           print @inputStr
-          print @cur.column(@i+1)
-          # puts
-          # puts i
+          print @cur.column(@i)
       end
-      @i += 1
+    end
+
+    def dbgPrint
+      puts
+      puts @i.to_s + "\n"
+      print @inputStr
+      print @cur.column(@i)
     end
 
     def navigateInput(c)
       kc = c.ord
 
       case @keyCodeState
-        
         when :NONE
           if kc == 27
-            @keyCodeState = :ARROW_KEY?
+            @keyCodeState = :FUNC_KEY_START
             return nil
           end
-        when :ARROW_KEY?
+        when :FUNC_KEY_START
           if kc == 91
-            @keyCodeState = :ARROW_KEY
-            return nil
+            @keyCodeState = :FUNC_KEY_SPLIT
           end
-        when :ARROW_KEY
+          return nil
+        when :FUNC_KEY_SPLIT
           @keyCodeState = :NONE
-          case ARROW_KEYS[kc]
+          case FUNC_KEYS[kc]
             when :UP
             when :DOWN
             when :LEFT
-              if @i > 0
+              if @i > 1
                 print @cur.backward
                 @i          -= 1
-                @inputState = :FIRST_INSERT if @inputState != :INSERT
+                @inputState = :INSERT
               end
             when :RIGHT
-              if @i < @inputStr.length
+              if @i < @inputStr.length + 1
                 print @cur.forward
                 @i          += 1
-                @inputState = :FIRST_INSERT if @inputState != :INSERT
+                @inputState = :INSERT
               else
                 @inputState = :APPEND
               end
+            when :DEL_PRE
+              @keyCodeState = :DEL_PRE
+            when :HOME
+              @i = 1
+              print @cur.column(@i)
+              @inputState = :INSERT if @inputStr.length > 0
+            when :END
+              @i = @inputStr.length + 1
+              print @cur.column(@i)
           end
           return nil
-
+        when :DEL_PRE
+          @keyCodeState = :NONE
+          case FUNC_KEYS[kc]
+            when :DEL
+              if @i < @inputStr.length + 1
+                @inputStr[@i - 1] = ''
+                print @cur.clear_line
+                print @inputStr
+                print @cur.column(@i)
+              end
+          end
+          return nil
         else
           return nil
       end
+
+
+      case SPECIAL_KEYS[kc]
+        when :BACK_SPACE
+          if @i > 1
+            @inputStr[@i - 2] = ''
+            @i                -= 1
+            print @cur.clear_line
+            print @inputStr
+            print @cur.column(@i)
+          end
+          return nil
+        when :ENTER
+          @promptRunning = false
+          return nil
+      end
+
       return c
 
     end

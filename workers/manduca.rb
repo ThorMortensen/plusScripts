@@ -60,6 +60,7 @@ class Manduca
       kc = c.ord
 
       case @keyCodeState
+        
         when :NONE
           if kc == 27
             @keyCodeState = :ARROW_KEY?

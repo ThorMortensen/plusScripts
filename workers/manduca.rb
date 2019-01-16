@@ -18,20 +18,47 @@ class Manduca
 
   SPECIAL_KEYS = {
       127 => :BACK_SPACE,
-      13 => :ENTER
+      13  => :ENTER
   }
 
   def initialize
-    @cur          = TTY::Cursor
-    @inputStr     = ""
-    @keyCodeState = :NONE
-    @i            = 1
-    @inputState   = :APPEND
+    @cur           = TTY::Cursor
+    @inputStr      = ""
+    @keyCodeState  = :NONE
+    @i             = 1
+    @inputState    = :APPEND
     @promptRunning = false
+
+    @history = [
+        "abbacies",
+        "abbacomes",
+        "Abbadide",
+        "Abbai",
+        "abbaye",
+        "abbandono",
+        "abbas",
+        "abbasi",
+        "Abbasid",
+        "abbassi",
+        "Abbassid",
+        "Abbasside",
+        "Abbate",
+        "overcapitalised",
+        "overcapitalising",
+        "overcapitalization",
+        "overcapitalize",
+        "over-capitalize",
+        "overcapitalized",
+        "overcapitalizes",
+        "overcapitalizing",
+        "overcaptious",
+        "overcaptiously",
+    ]
+
   end
 
   def prompt
-    c = 'f'
+    c              = 'f'
     @promptRunning = true
     while @promptRunning
       STDIN.raw!
@@ -53,7 +80,11 @@ class Manduca
       case @inputState
         when :APPEND
           @inputStr << c
-          print c
+          suggestion = @history.grep(/#{@inputStr}/).first
+          print @cur.clear_line
+          print suggestion
+          print @cur.column(@i)
+
         when :INSERT
           @inputStr.insert(@i - 2, c)
           print @cur.clear_line
@@ -162,9 +193,6 @@ cli = Manduca.new
 cli.prompt
 puts
 puts "result was: " + cli.inputStr
-
-
-
 
 
 

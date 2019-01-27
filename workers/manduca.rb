@@ -1,5 +1,6 @@
 require 'tty'
 require 'io/console'
+require_relative 'rubyHelpers'
 
 class Manduca
 
@@ -13,10 +14,11 @@ class Manduca
       126 => :DEL,
       51  => :DEL_PRE,
       70  => :END,
-      72  => :HOME
+      72  => :HOME,
   }
 
   SPECIAL_KEYS = {
+      9   => :TAB,
       127 => :BACK_SPACE,
       13  => :ENTER
   }
@@ -28,8 +30,8 @@ class Manduca
     @i             = 1
     @inputState    = :APPEND
     @promptRunning = false
-
-    @history = [
+    @suggestion    = nil
+    @history       = [
         "abbacies",
         "abbacomes",
         "Abbadide",
@@ -64,7 +66,7 @@ class Manduca
       STDIN.raw!
       c = STDIN.getc
       STDIN.cooked!
-      addInput(navigateInput(c))
+      parseInput(c)
       # printKeyCode c
 
     end
@@ -73,24 +75,21 @@ class Manduca
 
   private
 
-    def addInput(c)
-      return if c.nil?
-      @i += 1
 
-      case @inputState
-        when :APPEND
-          @inputStr << c
-          suggestion = @history.grep(/#{@inputStr}/).first
-          print @cur.clear_line
-          print suggestion
-          print @cur.column(@i)
+    def printInput useSugestion = false
+      print @cur.clear_line
 
-        when :INSERT
-          @inputStr.insert(@i - 2, c)
-          print @cur.clear_line
-          print @inputStr
-          print @cur.column(@i)
+      if useSugestion
+        @inputStr = @suggestion.clone
+        @i        = @inputStr.length + 1
+      else
+        @suggestion = @history.grep(/#{@inputStr}/i).first
+        print @suggestion.gray.dim unless @suggestion.nil?
+        print @cur.column(0)
       end
+      print @inputStr
+      print @cur.column(@i)
+
     end
 
     def dbgPrint
@@ -100,7 +99,7 @@ class Manduca
       print @cur.column(@i)
     end
 
-    def navigateInput(c)
+    def parseInput(c)
       kc = c.ord
 
       case @keyCodeState
@@ -131,6 +130,14 @@ class Manduca
                 @i          += 1
                 @inputState = :INSERT
               else
+                unless @suggestion.nil?
+                  c = @suggestion[@i - 1]
+                  unless c.nil?
+                    @i += 1
+                    @inputStr << c
+                    printInput
+                  end
+                end
                 @inputState = :APPEND
               end
             when :DEL_PRE
@@ -150,9 +157,7 @@ class Manduca
             when :DEL
               if @i < @inputStr.length + 1
                 @inputStr[@i - 1] = ''
-                print @cur.clear_line
-                print @inputStr
-                print @cur.column(@i)
+                printInput
               end
           end
           return nil
@@ -160,15 +165,15 @@ class Manduca
           return nil
       end
 
-
       case SPECIAL_KEYS[kc]
+        when :TAB
+          printInput useSugestion: true
+          return nil
         when :BACK_SPACE
           if @i > 1
             @inputStr[@i - 2] = ''
             @i                -= 1
-            print @cur.clear_line
-            print @inputStr
-            print @cur.column(@i)
+            printInput
           end
           return nil
         when :ENTER
@@ -176,7 +181,15 @@ class Manduca
           return nil
       end
 
-      return c
+      @i += 1
+      case @inputState
+        when :APPEND
+          @inputStr << c
+        when :INSERT
+          @inputStr.insert(@i - 2, c)
+      end
+
+      printInput
 
     end
 
@@ -192,7 +205,7 @@ cli = Manduca.new
 
 cli.prompt
 puts
-puts "result was: " + cli.inputStr
+puts "result was: |#{cli.inputStr}|"
 
 
 

@@ -31,6 +31,8 @@ class Manduca
     @inputState    = :APPEND
     @promptRunning = false
     @suggestion    = nil
+    @suggestKandidate = 0
+    @suggestBlock = nil
     @history       = [
         "abbacies",
         "abbacomes",
@@ -78,12 +80,13 @@ class Manduca
 
     def printInput useSugestion = false
       print @cur.clear_line
-
+      return if @inputStr.empty?
       if useSugestion
         @inputStr = @suggestion.clone
         @i        = @inputStr.length + 1
       else
-        @suggestion = @history.grep(/#{@inputStr}/i).first
+        @suggestBlock = @history.grep(/#{@inputStr}/i)
+        @suggestion = @suggestBlock[@suggestKandidate]
         print @suggestion.gray.dim unless @suggestion.nil?
         print @cur.column(0)
       end
@@ -117,7 +120,13 @@ class Manduca
           @keyCodeState = :NONE
           case FUNC_KEYS[kc]
             when :UP
+              return if @suggestBlock.nil?
+              @suggestKandidate = (@suggestKandidate + 1) %  @suggestBlock.size
+              printInput
             when :DOWN
+              return if @suggestBlock.nil?
+              @suggestKandidate = (@suggestKandidate - 1) %  @suggestBlock.size
+              printInput
             when :LEFT
               if @i > 1
                 print @cur.backward
@@ -181,6 +190,7 @@ class Manduca
           return nil
       end
 
+      @suggestKandidate = 0
       @i += 1
       case @inputState
         when :APPEND
@@ -202,16 +212,7 @@ end
 
 cli = Manduca.new
 
-
 cli.prompt
 puts
 puts "result was: |#{cli.inputStr}|"
-
-
-
-
-
-
-
-
 

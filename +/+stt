@@ -1,16 +1,7 @@
 #!/bin/bash
 
+
 . plusScriptsPaths
 
-ruby -W0 $PS_DIR_WORKERS'/histTest.rb'
-
-
-
-
-# #!/bin/bash
-
-
-# . plusScriptsPaths
-
-# cd $PS_DIR
-# subl .
+cd $PS_DIR
+subl .

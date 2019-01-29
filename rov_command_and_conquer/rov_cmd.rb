@@ -172,8 +172,20 @@ def runSlp(cmdHandler)
     cmd  = @cmdPrompt.result
     arg1 = @arg1Prompt.result
     arg2 = @arg2Prompt.result
-
+    
     return unless txCmd(cmdHandler, cmd, arg1, arg2)
+
+
+    # cmd1  = 75
+    # cmd2  = 76
+    # arg1 = 1
+    # arg2 = 1
+
+    # for i in 0..5 
+      # return unless txCmd(cmdHandler, cmd1, arg1, arg2)
+      # return unless txCmd(cmdHandler, cmd2, arg1, arg2)
+    # end
+
   end
 end
 

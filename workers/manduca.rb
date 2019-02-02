@@ -1,6 +1,8 @@
 require 'tty'
 require 'io/console'
+require 'fileutils'
 require_relative 'rubyHelpers'
+
 
 class Manduca
 
@@ -33,8 +35,43 @@ class Manduca
     @suggestion    = nil
     @suggestKandidate = 0
     @suggestBlock = nil
-    @history       = [
-        "abbacies",
+    @history       = []
+    @historyFilePath = ".inputHistory"
+    @historyFileName = "alphabetic.mda"
+    @completeHistoryilePath = "#{@historyFilePath}/#{@historyFileName}"
+
+  end
+
+  def prompt
+    loadHistory
+    c              = 'f'
+    @promptRunning = true
+    while @promptRunning
+      STDIN.raw!
+      c = STDIN.getc
+      STDIN.cooked!
+      parseInput(c)
+      # printKeyCode c
+
+    end
+  end
+
+  def test
+    saveHistory
+  end 
+
+  private
+
+    def loadHistory 
+      return unless File.exists?(@historyFilePath)
+
+      @history =  File.readlines(@completeHistoryilePath)
+
+    end 
+
+    def saveHistory 
+
+      th = [    "abbacies",
         "abbacomes",
         "Abbadide",
         "Abbai",
@@ -59,24 +96,11 @@ class Manduca
         "overcaptiously",
     ]
 
-  end
+      FileUtils.mkdir_p @historyFilePath
+      File.open(@completeHistoryilePath, "w") { |f| f.puts(th) }
+        
 
-  def prompt
-    c              = 'f'
-    @promptRunning = true
-    while @promptRunning
-      STDIN.raw!
-      c = STDIN.getc
-      STDIN.cooked!
-      parseInput(c)
-      # printKeyCode c
-
-    end
-  end
-
-
-  private
-
+    end 
 
     def printInput useSugestion = false
       print @cur.clear_line
@@ -87,6 +111,7 @@ class Manduca
       else
         @suggestBlock = @history.grep(/#{@inputStr}/i)
         @suggestion = @suggestBlock[@suggestKandidate]
+        @suggestion = @suggestion.strip unless  @suggestion.nil?
         print @suggestion.gray.dim unless @suggestion.nil?
         print @cur.column(0)
       end

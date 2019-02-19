@@ -1,10 +1,12 @@
 require 'tty'
 require 'io/console'
+require 'fileutils'
 require_relative 'rubyHelpers'
+
 
 class Manduca
 
-  attr_reader :inputStr
+  attr_accessor :inputStr
 
   FUNC_KEYS = {
       68  => :LEFT,
@@ -19,74 +21,83 @@ class Manduca
 
   SPECIAL_KEYS = {
       9   => :TAB,
+      3   => :SIGINT,
       127 => :BACK_SPACE,
       13  => :ENTER
   }
 
-  def initialize
+  def initialize(sigIntCallback = method(:exitPoint))
     @cur           = TTY::Cursor
+    @history       = []
+    @historyFilePath = ".inputHistory"
+    @historyFileName = "manduca-history"
+    @completeHistoryilePath = "#{@historyFilePath}/#{@historyFileName}"
+    loadHistory
+    @exit         = sigIntCallback
+    reset
+  end
+
+  def reset
     @inputStr      = ""
     @keyCodeState  = :NONE
     @i             = 1
     @inputState    = :APPEND
     @promptRunning = false
     @suggestion    = nil
-    @suggestKandidate = 0
-    @suggestBlock = nil
-    @history       = [
-        "abbacies",
-        "abbacomes",
-        "Abbadide",
-        "Abbai",
-        "abbaye",
-        "abbandono",
-        "abbas",
-        "abbasi",
-        "Abbasid",
-        "abbassi",
-        "Abbassid",
-        "Abbasside",
-        "Abbate",
-        "overcapitalised",
-        "overcapitalising",
-        "overcapitalization",
-        "overcapitalize",
-        "over-capitalize",
-        "overcapitalized",
-        "overcapitalizes",
-        "overcapitalizing",
-        "overcaptious",
-        "overcaptiously",
-    ]
-
+    @suggestionKandidate = 0
+    @suggestionBlock = ""
+    @lastSuggestion = ""  
   end
 
   def prompt
-    c              = 'f'
+    reset
     @promptRunning = true
     while @promptRunning
       STDIN.raw!
       c = STDIN.getc
       STDIN.cooked!
-      parseInput(c)
-      # printKeyCode c
-
+      parseInput c
+      # printKeyCode c # For debugging
     end
+    return @inputStr
   end
 
+  def saveInputStr
+    unless @inputStr.nil?
+      @history.delete "#{@inputStr}\n"
+      @history.unshift "#{@inputStr}" #unless @lastSuggestion == @inputStr
+    end 
+    saveHistory
+  end 
 
   private
 
+    def exitPoint 
+      exit 0
+    end 
 
-    def printInput useSugestion = false
+    def loadHistory 
+      return unless File.exists?(@historyFilePath)
+      @history =  File.readlines(@completeHistoryilePath)
+    end 
+
+    def saveHistory 
+      FileUtils.mkdir_p @historyFilePath
+      File.open(@completeHistoryilePath, "w") { |f| f.puts(@history[0..10000]) }
+    end 
+
+    def printInput useSugestion = false, lockSuggestion = false
       print @cur.clear_line
-      return if @inputStr.empty?
       if useSugestion
-        @inputStr = @suggestion.clone
+        @inputStr = @suggestion.clone unless @suggestion.nil?
         @i        = @inputStr.length + 1
       else
-        @suggestBlock = @history.grep(/#{@inputStr}/i)
-        @suggestion = @suggestBlock[@suggestKandidate]
+        # '^'           --> Start of line to only get words starting with the input
+        # Regexp.quote  --> Automatically escape any potential escape correctors
+        @suggestionBlock = @history.grep(Regexp.new('^' + Regexp.quote("#{@inputStr}"), Regexp::IGNORECASE)) unless @inputStr.empty? and not lockSuggestion
+        @suggestion = @suggestionBlock[@suggestionKandidate]
+        @suggestion = @suggestion.strip unless @suggestion.nil?
+        @lastSuggestion = @suggestion
         print @suggestion.gray.dim unless @suggestion.nil?
         print @cur.column(0)
       end
@@ -120,12 +131,18 @@ class Manduca
           @keyCodeState = :NONE
           case FUNC_KEYS[kc]
             when :UP
-              return if @suggestBlock.nil?
-              @suggestKandidate = (@suggestKandidate + 1) %  @suggestBlock.size
-              printInput
+              if inputStr.empty?
+                @suggestionBlock = @history.clone
+                printInput
+                @suggestionKandidate = (@suggestionKandidate + 1) %  @suggestionBlock.size
+              else 
+                return if @suggestionBlock.nil?
+                @suggestionKandidate = (@suggestionKandidate + 1) %  @suggestionBlock.size
+                printInput
+              end 
             when :DOWN
-              return if @suggestBlock.nil?
-              @suggestKandidate = (@suggestKandidate - 1) %  @suggestBlock.size
+              return if @suggestionBlock.nil?
+              @suggestionKandidate = (@suggestionKandidate - 1) %  @suggestionBlock.size
               printInput
             when :LEFT
               if @i > 1
@@ -139,12 +156,14 @@ class Manduca
                 @i          += 1
                 @inputState = :INSERT
               else
+
                 unless @suggestion.nil?
+
                   c = @suggestion[@i - 1]
                   unless c.nil?
                     @i += 1
                     @inputStr << c
-                    printInput
+                    printInput false, true
                   end
                 end
                 @inputState = :APPEND
@@ -188,9 +207,11 @@ class Manduca
         when :ENTER
           @promptRunning = false
           return nil
+        when :SIGINT
+          @exit.call 
       end
 
-      @suggestKandidate = 0
+      @suggestionKandidate = 0
       @i += 1
       case @inputState
         when :APPEND
@@ -207,12 +228,15 @@ class Manduca
       puts "#{c} -> #{c.ord}"
     end
 
-
 end
 
 cli = Manduca.new
 
-cli.prompt
-puts
-puts "result was: |#{cli.inputStr}|"
 
+answ = "foo"
+while answ != "q"
+  answ = cli.prompt
+  puts
+  puts "result was: |#{cli.inputStr}|"
+  cli.saveInputStr unless answ == "q"
+end 

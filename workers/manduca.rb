@@ -26,7 +26,7 @@ class Manduca
       13  => :ENTER
   }
 
-  def initialize(sigIntCallback = method(:exitPoint))
+  def initialize(promtMsg: "", sigIntCallback: method(:exitPoint))
     @cur           = TTY::Cursor
     @history       = []
     @historyFilePath = ".inputHistory"
@@ -35,6 +35,7 @@ class Manduca
     loadHistory
     @exit         = sigIntCallback
     reset
+    @promtMsg = promtMsg
   end
 
   def reset
@@ -63,7 +64,7 @@ class Manduca
   end
 
   def saveInputStr
-    unless @inputStr.nil?
+    unless @inputStr.nil? or @inputStr.length <= 0
       @history.delete "#{@inputStr}\n"
       @history.unshift "#{@inputStr}" #unless @lastSuggestion == @inputStr
     end 
@@ -86,15 +87,19 @@ class Manduca
       File.open(@completeHistoryilePath, "w") { |f| f.puts(@history[0..10000]) }
     end 
 
-    def printInput useSugestion = false, lockSuggestion = false
+    def printInput useSugestion: false, lockSuggestion: false
       print @cur.clear_line
+      print @promtMsg
       if useSugestion
         @inputStr = @suggestion.clone unless @suggestion.nil?
         @i        = @inputStr.length + 1
       else
-        # '^'           --> Start of line to only get words starting with the input
-        # Regexp.quote  --> Automatically escape any potential escape correctors
-        @suggestionBlock = @history.grep(Regexp.new('^' + Regexp.quote("#{@inputStr}"), Regexp::IGNORECASE)) unless @inputStr.empty? and not lockSuggestion
+
+        if not @inputStr.empty? and not lockSuggestion
+          # '^'           --> Start of line to only get words starting with the input
+          # Regexp.quote  --> Automatically escape any potential escape correctors
+          @suggestionBlock = @history.grep(Regexp.new('^' + Regexp.quote("#{@inputStr}"), Regexp::IGNORECASE)) 
+        end 
         @suggestion = @suggestionBlock[@suggestionKandidate]
         @suggestion = @suggestion.strip unless @suggestion.nil?
         @lastSuggestion = @suggestion
@@ -112,6 +117,10 @@ class Manduca
       print @inputStr
       print @cur.column(@i)
     end
+
+    def moveCurser i
+
+    end 
 
     def parseInput(c)
       kc = c.ord
@@ -136,12 +145,12 @@ class Manduca
                 printInput
                 @suggestionKandidate = (@suggestionKandidate + 1) %  @suggestionBlock.size
               else 
-                return if @suggestionBlock.nil?
+                return if @suggestionBlock.size <= 0
                 @suggestionKandidate = (@suggestionKandidate + 1) %  @suggestionBlock.size
                 printInput
               end 
             when :DOWN
-              return if @suggestionBlock.nil?
+              return if @suggestionBlock.size <= 0
               @suggestionKandidate = (@suggestionKandidate - 1) %  @suggestionBlock.size
               printInput
             when :LEFT
@@ -163,7 +172,7 @@ class Manduca
                   unless c.nil?
                     @i += 1
                     @inputStr << c
-                    printInput false, true
+                    printInput lockSuggestion: true
                   end
                 end
                 @inputState = :APPEND
@@ -230,7 +239,7 @@ class Manduca
 
 end
 
-cli = Manduca.new
+cli = Manduca.new(promtMsg: "")
 
 
 answ = "foo"

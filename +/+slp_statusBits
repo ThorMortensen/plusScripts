@@ -2,7 +2,7 @@
 
 . plusScriptsPaths
 
-ruby -W0 $PS_DIR_WORKERS'/regParser.rb' statusBits $1
+ruby -W0 $PS_DIR/rov_command_and_conquer'/regParser.rb' statusBits $1
 
 
 

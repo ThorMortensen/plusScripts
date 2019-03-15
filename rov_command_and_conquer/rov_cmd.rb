@@ -132,6 +132,119 @@ def printInputHelp
 end
 
 
+def strToInt(str)
+  if str.length > 8
+    puts "String is longer than 8 (#{ str.length })"
+    return nil, nil 
+  end 
+
+  arg1 = 0
+  arg2 = 0
+
+  d = 3
+  str[0..3].each_byte do |i|
+    c = i.ord.to_i
+    arg1 |= c  << (8 * d) # Fixnum#chr converts any number to the ASCII char it represents
+    d -= 1
+  end
+
+  d = 3
+  str[4..7].each_byte do |i|
+    arg2 |= i.ord.to_i  << (8 * d) # Fixnum#chr converts any number to the ASCII char it represents
+    d -= 1
+  end
+
+  return arg1, arg2
+
+end 
+
+  DISP_INFO_CONTROL = 187
+  DISP_INFO_LHS = 183
+  DISP_INFO_RHS = 185
+
+  SELECT_DISPLAYED_FUNCTION  = 0
+  SET_FUNCTION_COUNT = 1
+  SET_FUNCTION_LED = 2
+
+def runRemoteDisp(cmdHandler)
+  ledMap = [59,58,57,56, 4,3,2,1,0]
+  functionCount = ledMap.size
+
+  val1 = 0
+  val2 = 0
+
+  cmd = DISP_INFO_CONTROL
+
+  puts "----- Initializing DispInfo -----"
+
+  puts "Setting function count to #{functionCount}"
+  arg1 = SET_FUNCTION_COUNT
+  arg2 = functionCount
+
+  return unless txCmd(cmdHandler, cmd, arg1, arg2)
+
+  puts "Setting LED map #{ledMap}"
+
+  ledMap.each_with_index do |val, index|
+    arg1 = SET_FUNCTION_LED
+    val1 = index
+    val2 = val
+    arg2 = val1 | (val2 << 16)
+    return unless txCmd(cmdHandler, cmd, arg1, arg2)
+  end
+
+
+
+
+  intergerFy = -> str {
+    arg1 = 0
+
+    d = 3
+
+    str[0..3].each_byte do |i|
+      c = i.ord.to_i
+      arg1 |= c  << (8 * d) # Fixnum#chr converts any number to the ASCII char it represents
+      d -= 1
+    end
+    return arg1
+  }
+
+
+  dispIndex    = UserPrompter.new("DispFunction Index ".bold)
+  lhsStr    = UserPrompter.new("LHS   ".bold, -> input {input.length <= 4}, 'Must be shorter than 4', intergerFy)
+  rhsStr    = UserPrompter.new("RHS   ".bold, lhsStr)
+  dotLhs    = UserPrompter.new("Dot L ".bold, -> input {input.is_integer? && input.to_i <= 4},
+                               'Must be shorter than 4', -> int {(int.to_i > 0) ? (8 >> (int.to_i - 1)) : 0})
+  dotRhs    = UserPrompter.new("Dot R ".bold, dotLhs)
+
+
+  dispIndex >> lhsStr >> rhsStr >> dotLhs >> dotRhs
+  dispIndex << dispIndex # Tie up the back-loop so it doesn't crash when user goes back from fresh start
+
+
+  while true 
+    dispIndex.runPrompt
+
+    cmd = DISP_INFO_LHS
+    return if dispIndex.result == 99
+
+    arg1 = (dispIndex.result | (dotLhs.result << 16))
+    
+    arg2 = lhsStr.result
+    return unless txCmd(cmdHandler, cmd, arg1, arg2)
+
+    cmd = DISP_INFO_RHS
+
+    arg1 = (dispIndex.result | (dotRhs.result << 16))
+
+    arg2 = rhsStr.result
+    return unless txCmd(cmdHandler, cmd, arg1, arg2)
+
+  end 
+
+
+end 
+
 def runMasc(cmdHandler)
 
   printInputHelp
@@ -141,13 +254,25 @@ def runMasc(cmdHandler)
   shmCmdExdCmdPrompt = UserPrompter.new("Shm cmdExd ".bold, @cmdPrompt, @eatHexLambda)
   shmIndexCmdPrompt  = UserPrompter.new("Shm index  ".bold, @cmdPrompt, @eatHexLambda)
 
+  # dic  = UserPrompter.new("Display Info Control cmd  ".bold, @cmdPrompt, @eatHexLambda)
+  # div1  = UserPrompter.new("Display Info Control val1  ".bold, @cmdPrompt, @eatHexLambda)
+  # div2  = UserPrompter.new("Display Info Control val2  ".bold, @cmdPrompt, @eatHexLambda)
+
   # Connecting extra prompts to main prompt loop
   @cmdPrompt >> {-> cmd {cmd.to_i.between? 160, 163} => shmChmCmdPrompt >> shmCmdExdCmdPrompt >> shmIndexCmdPrompt >> @arg2Prompt}
+  # @cmdPrompt >> {-> cmd {cmd.to_i == 187} => dic >> div1 >> div2 >> @arg2Prompt}
 
   while true
     @cmdPrompt.runPrompt
 
     cmd = @cmdPrompt.result
+
+    if cmd == 255
+      while true 
+       runRemoteDisp cmdHandler
+      end 
+    end 
+
     if @cmdPrompt.didBranch
       shmCmd   = shmChmCmdPrompt.result
       shmCmdEx = shmCmdExdCmdPrompt.result
@@ -172,8 +297,20 @@ def runSlp(cmdHandler)
     cmd  = @cmdPrompt.result
     arg1 = @arg1Prompt.result
     arg2 = @arg2Prompt.result
-
+    
     return unless txCmd(cmdHandler, cmd, arg1, arg2)
+
+
+    # cmd1  = 75
+    # cmd2  = 76
+    # arg1 = 1
+    # arg2 = 1
+
+    # for i in 0..5 
+      # return unless txCmd(cmdHandler, cmd1, arg1, arg2)
+      # return unless txCmd(cmdHandler, cmd2, arg1, arg2)
+    # end
+
   end
 end
 

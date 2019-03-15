@@ -104,6 +104,7 @@ alias cleos='docker exec eosio /opt/eosio/bin/cleos --wallet-url http://localhos
 # alias ipp='192.168'
 
 zstyle ':completion:*:(ssh|scp|sftp|rsh|rsync|sshfs):*' hosts "$(echo $USER)@192.168.0." "$(echo $USER)@10.0.100." 
+alias goto_newest_folder_z='cd ./*(/om[1])'
 #,thm@10.0.100.
 # zstyle ':completion:*:ssh:*' hosts 192.168.0.
 # zstyle -e ':completion:*:(ssh|scp|sftp|rsh|rsync|sshfs):hosts' hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'

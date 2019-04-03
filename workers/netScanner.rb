@@ -10,6 +10,7 @@ require_relative 'rubyHelpers.rb'
 @ipRegex = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.)\d{1,3}/
 
 def scanIp(ipAddress)
+  puts
   @spinner = TTY::Spinner.new("Scanning with \'nmap -sP #{ipAddress}/24\' ".brown + ":spinner".blue, format: :bouncing_ball)
   @spinner.auto_spin
   out, err = @cmd.run("nmap -sP #{ipAddress}/24")
@@ -19,7 +20,7 @@ def scanIp(ipAddress)
   name      = out.scan(/for(\s|.*) (\(|\d)/)
 
   thisFileName = ".fileDump/ipRange_#{ipAddress}"
-  puts "\nActive hosts: #{ipUp.length} ".bold
+  puts "Active hosts: #{ipUp.length} ".bold
 
   if File.exists?(thisFileName)
     oldIpUp = IO.readlines(thisFileName);

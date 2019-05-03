@@ -5,7 +5,7 @@ source ../workers/globals
 
 install_dependancys() {
   $PS_DIR_PLUS/+update
-  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap net-tools curl
+  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap net-tools curl ranger
 }
 
 install_bundler_gems() {
@@ -69,6 +69,10 @@ add_common_stuff(){
   write_if_missing "#####################################################" ~/.common_rc
   write_if_missing "PATH=\$PATH:$PS_DIR_PLUS" ~/.common_rc
   write_if_missing "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" ~/.common_rc
+
+  write_if_missing "alias rr='ranger'" ~/.common_rc
+  write_if_missing "alias ø='echo "sourcing common_rc done!" && source ~/.common_rc'" ~/.common_rc
+
 }
 
 bundler_selection() {

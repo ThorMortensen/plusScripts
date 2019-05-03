@@ -111,6 +111,27 @@ class String
     self.match(/0x([a-fA-F0-9]+)/)
   end 
 end
+
+
+class DebugLog
+
+  def initialize logfilePath = "log_file" , cleanLog = false
+    # @@logfile  = File.new(logfilePath, cleanLog ? "w": "a")
+  end
+
+  def puts str = ""
+    # @@logfile.puts str
+    # @@logfile.flush
+  end
+
+  def close
+    # @@logfile.puts "Closing file!!"
+    # @@logfile.puts
+    # @@logfile.close
+  end
+
+end
+
 #@formatter:on
 
 #

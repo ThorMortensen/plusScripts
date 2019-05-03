@@ -71,7 +71,7 @@ add_common_stuff(){
   write_if_missing "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" ~/.common_rc
 
   write_if_missing "alias rr='ranger'" ~/.common_rc
-  write_if_missing "alias ø='echo "sourcing common_rc done!" && source ~/.common_rc'" ~/.common_rc
+  write_if_missing "alias ø='echo \"sourcing common_rc done!\" && source ~/.common_rc'" ~/.common_rc
 
 }
 

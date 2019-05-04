@@ -132,7 +132,7 @@ class Caret
 end
 
 
-class Manduca
+class Loxta
 
   attr_accessor :inputStr
 
@@ -154,11 +154,11 @@ class Manduca
     13  => :ENTER
   }
 
-  def initialize promtMsg: "", defaultAnswer: "", historyFilePath: "~/.manduca-history", historyFileName: ".inputHistory" , sigIntCallback: method(:exitPoint)
+  def initialize promtMsg: "", defaultAnswer: "", historyFilePath: "~/.Loxta-history", historyFileName: ".inputHistory" , sigIntCallback: method(:exitPoint)
     @car           = Caret.new promtMsg
     @defaultAnswer = defaultAnswer
     @history       = []
-    @historyFilePath = historyFilePath
+    @historyFilePath = File.expand_path(historyFilePath)
     @historyFileName = historyFileName
     @completeHistoryilePath = "#{@historyFilePath}/#{@historyFileName}"
     loadHistory
@@ -177,7 +177,6 @@ class Manduca
     @lastSuggestion = ""
 
     if @defaultAnswer.empty?
-      puts "fuck"
       @car.write
     else
       @suggestionKandidate = @defaultAnswer
@@ -214,13 +213,13 @@ class Manduca
   end
 
   def loadHistory
-    return unless File.exists?(@historyFilePath)
+    return unless File.exists?(@completeHistoryilePath)
     @history =  File.readlines(@completeHistoryilePath)
   end
 
   def saveHistory
     FileUtils.mkdir_p @historyFilePath
-    File.open(@completeHistoryilePath, "w") { |f| f.puts(@history[0..10000]) }
+    File.open(@completeHistoryilePath, "w") { |f| f.puts(@history[0..1000]) }
   end
 
   def suggestInput useSuggestion: false, lockSuggestion: false, suggestDefault: false
@@ -232,13 +231,16 @@ class Manduca
         # Regexp.quote  --> Automatically escape any potential escape correctors
         @suggestionBlock = @history.grep(Regexp.new('^' + Regexp.quote("#{@car.getStr}"), Regexp::IGNORECASE))
       end
+
+
+
       unless suggestDefault
         @suggestion = @suggestionBlock[@suggestionKandidate]
         @suggestion = @suggestion.strip unless @suggestion.nil?
         @lastSuggestion = @suggestion
       else
         @suggestion = @suggestionKandidate
-        puts "here"
+      	@suggestionBlock = {@suggestion => @suggestion}
       end
       @car.showSuggestion @suggestion
     end
@@ -338,7 +340,7 @@ class Manduca
 
 end
 
-cli = Manduca.new(promtMsg: "Please write here --> ".green.bold, defaultAnswer: "This is default!", historyFileName: "manduca-test" )
+cli = Loxta.new(promtMsg: "Please write here --> ".green.bold, defaultAnswer: "This is default!", historyFileName: "Loxta-test" )
 
 
 answ = "foo"

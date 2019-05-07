@@ -1,6 +1,7 @@
 require 'tty'
 require 'socket'
 require_relative 'rubyHelpers.rb'
+require_relative 'manduca.rb'
 
 
 @cmd = TTY::Command.new(printer: :null)
@@ -63,6 +64,34 @@ Dir.mkdir(".fileDump") unless File.exists?(".fileDump")
 
 
 if ARGV[0].nil?
+
+  simplePrompter = TTY::Prompt.new(interrupt: :signal)
+
+  mode = simplePrompter.select("Select scan mode:", ["Default IP ranges", "Enter IP range"])
+  cli = Manduca.new(promtMsg: "Please enter base ip range to scan ~> ".green.bold,
+                    # defaultAnswer: "This is default!",
+                    defaultAnswerLastInput: true,
+                    # useDefaultOnEnter: true,
+                    historyFileName: "ipScanHistory"
+                    )
+
+  if mode == "Enter IP range"
+    rangeOk = true
+    while rangeOk
+      answ = cli.prompt
+      if range = answ.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.)\d{1,3}/)
+        cli.saveInputStr
+        scanIp(range[1] + '0')
+      else
+        puts "Not a valid ip!"
+        rangeOk = false
+      end
+    end
+    return 
+  end
+
+
+
   @addr_infos.each do |ip|
     next if ip.ip_address == "127.0.0.1"
     if range = ip.ip_address.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.)\d{1,3}/)
@@ -72,11 +101,10 @@ if ARGV[0].nil?
   end
 else
 
-if range = ARGV[0].match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.)\d{1,3}/)
-  scanIp(range[1] + '0')
-else
-  puts "Not a valid ip!"
+  if range = ARGV[0].match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.)\d{1,3}/)
+    scanIp(range[1] + '0')
+  else
+    puts "Not a valid ip!"
+  end
+
 end
-
-end 
-

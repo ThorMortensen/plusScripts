@@ -132,7 +132,7 @@ class Caret
 end
 
 
-class Loxta
+class Manduca
 
   attr_accessor :inputStr
 
@@ -154,9 +154,18 @@ class Loxta
     13  => :ENTER
   }
 
-  def initialize promtMsg: "", defaultAnswer: "", historyFilePath: "~/.Loxta-history", historyFileName: ".inputHistory" , sigIntCallback: method(:exitPoint)
+  def initialize (promtMsg: "",
+                  defaultAnswer: "",
+                  defaultAnswerLastInput: false,
+                  useDefaultOnEnter: false,
+                  historyFilePath: "~/.manduca-history",
+                  historyFileName: ".inputHistory" ,
+                  sigIntCallback: method(:exitPoint)
+                  )
     @car           = Caret.new promtMsg
     @defaultAnswer = defaultAnswer
+    @useDefaultOnEnter = useDefaultOnEnter
+    @defaultAnswerLastInput = defaultAnswerLastInput
     @history       = []
     @historyFilePath = File.expand_path(historyFilePath)
     @historyFileName = historyFileName
@@ -175,14 +184,16 @@ class Loxta
     @suggestionKandidate = 0
     @suggestionBlock = ""
     @lastSuggestion = ""
+    @forceDefault = false
+    @defaultIsPressent = false
 
-    if @defaultAnswer.empty?
-      @car.write
+    if @defaultAnswerLastInput or not @defaultAnswer.empty?
+      @forceDefault = true
+      @defaultIsPressent = true
+      suggestInput
     else
-      @suggestionKandidate = @defaultAnswer
-      suggestInput suggestDefault: true
+      @car.write
     end
-
   end
 
   def prompt
@@ -200,9 +211,12 @@ class Loxta
 
   def saveInputStr
     unless @car.getStr.nil? or @car.getStr.length <= 0
-      @history.delete "#{@car.getStr}\n"
-      @history.unshift "#{@car.getStr}" #unless @lastSuggestion == @car.getStr
+      # @history.delete "#{@car.getStr}\n"
+      # @history.unshift "#{@car.getStr}\n"
+      @history.unshift "#{@car.getStr}\n" unless @car.getStr == @defaultAnswer
+      @history = @history.uniq
     end
+
     saveHistory
   end
 
@@ -213,8 +227,14 @@ class Loxta
   end
 
   def loadHistory
-    return unless File.exists?(@completeHistoryilePath)
-    @history =  File.readlines(@completeHistoryilePath)
+    if File.exists?(@completeHistoryilePath)
+      @history =  File.readlines(@completeHistoryilePath)
+    else
+      @history = [""]
+    end
+    unless @defaultAnswer.empty?
+      @history.unshift("#{@defaultAnswer}\n") unless @defaultAnswer.strip == @history[0].strip
+    end
   end
 
   def saveHistory
@@ -222,28 +242,23 @@ class Loxta
     File.open(@completeHistoryilePath, "w") { |f| f.puts(@history[0..1000]) }
   end
 
-  def suggestInput useSuggestion: false, lockSuggestion: false, suggestDefault: false
-    if useSuggestion
-      @car.setStr @suggestion.clone unless @suggestion.nil?
-    else
-      if not @car.empty? and not lockSuggestion
-        # '^'           --> Start of line to only get words starting with the input
-        # Regexp.quote  --> Automatically escape any potential escape correctors
-        @suggestionBlock = @history.grep(Regexp.new('^' + Regexp.quote("#{@car.getStr}"), Regexp::IGNORECASE))
-      end
+  def suggestInput useSuggestion: false, lockSuggestion: false
 
-
-
-      unless suggestDefault
-        @suggestion = @suggestionBlock[@suggestionKandidate]
-        @suggestion = @suggestion.strip unless @suggestion.nil?
-        @lastSuggestion = @suggestion
-      else
-        @suggestion = @suggestionKandidate
-      	@suggestionBlock = {@suggestion => @suggestion}
-      end
-      @car.showSuggestion @suggestion
+    if useSuggestion and not @suggestion.nil?
+      @car.setStr @suggestion.clone
+      return
     end
+
+    if (not @car.empty? and not lockSuggestion) or @forceDefault
+      # '^'           --> Start of line to only get words starting with the input
+      # Regexp.quote  --> Automatically escape any potential escape correctors
+      @suggestionBlock = @history.grep(Regexp.new('^' + Regexp.quote("#{@car.getStr}"), Regexp::IGNORECASE))
+    end
+    @suggestion = @suggestionBlock[@suggestionKandidate]
+    @suggestion = @suggestion.strip unless @suggestion.nil?
+    @lastSuggestion = @suggestion
+
+    @car.showSuggestion @suggestion
   end
 
   def parseInput(c)
@@ -267,15 +282,25 @@ class Loxta
 
         if @car.empty?
           @suggestionBlock = @history.clone
-          suggestInput
-          @suggestionKandidate = (@suggestionKandidate + 1) %  @suggestionBlock.size
+          if @defaultIsPressent
+            @suggestionKandidate = (@suggestionKandidate + 1) %  @suggestionBlock.size
+            @forceDefault = false
+            suggestInput
+          else
+            suggestInput
+            @suggestionKandidate = (@suggestionKandidate + 1) %  @suggestionBlock.size
+          end
         else
+          @forceDefault = false
           return if @suggestionBlock.size <= 0
           @suggestionKandidate = (@suggestionKandidate + 1) %  @suggestionBlock.size
           suggestInput
         end
 
       when :DOWN
+
+        @forceDefault = false
+
         return if @suggestionBlock.size <= 0
         @suggestionKandidate = (@suggestionKandidate - 1) %  @suggestionBlock.size
         suggestInput
@@ -322,6 +347,10 @@ class Loxta
 
       return nil
     when :ENTER
+      if @useDefaultOnEnter
+        suggestInput useSuggestion: true
+      end
+
       @promptRunning = false
       return nil
     when :SIGINT
@@ -340,7 +369,12 @@ class Loxta
 
 end
 
-cli = Loxta.new(promtMsg: "Please write here --> ".green.bold, defaultAnswer: "This is default!", historyFileName: "Loxta-test" )
+cli = Manduca.new(promtMsg: "Please write here --> ".green.bold,
+                  defaultAnswer: "This is default!",
+                  # defaultAnswerLastInput: true,
+                  # useDefaultOnEnter: true,
+                  historyFileName: "manduca-test2"
+                  )
 
 
 answ = "foo"

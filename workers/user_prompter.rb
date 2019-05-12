@@ -10,6 +10,7 @@
 
 require 'tty'
 require_relative 'rubyHelpers.rb'
+require_relative 'manduca.rb'
 
 class UserPrompter
 
@@ -19,16 +20,32 @@ class UserPrompter
   @controlKeys = {'r' => :autoRun, 'b' => :back, 'h' => :help, 'q' => :quit}
   @@sigExitMsg = "Exiting."
 
-  def self.setSignalExitMsg (msg)
+  def self.setSignalExitMsg msg
     @@sigExitMsg = msg
   end
 
 
   # @param [String] promptStr
-  def initialize(promptStr, acceptedInput_lambda = -> input {input.is_integer?}, errorMsg = 'Must be (or produce) a number', inputConverter_lambda = -> input {input.to_i})
+  def initialize(promptStr, 
+                 appName, 
+                 cloneSettingsFrom: nil,
+                 acceptedInput_lambda: -> input {input.is_integer?}, 
+                 errorMsg: 'Must be (or produce) a number', 
+                 inputConverter_lambda: -> input {input.to_i},
+                 exitPoint: Manduca.method(:exitPoint)
+                 )
     @nextPrompt      = []
     @cursor          = TTY::Cursor
-    @reader          = TTY::Reader.new(interrupt: -> {puts @@sigExitMsg; exit(1)})
+    # @reader          = TTY::Reader.new(interrupt: -> {puts @@sigExitMsg; exit(1)})
+    @cli = Manduca.new(promtMsg: promptStr,
+                       # defaultAnswer: "",
+                       defaultAnswerLastInput: true,
+                       useDefaultOnEnter: true,
+                       # historyFilePath: "~/.manduca-history",
+                       historyFileName: appName ,
+                       sigIntCallback: exitPoint,
+                       )
+
     @branchCond      = -> res {false}
     @lastLambdaInput = nil
     @ppState         = :start
@@ -37,24 +54,13 @@ class UserPrompter
 
 
     @promptStr = promptStr
-    if acceptedInput_lambda.is_a?(UserPrompter) # Clone rest of the parameters from any incoming objects of the same type
-      @checkValidInput       = acceptedInput_lambda.checkValidInput
-      @errorMsg              = acceptedInput_lambda.errorMsg
-      @inputConverter_lambda = acceptedInput_lambda.inputConverter_lambda
-    else
-      @checkValidInput = acceptedInput_lambda
-      if errorMsg.is_a?(UserPrompter)
-        @errorMsg              = errorMsg.errorMsg
-        @inputConverter_lambda = errorMsg.inputConverter_lambda
-      else
-        @errorMsg = errorMsg
-        if inputConverter_lambda.is_a?(UserPrompter)
-          @inputConverter_lambda = inputConverter_lambda.inputConverter_lambda
-        else
-          @inputConverter_lambda = inputConverter_lambda
-        end
-      end
-    end
+
+    if cloneSettingsFrom.is_a?(UserPrompter) # Clone rest of the parameters from any incoming objects of the same type
+      @checkValidInput       = cloneSettingsFrom.checkValidInput
+      @errorMsg              = cloneSettingsFrom.errorMsg
+      @inputConverter_lambda = cloneSettingsFrom.inputConverter_lambda
+      @checkValidInput       = cloneSettingsFrom.checkValidInput
+    end 
   end
 
   def getFormattedPromptStr(promptStr)
@@ -133,12 +139,11 @@ class UserPrompter
 
   end
 
-  def pp(promptStr = @promptStr, trumpUserInput = nil)
+  def pp(promptStr: @promptStr, trumpUserInput: nil)
 
     @didBranch = false
 
-    userInput = trumpUserInput.nil? ? @reader.read_line(getFormattedPromptStr(promptStr)) : trumpUserInput.to_s
-    userInput.chomp!
+    userInput = trumpUserInput.nil? ? @cli.prompt(promtMsg: getFormattedPromptStr(promptStr)) : trumpUserInput.to_s    
     wasEmptyInput = userInput.empty?
     wasOk         = true
 
@@ -174,12 +179,14 @@ class UserPrompter
       @ppState = :start
     end
 
+    @cli.saveInputStr if wasOk and trumpUserInput.nil?
+
     return wasOk
 
   end
 
   def autoRun
-    pp(trumpUserInput = @lastInput)
+    pp(trumpUserInput: @lastInput)
   end
 
   def setDefault(defaultValue)
@@ -261,7 +268,7 @@ class UserPrompter
     if other.is_a?(Hash)
       #Change last
       @branchCond = other.first.first
-      @nextPrompt.prepend ({other.first.first => other.first.last.firstLink})
+      @nextPrompt.unshift ({other.first.first => other.first.last.firstLink})
       other.first.last << self
     else
       @nextPrompt << ({-> res {true} => other})

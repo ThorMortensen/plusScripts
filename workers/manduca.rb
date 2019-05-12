@@ -52,6 +52,7 @@ class Caret
   end
 
   def goHome
+    @i = @offset
     @state = :INSERT unless @str.empty?
     print @cur.column(@offset)
   end
@@ -117,7 +118,7 @@ class Caret
   end
 
   def write chars = ""
-    addChars
+    addChars chars
     clearLine
     pp
   end
@@ -133,8 +134,6 @@ end
 
 
 class Manduca
-
-  attr_accessor :inputStr
 
   FUNC_KEYS = {
     68  => :LEFT,
@@ -160,7 +159,7 @@ class Manduca
                   useDefaultOnEnter: false,
                   historyFilePath: "~/.manduca-history",
                   historyFileName: ".inputHistory" ,
-                  sigIntCallback: method(:exitPoint)
+                  sigIntCallback: Manduca.method(:exitPoint)
                   )
     @car           = Caret.new promtMsg
     @defaultAnswer = defaultAnswer
@@ -195,7 +194,17 @@ class Manduca
     end
   end
 
-  def prompt
+  def prompt promtMsg: "", defaultAnswer: ""
+
+    unless promtMsg.empty?
+      @car = Caret.new promtMsg 
+    end 
+
+    unless defaultAnswer.empty?
+      @defaultAnswer = defaultAnswer 
+      setDefault
+    end
+
     reset
     @promptRunning = true
     while @promptRunning
@@ -205,7 +214,8 @@ class Manduca
       parseInput c
       # printKeyCode c # For debugging
     end
-    @inputStr = @car.getStr
+    print "\n"
+    return  @car.getStr
   end
 
   def saveInputStr
@@ -219,11 +229,18 @@ class Manduca
     saveHistory
   end
 
-  private
-
-  def exitPoint
+  def self.exitPoint
     exit 0
   end
+
+  private
+
+
+  def setDefault 
+    unless @defaultAnswer.empty?
+      @history.unshift("#{@defaultAnswer}\n") unless @defaultAnswer.strip == @history[0].strip
+    end
+  end 
 
   def loadHistory
     if File.exists?(@completeHistoryilePath)
@@ -231,9 +248,7 @@ class Manduca
     else
       @history = [""]
     end
-    unless @defaultAnswer.empty?
-      @history.unshift("#{@defaultAnswer}\n") unless @defaultAnswer.strip == @history[0].strip
-    end
+    setDefault
   end
 
   def saveHistory
@@ -256,7 +271,6 @@ class Manduca
     @suggestion = @suggestionBlock[@suggestionKandidate]
     @suggestion = @suggestion.strip unless @suggestion.nil?
     @lastSuggestion = @suggestion
-
     @car.showSuggestion @suggestion
   end
 
@@ -349,7 +363,6 @@ class Manduca
       if @useDefaultOnEnter
         suggestInput useSuggestion: true
       end
-
       @promptRunning = false
       return nil
     when :SIGINT
@@ -367,21 +380,3 @@ class Manduca
   end
 
 end
-
-
-
-# cli = Manduca.new(promtMsg: "Please write here --> ".green.bold,
-#                   defaultAnswer: "This is default!",
-#                   # defaultAnswerLastInput: true,
-#                   # useDefaultOnEnter: true,
-#                   historyFileName: "manduca-test2"
-#                   )
-
-
-# answ = "foo"
-# while answ != "q"
-#   answ = cli.prompt
-#   puts
-#   puts "result was: |#{cli.inputStr}|"
-#   cli.saveInputStr unless answ == "q"
-# end

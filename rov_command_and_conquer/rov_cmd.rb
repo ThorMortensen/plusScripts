@@ -3,9 +3,11 @@
 #
 require 'tty'
 require_relative '../workers/user_prompter'
+require_relative '../workers/manduca.rb'
 require_relative 'cmd_handler'
 require_relative 'rubyHelpers'
 
+@APP_NAME       = "CommandNConquer"
 pastel          = Pastel.new
 logoPrinter     = LogoPrinter.new
 @spinner        = TTY::Spinner.new("Sending package ".brown + ":spinner".blue, format: :arrow_pulse)
@@ -13,7 +15,7 @@ logoPrinter     = LogoPrinter.new
 $sigExitMsg     = "\nExiting. Use 'b' to go back (Noting was sent)"
 @initDone       = false
 
-trap "SIGINT" do
+def exitPoint
   puts $sigExitMsg
   exit 130
 end
@@ -31,17 +33,29 @@ end
 UserPrompter.setSignalExitMsg($sigExitMsg)
 @connectionFuckUpDefaultAnsw = true
 
-@cmdPrompt  = UserPrompter.new("Enter CMD  ".green, @betweenLambda, @betweenErrorMsg)
-@arg1Prompt = UserPrompter.new("Enter Arg1 ".magenta, @eatHexLambda)
-@arg2Prompt = UserPrompter.new("Enter Arg2 ".cyan, @eatHexLambda)
+@cmdPrompt  = UserPrompter.new("Enter CMD  ".green, 
+                                @APP_NAME+"-CMD", 
+                                acceptedInput_lambda: @betweenLambda, 
+                                errorMsg: @betweenErrorMsg
+                                )
+@arg1Prompt = UserPrompter.new("Enter Arg1 ".magenta, @APP_NAME+"-ARG1", acceptedInput_lambda: @eatHexLambda)
+@arg2Prompt = UserPrompter.new("Enter Arg2 ".cyan, @APP_NAME+"-ARG2", acceptedInput_lambda: @eatHexLambda)
 
 # Setup the prompt order loop
 @cmdPrompt >> @arg1Prompt >> @arg2Prompt
 @cmdPrompt << @cmdPrompt # Tie up the back-loop so it doesn't crash when user goes back from fresh start
+@ipPromter = Manduca.new(promtMsg: "",
+            # defaultAnswer: "",
+            defaultAnswerLastInput: true,
+            useDefaultOnEnter: true,
+            historyFileName: @APP_NAME+"-ipPromter" ,
+            sigIntCallback: method(:exitPoint),
+            )
+
 
 def startPrompt
 
-  device = @simplePrompter.select("Select device:", %w(MASC SLP))
+  device = @simplePrompter.select("Select device:", %w(MASC SLP SLP100))
 
   if @deviceIP.nil? or @initDone
     case device
@@ -49,24 +63,25 @@ def startPrompt
         defaultIp = "192.168.52."
       when "SLP"
         defaultIp = "192.168.51."
+      when "SLP100"
+        defaultIp = "192.168.53."
     end
 
     while true
-      @deviceIP = @simplePrompter.ask("What's the #{device} ip?", default: defaultIp + "xx") do |q|
-        q.required(true)
-        q.validate(/(\d{1,3}|\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b)/, "Not a valid IP address")
-      end
-      if @deviceIP == defaultIp + "xx"
+
+      @deviceIP = @ipPromter.prompt(promtMsg: "What's the #{device} ip? ~> ", defaultAnswer: defaultIp)
+
+      if @deviceIP.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)
+        puts "Device IP: " + @deviceIP.green
+        @ipPromter.saveInputStr
+        break
+      else
         puts "Not a valid IP address".red
         next
       end
-      unless @deviceIP.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)
-        @deviceIP = defaultIp + @deviceIP
-        puts "Device IP: " + @deviceIP.green
-
-      end
-      break
     end
+
+    exitPoint
 
   end
 
@@ -94,7 +109,7 @@ def txCmd(cmdHandler, cmd, arg1, arg2)
   @spinner.auto_spin
 
   begin
-    cmdHandler.sendCmd(cmd, arg1, arg2)
+    cmdHandler.sendCmd(cmd, arg1, arg2, doloopbackTest: true)
   rescue => e
     @spinner.stop(e.to_s.bold.red)
     msg = "Something went wrong with the network. Select new IP?"
@@ -195,7 +210,6 @@ def runRemoteDisp(cmdHandler)
 
 
 
-
   intergerFy = -> str {
     arg1 = 0
 
@@ -250,9 +264,9 @@ def runMasc(cmdHandler)
   printInputHelp
 
   # Extra prompt for MASC shm
-  shmChmCmdPrompt    = UserPrompter.new("Shm CMD    ".bold, @cmdPrompt, @eatHexLambda)
-  shmCmdExdCmdPrompt = UserPrompter.new("Shm cmdExd ".bold, @cmdPrompt, @eatHexLambda)
-  shmIndexCmdPrompt  = UserPrompter.new("Shm index  ".bold, @cmdPrompt, @eatHexLambda)
+  shmChmCmdPrompt    = UserPrompter.new("Shm CMD    ".bold, @APP_NAME+"-SHM_CMD",  acceptedInput_lambda: @eatHexLambda)
+  shmCmdExdCmdPrompt = UserPrompter.new("Shm cmdExd ".bold, @APP_NAME+"-SHM_ARG1", acceptedInput_lambda: @eatHexLambda)
+  shmIndexCmdPrompt  = UserPrompter.new("Shm index  ".bold, @APP_NAME+"-SHM_ARG2", acceptedInput_lambda: @eatHexLambda)
 
   # dic  = UserPrompter.new("Display Info Control cmd  ".bold, @cmdPrompt, @eatHexLambda)
   # div1  = UserPrompter.new("Display Info Control val1  ".bold, @cmdPrompt, @eatHexLambda)
@@ -260,6 +274,7 @@ def runMasc(cmdHandler)
 
   # Connecting extra prompts to main prompt loop
   @cmdPrompt >> {-> cmd {cmd.to_i.between? 160, 163} => shmChmCmdPrompt >> shmCmdExdCmdPrompt >> shmIndexCmdPrompt >> @arg2Prompt}
+
   # @cmdPrompt >> {-> cmd {cmd.to_i == 187} => dic >> div1 >> div2 >> @arg2Prompt}
 
   while true

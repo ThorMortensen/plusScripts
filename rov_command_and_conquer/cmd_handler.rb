@@ -28,7 +28,8 @@ class CmdHandler
     @socket.close
   end
 
-  def sendCmd(cmdId, arg1, arg2)
+  def sendCmd(cmdId, arg1, arg2, doloopbackTest: false)   
+    @isConnected = true if doloopbackTest
     connect unless @isConnected
     new_packet
     set_command_id cmdId
@@ -36,9 +37,9 @@ class CmdHandler
     set_sender_id 127
     set_arg1 arg1
     set_arg2 arg2
-    sendPackage
+    doloopbackTest ? loopbackTest : sendPackage
     getRes
-    close # Close as we are very slow in man mode
+    close unless doloopbackTest # Close as we are very slow in man mode
   end
 
   def print_package
@@ -87,6 +88,10 @@ class CmdHandler
   end
 
   private
+
+    def loopbackTest
+
+    end 
 
     def sendPackage
       @socket.write(@data.map(&:to_i).pack('c*'))

@@ -37,8 +37,13 @@ class CmdHandler
     set_sender_id 127
     set_arg1 arg1
     set_arg2 arg2
-    doloopbackTest ? loopbackTest : sendPackage
-    getRes
+    if doloopbackTest
+      loopbackSendPackage
+      loopbackGetRes
+    else 
+      sendPackage
+      getRes
+    end 
     close unless doloopbackTest # Close as we are very slow in man mode
   end
 
@@ -89,15 +94,22 @@ class CmdHandler
 
   private
 
-    def loopbackTest
-
+    def loopbackSendPackage
+      @lbp = @data
     end 
+
+    def loopbackGetRes
+      @res = @lbp
+    end 
+
 
     def sendPackage
       @socket.write(@data.map(&:to_i).pack('c*'))
     end
 
     def getRes
+      @res = Array.new(18, 0)
+
       @res = @socket.readline.bytes.to_a
     end
 

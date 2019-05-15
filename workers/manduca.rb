@@ -360,8 +360,10 @@ class Manduca
 
       return nil
     when :ENTER
-      if @useDefaultOnEnter
+      if @useDefaultOnEnter and @car.empty?
         suggestInput useSuggestion: true
+      else 
+        @car.write
       end
       @promptRunning = false
       return nil

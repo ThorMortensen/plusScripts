@@ -76,12 +76,11 @@ def startPrompt
         @ipPromter.saveInputStr
         break
       else
+        puts "Device IP: " + @deviceIP
         puts "Not a valid IP address".red
         next
       end
     end
-
-    exitPoint
 
   end
 

@@ -55,8 +55,12 @@ class UserPrompter
 
     @promptStr = promptStr
 
+    @checkValidInput = acceptedInput_lambda
+    @inputConverter_lambda = inputConverter_lambda
+    @errorMsg = errorMsg
+
+
     if cloneSettingsFrom.is_a?(UserPrompter) # Clone rest of the parameters from any incoming objects of the same type
-      @checkValidInput       = cloneSettingsFrom.checkValidInput
       @errorMsg              = cloneSettingsFrom.errorMsg
       @inputConverter_lambda = cloneSettingsFrom.inputConverter_lambda
       @checkValidInput       = cloneSettingsFrom.checkValidInput
@@ -67,7 +71,7 @@ class UserPrompter
     "#{promptStr}#{
     (@lastInput.nil? and @lastLambdaInput.nil?) ?
         '' :
-        '(' + (((@ppCaller == :lambda or @ppState == :lastWasLambdaInput) ? @lastLambdaInput.to_s + " = " : '') + @lastInput.to_s).gray.dim + ')'} ~> "
+        '(' + @lastInput.to_s.gray.dim + ')'} ~> "
   end
 
 
@@ -116,7 +120,7 @@ class UserPrompter
       return false
     end
 
-    if pp(promptStr, lambdaResult)
+    if pp(promptStr: promptStr, trumpUserInput: lambdaResult)
       @lastLambdaInput = m[2]
       case @ppState
         when :start
@@ -164,6 +168,7 @@ class UserPrompter
       return handleLambdaInput(m, wasEmptyInput) # Must return here else pp state is overwritten further down
     elsif @checkValidInput.(userInput)
       @lastInput = @inputConverter_lambda.(userInput)
+
     elsif userInput == "b"
       wasOk = :back
     elsif userInput == "h"

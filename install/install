@@ -5,7 +5,7 @@ source ../workers/globals
 
 install_dependancys() {
   $PS_DIR_PLUS/+update
-  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap net-tools curl ranger
+  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap net-tools curl ranger xautomation xbindkeys
 }
 
 install_bundler_gems() {
@@ -88,6 +88,16 @@ dependences_selection(){
   bundler_selection
 }
 
+changec_numpad_to_dot(){
+  gsettings set org.gnome.desktop.input-sources xkb-options "['kpdl:period', 'kpdl:dotoss']"
+  echo "Numpad comma is not period!"
+}
+
+changec_numpad_to_comma(){
+  gsettings set org.gnome.desktop.input-sources xkb-options "['kpdl:period']"
+}
+
+
 install_z(){
   git clone git@github.com:rupa/z.git $PS_DIR_CONFIG/z
   write_if_missing "source $PS_DIR_CONFIG/z/z.sh" ~/.common_rc
@@ -101,10 +111,10 @@ install_z(){
 while true; do 
 
   WHAT_TO_INTALL=$(whiptail --title "Menu example" --menu "Choose an install option" 20 50 10 \
-                  "All"         "Installs everything. (except fish)" \
+                  "All"         "Installs everything." \
                   "Bash stuff"  "Only adds +scripts to bashrc." \
                   "ZSH stuff"   "Only adds +scripts to ZSH." \
-                  "Fish stuff"  "Only adds +scripts to fish." \
+                  "Fix numpad"  "Change the numpad comma to dot!" \
                   "Z"           "Install Z" \
                   "Dependences" "Only installs dependences." 3>&1 1>&2 2>&3)
 
@@ -133,9 +143,9 @@ while true; do
         add_common_stuff
         install_zsh_termianl
       ;;
-      "Fish stuff")
+      "Fix numpad")
         dependences_selection
-        install_fish_termianl
+        changec_numpad_to_dot
       ;;
       "Z")
         install_z

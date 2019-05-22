@@ -94,7 +94,7 @@ def startPrompt
   case device
     when "MASC"
       runMasc(cmdHandler)
-    when "SLP"
+    else 
       runSlp(cmdHandler)
   end
 
@@ -108,7 +108,7 @@ def txCmd(cmdHandler, cmd, arg1, arg2)
   @spinner.auto_spin
 
   begin
-    cmdHandler.sendCmd(cmd, arg1, arg2, doloopbackTest: true)
+    cmdHandler.sendCmd(cmd, arg1, arg2, doloopbackTest: false)
   rescue => e
     @spinner.stop(e.to_s.bold.red)
     msg = "Something went wrong with the network. Select new IP?"
@@ -181,7 +181,7 @@ end
   SET_FUNCTION_LED = 2
 
 def runRemoteDisp(cmdHandler)
-  ledMap = [59,58,57,56, 4,3,2,1,0]
+  ledMap = [0,1,2,3]
   functionCount = ledMap.size
 
   val1 = 0
@@ -222,18 +222,37 @@ def runRemoteDisp(cmdHandler)
     return arg1
   }
 
+  @arg2Prompt = UserPrompter.new("Enter Arg2 ".cyan, @APP_NAME+"-ARG2", acceptedInput_lambda: @eatHexLambda)
 
-  dispIndex    = UserPrompter.new("DispFunction Index ".bold)
-  lhsStr    = UserPrompter.new("LHS   ".bold, -> input {input.length <= 4}, 'Must be shorter than 4', intergerFy)
-  rhsStr    = UserPrompter.new("RHS   ".bold, lhsStr)
-  dotLhs    = UserPrompter.new("Dot L ".bold, -> input {input.is_integer? && input.to_i <= 4},
-                               'Must be shorter than 4', -> int {(int.to_i > 0) ? (8 >> (int.to_i - 1)) : 0})
-  dotRhs    = UserPrompter.new("Dot R ".bold, dotLhs)
+  dispIndex = UserPrompter.new("DispFunction Index ".bold, @APP_NAME+"-DispFunkIndex")
+  
+  lhsStr    = UserPrompter.new("LHS   ".bold, 
+                               @APP_NAME+"-DispLHS", 
+                               acceptedInput_lambda: -> input {input.length <= 4}, 
+                               errorMsg: 'Must be shorter than 4', 
+                               inputConverter_lambda: intergerFy
+                               )
+  rhsStr    = UserPrompter.new("RHS   ".bold, @APP_NAME+"-DispRHS", cloneSettingsFrom: lhsStr)
+
+  dotLhs    = UserPrompter.new("Dot L ".bold, 
+                               @APP_NAME+"-DispDOT-L", 
+                               acceptedInput_lambda: -> input {input.is_integer? && input.to_i <= 4},
+                               errorMsg: 'Must be shorter than 4', 
+                               inputConverter_lambda: -> int {(int.to_i > 0) ? (8 >> (int.to_i - 1)) : 0}
+                               )
+
+
+  dotRhs    = UserPrompter.new("Dot R ".bold, @APP_NAME+"-DispDOT-R", cloneSettingsFrom: dotLhs)
 
 
   dispIndex >> lhsStr >> rhsStr >> dotLhs >> dotRhs
   dispIndex << dispIndex # Tie up the back-loop so it doesn't crash when user goes back from fresh start
 
+
+  @socket = TCPSocket.open(@deviceIP, 8881)
+  @socket.write("dispInf")
+  @res = @socket.readline
+  puts "Res is --> #{@res}"
 
   while true 
     dispIndex.runPrompt

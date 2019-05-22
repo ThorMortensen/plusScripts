@@ -11,7 +11,7 @@ rescue LoadError
   $noTTY = true
 end
 
-class CmdHandler
+class rawSocket
 
   def initialize(ipAddress = nil, port = 8881)
     @ip = ipAddress
@@ -28,19 +28,19 @@ class CmdHandler
     @socket.close
   end
 
-    def sendPackage
-      @socket.write("dispInf")
-    end
+  def sendPackage
+    @socket.write("dispInf")
+  end
 
-    def getRes
-      @res = @socket.readline
-      puts "Res is --> #{@res}"
-      return @res
-    end
+  def getRes
+    @res = @socket.readline
+    puts "Res is --> #{@res}"
+    return @res
+  end
 
 end
 
-f = CmdHandler.new "192.168.52.48"
+f = rawSocket.new "192.168.52.48"
 
 f.connect
 f.sendPackage

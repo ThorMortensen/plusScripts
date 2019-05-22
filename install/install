@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-source ../workers/globals
+cd "$(dirname "$0")"
 
+source ../workers/globals
 
 install_dependancys() {
   $PS_DIR_PLUS/+update
@@ -90,7 +91,7 @@ dependences_selection(){
 
 changec_numpad_to_dot(){
   gsettings set org.gnome.desktop.input-sources xkb-options "['kpdl:period', 'kpdl:dotoss']"
-  echo "Numpad comma is not period!"
+  echo "Numpad comma is now period!"
 }
 
 changec_numpad_to_comma(){

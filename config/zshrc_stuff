@@ -102,6 +102,9 @@ alias in='sudo apt install'
 # zstyle ':completion:*:(ssh|scp|sftp|rsh|rsync|sshfs):*' hosts "$(echo $USER)@192.168.0." "$(echo $USER)@10.0.100." 
 alias goto_newest_folder_z='cd ./*(/om[1])'
 
+VISUAL=subl
+export VISUAL EDITOR=subl
+export EDITOR
 
 #,thm@10.0.100.
 # zstyle ':completion:*:ssh:*' hosts 192.168.0.

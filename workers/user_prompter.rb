@@ -182,6 +182,9 @@ class UserPrompter
 
     if @ppCaller == :user
       @ppState = :start
+
+
+      handleLambdaInput 
     end
 
     @cli.saveInputStr if wasOk and trumpUserInput.nil?

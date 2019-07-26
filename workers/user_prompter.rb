@@ -146,10 +146,21 @@ class UserPrompter
   def pp(promptStr: @promptStr, trumpUserInput: nil)
 
     @didBranch = false
+    defAns = ""
 
-    userInput = trumpUserInput.nil? ? @cli.prompt(promtMsg: getFormattedPromptStr(promptStr)) : trumpUserInput.to_s    
+    if @ppState == :lastWasLambdaInput
+      defAns = @lastLambdaInput
+    end 
+
+    userInput = trumpUserInput.nil? ? @cli.prompt(promtMsg: getFormattedPromptStr(promptStr), defaultAnswer: defAns) : trumpUserInput.to_s  
+    # puts "userinput = #{userInput}"
+    # puts "@ppCaller = #{@ppCaller}"
     wasEmptyInput = userInput.empty?
     wasOk         = true
+
+    if @ppState == :lastWasLambdaInput and userInput.match(/(\d*)(\s?lambda\s?{.*}\s|\s?->.*{.*})/)
+      wasEmptyInput = true
+    end 
 
     if wasEmptyInput
       if @ppState == :lastWasLambdaInput
@@ -165,10 +176,14 @@ class UserPrompter
       @lastInput = userInput
       @didBranch = true
     elsif (m = userInput.match(/(\d*)(\s?lambda\s?{.*}\s|\s?->.*{.*})/))
-      return handleLambdaInput(m, wasEmptyInput) # Must return here else pp state is overwritten further down
+      if handleLambdaInput(m, wasEmptyInput) # Must return here else pp state is overwritten further down
+         # @cli.saveInputStr 
+         return true 
+      end 
+      return false
     elsif @checkValidInput.(userInput)
       @lastInput = @inputConverter_lambda.(userInput)
-
+      @ppCaller = :user
     elsif userInput == "b"
       wasOk = :back
     elsif userInput == "h"
@@ -184,10 +199,10 @@ class UserPrompter
       @ppState = :start
 
 
-      handleLambdaInput 
+      # handleLambdaInput 
     end
 
-    @cli.saveInputStr if wasOk and trumpUserInput.nil?
+    @cli.saveInputStr if wasOk and trumpUserInput.nil? and not userInput == "b" and not userInput == "h"
 
     return wasOk
 

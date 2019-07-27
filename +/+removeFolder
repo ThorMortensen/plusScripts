@@ -19,7 +19,7 @@ read -p "" -n 1 -r
 echo
 if [[ $REPLY = "y" ]]
 then
-  rm -rf $1
-else 
+  sudo rm -rf $1
+else
   echo "Nothing happen.."
 fi

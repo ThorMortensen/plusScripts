@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=true
+Exec=/home/thor/.RBTW/RBTW
+Name=RBTW
+Comment="Reboot to Windows"
+Icon=/home/thor/.RBTW/win.ico
+Name[en_US]=RBTW

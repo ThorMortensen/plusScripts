@@ -6,7 +6,7 @@ source ../workers/globals
 
 install_dependancys() {
   $PS_DIR_PLUS/+update
-  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap net-tools curl ranger xautomation xbindkeys
+  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap net-tools curl ranger xautomation xbindkeys tig lnav ncdu
 }
 
 install_bundler_gems() {
@@ -23,7 +23,7 @@ install_gnome_stuff() {
 }
 
 install_zsh_termianl() {
-  
+
   if (whiptail --title "Install ZSH" --yesno "Do you want to install ZSH and oh-my-zsh? (If already installed select NO and only the zshrc file will be updated)" 8 78); then
     sudo apt -y install zsh
     #### Install Oh my ZSH
@@ -109,7 +109,7 @@ install_z(){
 # Main
 #####################################################
 
-while true; do 
+while true; do
 
   WHAT_TO_INTALL=$(whiptail --title "Menu example" --menu "Choose an install option" 20 50 10 \
                   "All"         "Installs everything." \
@@ -119,7 +119,7 @@ while true; do
                   "Z"           "Install Z" \
                   "Dependences" "Only installs dependences." 3>&1 1>&2 2>&3)
 
-  if [ -z "$WHAT_TO_INTALL" ] 
+  if [ -z "$WHAT_TO_INTALL" ]
   then
     echo "Nothing was touched..."
     exit

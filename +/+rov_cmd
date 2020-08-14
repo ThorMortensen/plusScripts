@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-. plusScriptsPaths
-
-cd $PS_DIR/rov_command_and_conquer
-
-./run

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-ruby -W0 rov_cmd.rb

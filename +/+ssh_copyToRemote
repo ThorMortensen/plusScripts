@@ -21,7 +21,7 @@ select opt in "${options[@]}" "Quit" ; do
     fi
 done
 
-ssh-copy-id -i $opt $userTarget@$ipTarget
+ssh-copy-id -f -i $opt $userTarget@$ipTarget
 # ssh -i ~/.ssh/mykey user@host
 
 echo "Done!"

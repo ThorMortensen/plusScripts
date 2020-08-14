@@ -1,0 +1,4 @@
+#!/bin/bash
+
+bakStr="$1"
+mv ./$1 ./${bakStr#"bak."}

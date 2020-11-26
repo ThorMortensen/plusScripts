@@ -173,6 +173,10 @@ class Manduca
     @exit         = sigIntCallback
   end
 
+  def getDefaultAnsw
+    @defaultAnswer
+  end 
+
   def reset
     @inputStr = ""
     @car.reset

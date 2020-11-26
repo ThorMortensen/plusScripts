@@ -1,10 +1,11 @@
 require 'tty'
+require 'tty-command'
 require 'socket'
 require_relative 'rubyHelpers.rb'
 require_relative 'manduca.rb'
 
 
-@cmd = TTY::Command.new(printer: :null)
+@cmd = TTY::Command.new
 
 @addr_infos = Socket.ip_address_list
 

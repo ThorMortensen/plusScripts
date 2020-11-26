@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+#!/bin/bash
+
+. plusScriptsPaths
+
+cd $PS_DIR_WORKERS
+
+ruby -W0 mapRange.rb $1 $2 $3 $4 $5 $6

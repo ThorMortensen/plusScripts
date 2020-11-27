@@ -174,7 +174,7 @@ class Manduca
   end
 
   def getDefaultAnsw
-    @defaultAnswer
+    @history[0].strip
   end 
 
   def reset

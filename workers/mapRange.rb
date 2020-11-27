@@ -13,16 +13,28 @@ class RangeMapper
 
   def initialize label, fromStart = nil, fromEnd = nil, toStart = nil, toEnd = nil, input = nil, decimals = nil
     @label = label
+    
+    @prompt = TTY::Prompt.new(interrupt: :exit)
     load
-    if fromStart.nil?
-      promptRange
-    else 
-      @fromRange = fromStart..fromEnd
-      @toRange = toStart..toEnd
-      @decimals = decimals.nil? ? 3 : decimals
-    end 
+    # if @fromStart.nil?
+    #   promptRange
+    # else 
+    #   # @fromStart = fromStart
+    #   # @fromEnd = fromEnd
+    #   # @toStart = toStart
+    #   # @toEnd = toEnd
+    # end 
 
   end 
+
+  def setRange
+    @fromStart = @p_fromStart.getDefaultAnsw
+    @fromEnd = @p_fromEnd.getDefaultAnsw
+    @toStart = @p_toStart.getDefaultAnsw
+    @toEnd = @p_toEnd.getDefaultAnsw
+    @decimals = @p_decimals.getDefaultAnsw
+  end
+
 
   def load 
     #TODO make load from file here 
@@ -32,13 +44,9 @@ class RangeMapper
     @p_toEnd = getPromter "p_toEnd", "To range end ~> "
     @p_input = getPromter "p_input", "Input ~> "
     @p_decimals = getPromter "p_decimals", "Result decimals ~> "
+    
+    setRange
 
-    # puts "#{@p_fromStart}"
-
-
-    @fromRange = @p_fromStart.getDefaultAnsw..@p_fromEnd.getDefaultAnsw
-    @toRange = @p_toStart.getDefaultAnsw..@p_toEnd.getDefaultAnsw
-    @decimals = @p_decimals.getDefaultAnsw
   end
 
   def getPromter name, msg 
@@ -52,40 +60,98 @@ class RangeMapper
 
   end 
 
-  def validate promt
-    while (answ = parseInput(promt.prompt)) == nil
+  def validate prompt
+    while (answ = parseInput(prompt.prompt)) == nil
     end 
-    promt.saveInputStr
-
+    prompt.saveInputStr
+    setRange
   end 
 
   def promptInput 
     answ = nil
 
     until !answ.nil?
-      answ = parseInput(@p_input.prompt, true)
-      unless @fromRange.include? answ 
-        puts "#{answ} is not in range #{@fromRange}"
+      input = @p_input.prompt 
+      if input == "c" 
+        promptRange
+        next
+      end 
+
+      fromStart = parseInput(@fromStart)
+      fromEnd = parseInput(@fromEnd)
+      toStart = parseInput(@toStart)
+      toEnd = parseInput(@toEnd)
+      decimals = parseInput(@decimals)
+
+      answ = parseInput(input, true)
+
+      if answ.nil? || answ < fromStart || answ > fromEnd 
+        puts "#{answ} is not in range #{fromStart} to #{fromEnd}"
         answ = nil
       end 
     end 
-    calc answ
+    calc answ, fromStart, fromEnd, toStart, toEnd, decimals
   end 
+
+  def thisIs 
+   ["From start : #{@fromStart}",
+    "From end   : #{@fromEnd}",
+    "To start   : #{@toStart}",
+    "To end     : #{@toEnd}",
+    "Decimals   : #{@decimals}"]
+  end 
+
+  def details
+    is = thisIs
+    puts "#{is[0]}"
+    puts "#{is[1]}"
+    puts "------------"
+    puts "#{is[2]}"
+    puts "#{is[3]}"
+    puts "------------"
+    puts "#{is[4]}"
+  end   
 
   def promptRange
     
-    validate @p_fromStart.prompt
-    validate @p_fromEnd.prompt
-    validate @p_toStart.prompt
-    validate @p_toEnd.prompt
-    validate @p_decimals.prompt
+    again = true
 
+    while again
+      is = thisIs
+      answ = @prompt.select("Change range".bold) do |menu|
+        menu.choice "#{is[0]}", 1
+        menu.choice "#{is[1]}", 2
+        menu.choice "#{is[2]}", 3
+        menu.choice "#{is[3]}", 4
+        menu.choice "#{is[4]}", 5
+        menu.choice "Swap", 6
+        menu.choice "Back", 7
+      end
+
+      case answ
+      when 1
+        validate @p_fromStart
+      when 2
+        validate @p_fromEnd
+      when 3
+        validate @p_toStart
+      when 4
+        validate @p_toEnd
+      when 5
+        validate @p_decimals
+      when 6
+        swap
+      when 7
+        again = false 
+        break
+      end 
+    end 
   end 
 
 
-  def calc input  
-    @slope = 1.0 * (@toRange.last - @toRange.first) / (@fromRange.last - @fromRange.first)
-    @toRange.first + @slope * (input - @fromRange.first)
+  def calc input, fromStart, fromEnd, toStart, toEnd, decimals
+    slope = 1.0 * (toEnd - toStart) / (fromEnd - fromStart)
+    (toStart + slope * (input - fromStart)).round(decimals)
   end
 
 
@@ -102,9 +168,16 @@ class RangeMapper
   end 
 
   def swap
-    tempFrom = @fromRange 
-    @fromRange = @toRange 
-    @toRange = tempFrom
+
+    tempFromStart = @fromStart 
+    tempFromEnd = @fromEnd
+
+    @fromStart = @toStart
+    @fromEnd = @toEnd
+
+    @toStart = tempFromStart
+    @toEnd = tempFromEnd
+
   end 
 
 end 
@@ -125,32 +198,10 @@ end
 # end  
 
 defRange = RangeMapper.new "default"
+puts "#{defRange.details}"
 
-puts "answer: #{defRabger}"
+while true 
+  input = defRange.promptInput
+  puts "=> #{input}     0x#{input.to_i.to_s(16)} "
 
-# puts "parseInput: #{parseInput ARGV[0]}"
-
-# device = ARGV[0]
-# cmd = ARGV[1]
-# ipId = ARGV[2]
-# ARGV.clear
-
-
-
-# setup:
-# - swap 
-# - input range high 
-# - input range low
-# - output range high 
-# - output range low
-# - decimals
-
-# input: zzz 0xzzz
-# output: yyy 0xyyy
-
-
-# current setup:
-
-# input
-# setup 
-# 
+end 

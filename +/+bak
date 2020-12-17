@@ -1,5 +1,4 @@
 #!/bin/bash
 
-mv ./$1 ./"bak.$1"
-
+mv ./$1 ./"bak.$1" || (echo "Trying with sudo.." && sudo mv ./$1 ./"bak.$1" && echo "Done!")
 

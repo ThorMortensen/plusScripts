@@ -104,6 +104,12 @@ install_z(){
   write_if_missing "source $PS_DIR_CONFIG/z/z.sh" ~/.common_rc
 }
 
+add_plus_to_nautilus_gui(){
+  ln -s ../+ "$HOME.local/share/nautilus/scripts/+"
+}
+
+/home/thm/.local/share/nautilus/scripts
+
 
 #####################################################
 # Main
@@ -116,6 +122,7 @@ while true; do
                   "Bash stuff"  "Only adds +scripts to bashrc." \
                   "ZSH stuff"   "Only adds +scripts to ZSH." \
                   "Fix numpad"  "Change the numpad comma to dot!" \
+                  "Add + GUI"   "Add + scripts to nautilus" \
                   "Z"           "Install Z" \
                   "Dependences" "Only installs dependences." 3>&1 1>&2 2>&3)
 
@@ -132,6 +139,7 @@ while true; do
         add_common_stuff
         add_bash_stuff
         install_zsh_termianl
+        add_plus_to_nautilus_gui
         install_z
       ;;
       "Bash stuff")
@@ -147,6 +155,9 @@ while true; do
       "Fix numpad")
         dependences_selection
         changec_numpad_to_dot
+      ;;
+      "Add + GUI")
+        add_plus_to_nautilus_gui
       ;;
       "Z")
         install_z

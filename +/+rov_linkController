@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# . plusScriptsPaths
+
+# cd $PS_DIR_WORKERS
+
+find_up () {
+  path=$(pwd)
+  while [[ "$path" != "" && ! -e "$path/$1" ]]; do
+    path=${path%/*}
+  done
+  echo "$path"
+}
+
+
+COMMON_PATH=$(find_up "controller_common")
+
+
+
+ln -s $COMMON_PATH/controller_common/CONTROLLER CONTROLLER
+ln -s $COMMON_PATH/controller_common/223_SAS_JAVA_SIM 223_SAS_JAVA_SIM
+ln -s $COMMON_PATH/controller_common/223_SAS_SCENARIO_APP 223_SAS_SCENARIO_APP
+ln -s $COMMON_PATH/controller_common/223_SAS_SCENARIO_DATABASE 223_SAS_SCENARIO_DATABASE

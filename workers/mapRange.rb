@@ -138,17 +138,17 @@ class RangeMapper
 
       case answ
       when 1
-        validate @p_fromStart
-      when 2
-        validate @p_fromEnd
-      when 3
-        validate @p_toStart
-      when 4
-        validate @p_toEnd
-      when 5
-        validate @p_decimals
-      when 6
         swap
+      when 2
+        validate @p_fromStart
+      when 3
+        validate @p_fromEnd
+      when 4
+        validate @p_toStart
+      when 5
+        validate @p_toEnd
+      when 6
+        validate @p_decimals
       when 7
         again = false
         break

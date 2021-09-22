@@ -5,8 +5,8 @@ require_relative 'rubyHelpers.rb'
 require_relative 'manduca.rb'
 
 
-@cmd = TTY::Command.new
 
+@cmd = TTY::Command.new printer: :null
 @addr_infos = Socket.ip_address_list
 
 @ipRegex = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.)\d{1,3}/
@@ -15,7 +15,7 @@ def scanIp(ipAddress)
   puts
   @spinner = TTY::Spinner.new("Scanning with \'nmap -sP #{ipAddress}/24\' ".brown + ":spinner".blue, format: :bouncing_ball)
   @spinner.auto_spin
-  out, err = @cmd.run("nmap -sP #{ipAddress}/24")
+  out, err = @cmd.run("nmap -sP #{ipAddress}/24", null: true)
   @spinner.stop('Done!'.green)
   ipUp         = out.scan(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
   latency      = out.scan(/\(.* latency\)/)

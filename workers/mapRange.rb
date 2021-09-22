@@ -218,6 +218,6 @@ puts "#{defRange.details}"
 
 while true
   input = defRange.promptInput
-  puts "=> #{input}     0x#{input.to_i.to_s(16)} "
+  puts "=> #{input}     0x#{(input).to_i.to_s(16)} "
 
 end

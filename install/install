@@ -6,7 +6,7 @@ source ../workers/globals
 
 install_dependancys() {
   $PS_DIR_PLUS/+update
-  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap net-tools curl ranger xautomation xbindkeys tig lnav ncdu
+  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap curl ranger xautomation xbindkeys tig lnav ncdu subversion ssh
 }
 
 install_bundler_gems() {
@@ -99,10 +99,6 @@ changec_numpad_to_comma(){
 }
 
 
-install_z(){
-  git clone git@github.com:rupa/z.git $PS_DIR_CONFIG/z
-  write_if_missing "source $PS_DIR_CONFIG/z/z.sh" ~/.common_rc
-}
 
 add_plus_to_nautilus_gui(){
   ln -s ../+ "$HOME.local/share/nautilus/scripts/+"
@@ -118,12 +114,12 @@ add_plus_to_nautilus_gui(){
 while true; do
 
   WHAT_TO_INTALL=$(whiptail --title "Menu example" --menu "Choose an install option" 20 50 10 \
-                  "All"         "Installs everything." \
+                  "All"         "Installs everything (FOR UBUNTU!)." \
+                  "All Raspi"   "Installs everything on Debian with no gnome" \
                   "Bash stuff"  "Only adds +scripts to bashrc." \
                   "ZSH stuff"   "Only adds +scripts to ZSH." \
                   "Fix numpad"  "Change the numpad comma to dot!" \
                   "Add + GUI"   "Add + scripts to nautilus" \
-                  "Z"           "Install Z" \
                   "Dependences" "Only installs dependences." 3>&1 1>&2 2>&3)
 
   if [ -z "$WHAT_TO_INTALL" ]
@@ -140,7 +136,14 @@ while true; do
         add_bash_stuff
         install_zsh_termianl
         add_plus_to_nautilus_gui
-        install_z
+        install_gnome_stuff
+        changec_numpad_to_dot
+      ;;
+      "All Raspi")
+        dependences_selection
+        add_common_stuff
+        add_bash_stuff
+        install_zsh_termianl
       ;;
       "Bash stuff")
         dependences_selection
@@ -158,9 +161,6 @@ while true; do
       ;;
       "Add + GUI")
         add_plus_to_nautilus_gui
-      ;;
-      "Z")
-        install_z
       ;;
       "Dependences")
         dependences_selection

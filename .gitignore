@@ -1,3 +1,6 @@
 .fileDump
 config/GITHUB_SETTINGS.yml
 config/z
+*vscode*
+*idea*
+install/Gemfile.lock

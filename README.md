@@ -54,8 +54,8 @@ network:
         addresses:
         -  <Remember nameserver !!>
       access-points:
-        "Rovsing":
-          password: "Jgmosol2600"
+        "<SSID>":
+          password: "<ssid password>"
 ```
 (Correct indentation is important. Use only spaces)
 Run `sudo netplan apply` to apply the netplan. It may be useful to restart if this is the first time.

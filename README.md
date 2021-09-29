@@ -33,26 +33,26 @@ network:
     enp0s31f6:
       dhcp4: yes
       addresses:
-      - 192.168.255.235/16
+      - <added static address>/16
       nameservers:
         addresses:
-        - 10.230.8.13
-    enxf4a80d010605:
+        -  <Remember nameserver !!>
+    <next addapter>:
       dhcp4: yes
       addresses:
-      - 192.168.255.235/16
+      - <added static address>/16
       nameservers:
         addresses:
-        - 10.230.8.13
+        -  <Remember nameserver !!>
   wifis:
     wlp9s0:
       dhcp4: yes
       dhcp6: yes
       addresses:
-      - 192.168.255.235/16
+      - <added static address>/16
       nameservers:
         addresses:
-        - 10.230.8.13
+        -  <Remember nameserver !!>
       access-points:
         "Rovsing":
           password: "Jgmosol2600"

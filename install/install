@@ -6,7 +6,7 @@ source ../workers/globals
 
 install_dependancys() {
   $PS_DIR_PLUS/+update
-  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap curl ranger xautomation xbindkeys tig lnav ncdu subversion ssh
+  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap curl ranger xautomation xbindkeys tig lnav ncdu subversion ssh libusb-dev pip python3.9
 }
 
 install_bundler_gems() {

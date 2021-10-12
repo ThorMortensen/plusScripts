@@ -1,1 +1,1 @@
-ssh-keygen -t rsa -b 4096 -C "send.tilmig@gmail.com"
+ssh-keygen -t rsa -b 4096 -C "thm@rovsing.dk"

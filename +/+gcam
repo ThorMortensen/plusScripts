@@ -1,4 +1,5 @@
 git add .
 git commit -a -m"$@"
+git push --recurse-submodules=on-demand
 git pull
 git push

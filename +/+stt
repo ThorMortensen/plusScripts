@@ -1,7 +1,6 @@
 #!/bin/bash
 
-
 . plusScriptsPaths
 
 cd $PS_DIR
-subl .
+code .

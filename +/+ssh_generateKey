@@ -1,1 +1,1 @@
-ssh-keygen -t rsa -b 4096 -C "thm@rovsing.dk"
+ssh-keygen -t rsa -b 4096 -C "tm@connectedcars.dk"

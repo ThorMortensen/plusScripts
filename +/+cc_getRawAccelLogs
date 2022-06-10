@@ -1,0 +1,21 @@
+#!/bin/bash
+
+ONLINE=0
+
+
+while [ $ONLINE -eq 0 ]
+do 
+  echo "Trying at `date`"
+  ping -c1 -W1 -q $1 2>&1 >/dev/null && ONLINE=1 || ONLINE=0
+  sleep 30
+done 
+
+ONLINE="`date`"
+
+
+echo "Device online at $ONLINE"
+
+DEST_FOLDER="$HOME/logs/$1_$ONLINE"
+mkdir "$DEST_FOLDER"
+
+auth-wrapper scp -r support@$1:/data/raw-accel-logs "$DEST_FOLDER"

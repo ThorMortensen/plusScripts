@@ -6,12 +6,12 @@ ping -c10 -W10 -q $1 2>&1 >/dev/null && ONLINE=1 || ONLINE=0
 
 while [ $ONLINE -eq 0 ]
 do 
-  echo "No connection at `date`"
+  echo "No connection at `date "+%F-%T"`"
   sleep 30
   ping -c10 -W10 -q $1 2>&1 >/dev/null && ONLINE=1 || ONLINE=0
 done 
 
-ONLINE="`date`"
+ONLINE="`date "+%F-%T"`"
 
 
 echo "Device online at $ONLINE"
@@ -20,3 +20,7 @@ DEST_FOLDER="$HOME/logs/$1_$ONLINE"
 mkdir "$DEST_FOLDER"
 
 auth-wrapper scp -r support@$1:/data/raw-accel-logs "$DEST_FOLDER"
+
+cd $DEST_FOLDER
+
+drb-decoder -t accel decode -i ./raw-accel-logs

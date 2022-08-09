@@ -1,8 +1,0 @@
-#!/bin/bash
-
-
-# DATE=`date "+%d_%m_%Y"`
-# folderName="bac_$DATE"
-. plusScriptsPaths
-
-ruby -W0 $PS_DIR_WORKERS'/backupFolderTo.rb' 

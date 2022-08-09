@@ -1,5 +1,0 @@
-#!/bin/bash
-
-. plusScriptsPaths
-
-ruby -W0 $PS_DIR_WORKERS'/autogit.rb' add $1 $2

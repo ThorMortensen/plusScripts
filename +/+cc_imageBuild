@@ -1,0 +1,4 @@
+
+BUILD_PATH=$(pwd)/$1
+echo $BUILD_PATH
+docker run -ti --rm -v $BUILD_PATH:/src -v $HOME/.ssh:/home/user/.ssh -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -e MACHINE=imx6ul yocto-build 

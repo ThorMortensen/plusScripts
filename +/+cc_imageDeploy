@@ -1,0 +1,18 @@
+#!/bin/bash
+
+
+
+
+if [ "$1" != "-n" ]
+then 
+  BUILD_PATH=$(pwd)/$1
+  echo $BUILD_PATH
+  auth-wrapper scp $BUILD_PATH/docker-build/tmp-glibc/deploy/images/imx6ul/cc-image-imx6ul.ccupd support@192.168.7.1:
+fi
+
+
+. plusScriptsPaths
+
+cd $PS_DIR_WORKERS
+
+expect install_image_v2.exp

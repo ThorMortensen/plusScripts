@@ -10,7 +10,9 @@
 # POWERLEVEL9K_MODE='awesome-patched'
 
 
-ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
+# ZSH_THEME="Agnoster"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # POWERLEVEL9K_MODE='awesome-patched'
 
@@ -69,10 +71,10 @@ COMPLETION_WAITING_DOTS="true"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
-  svn
+  # svn
   # autojump
   zsh-autosuggestions
-  sublime
+  # sublime
 )
 
 # prompt_svn() {
@@ -94,6 +96,8 @@ plugins=(
 
 alias goto_newest_folder='cd $(ls -td -- */ | head -n 1)'
 alias in='sudo apt install'
+alias un='sudo apt remove'
+
 # alias do='./'
 # alias cleos='docker exec eosio /opt/eosio/bin/cleos --wallet-url http://localhost:8888'
 
@@ -102,12 +106,12 @@ alias in='sudo apt install'
 # zstyle ':completion:*:(ssh|scp|sftp|rsh|rsync|sshfs):*' hosts "$(echo $USER)@192.168.0." "$(echo $USER)@10.0.100." 
 alias goto_newest_folder_z='cd ./*(/om[1])'
 
-VISUAL=subl
-export VISUAL EDITOR=subl
+VISUAL=code
+export VISUAL EDITOR=code
 export EDITOR
 
 
-setopt correct
+# setopt correct
 
 #,thm@10.0.100.
 # zstyle ':completion:*:ssh:*' hosts 192.168.0.

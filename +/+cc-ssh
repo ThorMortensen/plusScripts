@@ -1,0 +1,1 @@
+auth-wrapper ssh -o "StrictHostKeyChecking=no" support@$@

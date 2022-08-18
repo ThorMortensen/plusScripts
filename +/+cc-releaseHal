@@ -1,0 +1,9 @@
+
+
+
+cd /home/thor/workspace/firmware_hal/cc-hal
+~/installers/cargo-bitbake bitbake
+mv cc-hal_0.1.0.bb /home/thor/workspace/firmware_yocto/meta-cc/recipes-cc/cc-hal
+git commit -m "meta-cc: cc-hal: bump srcrev" cc-hal_0.1.0.bb
+cd /home/thor/workspace/firmware_yocto/meta-cc/recipes-cc/cc-hal
+echo "Rlease created!"

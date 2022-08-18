@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cargo build --target armv7-unknown-linux-gnueabihf
+
+auth-wrapper scp /home/thor/workspace/firmware_hal/target/armv7-unknown-linux-gnueabihf/debug/$1 support@192.168.7.1:/data/support/

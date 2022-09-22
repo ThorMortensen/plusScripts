@@ -1,0 +1,5 @@
+#!/bin/bash
+. plusScriptsPaths
+
+
+ts-node $PS_DIR_WORKERS'/timeParser.ts'

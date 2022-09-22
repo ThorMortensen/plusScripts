@@ -21,6 +21,15 @@ function write_if_missing(){
   FILE="$2"
   echo "$LINE"
   grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
+
+  
+}
+
+function write_if_missing_sudo(){
+  LINE="$1"
+  FILE="$2"
+  echo "$LINE"
+  sudo grep -qF -- "$LINE" "$FILE" || echo "$LINE" | sudo tee --append "$FILE"
 }
 
 function create_and_write_if_missing(){

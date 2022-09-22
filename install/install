@@ -85,6 +85,12 @@ add_common_stuff(){
 
 }
 
+disable_sudo(){
+  write_if_missing_sudo "@includedir /etc/sudoers.d" /etc/sudoers
+  write_if_missing_sudo "%$USER ALL=(ALL) NOPASSWD: ALL" /etc/sudoers
+}
+
+
 bundler_selection() {
   if (whiptail --title "Bundler" --yesno "Do you want to run Bundler to install ruby gem dependences?" 8 78); then
       install_bundler_gems
@@ -107,13 +113,10 @@ changec_numpad_to_comma(){
   gsettings set org.gnome.desktop.input-sources xkb-options "['kpdl:period']"
 }
 
-
-
 add_plus_to_nautilus_gui(){
   ln -s ../+ "$HOME.local/share/nautilus/scripts/+"
 }
 
-/home/thm/.local/share/nautilus/scripts
 
 
 #####################################################
@@ -128,6 +131,7 @@ while true; do
                   "Bash stuff"  "Only adds +scripts to bashrc." \
                   "ZSH stuff"   "Only adds +scripts to ZSH." \
                   "Fix numpad"  "Change the numpad comma to dot!" \
+                  "No sudo"     "Remove sudo password" \
                   "Add + GUI"   "Add + scripts to nautilus" \
                   "Dependences" "Only installs dependences." 3>&1 1>&2 2>&3)
 
@@ -147,6 +151,7 @@ while true; do
         add_plus_to_nautilus_gui
         install_gnome_stuff
         changec_numpad_to_dot
+        disable_sudo
       ;;
       "All Raspi")
         dependences_selection
@@ -167,6 +172,9 @@ while true; do
       "Fix numpad")
         dependences_selection
         changec_numpad_to_dot
+      ;;
+      "No sudo")
+        disable_sudo
       ;;
       "Add + GUI")
         add_plus_to_nautilus_gui

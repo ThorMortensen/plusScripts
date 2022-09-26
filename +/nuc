@@ -1,0 +1,5 @@
+#!/bin/bash
+
+TARGET="nuc"
+[[ "$1" == port* ]] && TARGET=$1 
+auth-wrapper ssh "$TARGET"

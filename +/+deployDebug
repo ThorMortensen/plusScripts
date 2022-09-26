@@ -2,8 +2,9 @@
 source /usr/local/oecore-x86_64/environment-setup-cortexa7t2hf-neon-oe-linux-gnueabi
 WORKING_DIR=$(pwd)
 
+
 if [[ $1 == nuc ]]; then
-  cargo build --target armv7-unknown-linux-gnueabihf && +nuc-scp $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$3 $2 /data/support/
+  cargo build --target armv7-unknown-linux-gnueabihf && auth-wrapper scp $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$3 $2 /data/support/
 else 
   cargo build --target armv7-unknown-linux-gnueabihf && auth-wrapper scp $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$1 support@192.168.7.1:/data/support/
 fi

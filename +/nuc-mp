@@ -1,7 +1,4 @@
 #!/bin/bash
 
-TARGET=$@
-[[ $@ == port* ]] && PORT_NUMBER=$(echo $@ | tr -dc '0-9') && TARGET="support@192.168.$PORT_NUMBER.2"
-auth-wrapper ssh -o ProxyCommand="ssh -W %h:%p nuc" -o StrictHostKeyChecking=no -F none -A $TARGET
-
-
+# echo "max-power "$1" --pingPatience 0 --ip "${@:2}""
+max-power "$1" --pingPatience 0 --ip "${@:2}"

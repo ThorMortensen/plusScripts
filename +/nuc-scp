@@ -1,0 +1,6 @@
+#!/bin/bash
+
+TARGET=$2
+[[ $TARGET == port* ]] && PORT_NUMBER=$(echo $TARGET | tr -dc '0-9') && TARGET="support@192.168.$PORT_NUMBER.2"
+auth-wrapper scp -o ProxyCommand="ssh -W %h:%p nuc" -o StrictHostKeyChecking=no -F none -A $1 $TARGET:$3
+

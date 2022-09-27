@@ -1,1 +1,5 @@
-auth-wrapper ssh -o "StrictHostKeyChecking=no" support@$@
+#!/bin/bash
+
+. +parseDeviceId
+
+auth-wrapper ssh -o "StrictHostKeyChecking=no" support@$DEVICE_IP "${@:2}"

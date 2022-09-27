@@ -1,1 +1,3 @@
-tar -xf $@
+#!/bin/bash
+
+tar -xf $@*

@@ -1,18 +1,25 @@
 #!/bin/bash
 
-
-
-
-if [ "$1" != "-n" ]
-then 
-  BUILD_PATH=$(pwd)/$1
-  echo $BUILD_PATH
-  auth-wrapper scp $BUILD_PATH/docker-build/tmp-glibc/deploy/images/imx6ul/cc-image-imx6ul.ccupd support@192.168.7.1:
+if [[ $1 == port* ]]; then
+  cargo build --target armv7-unknown-linux-gnueabihf && auth-wrapper scp $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$2 $1:/data/support/
+else 
+  cargo build --target armv7-unknown-linux-gnueabihf && auth-wrapper scp $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$1 support@192.168.7.1:/data/support/
 fi
 
 
-. plusScriptsPaths
 
-cd $PS_DIR_WORKERS
+auth-wrapper ssh $1 "source /etc/profile && sudo ccupd install cc-image-imx6ul.ccupd"
 
-expect install_image_v2.exp
+# if [ "$1" != "-n" ]
+# then 
+#   BUILD_PATH=$(pwd)/$1
+#   echo $BUILD_PATH
+#   auth-wrapper scp $BUILD_PATH/docker-build/tmp-glibc/deploy/images/imx6ul/cc-image-imx6ul.ccupd support@192.168.7.1:
+# fi
+
+
+# . plusScriptsPaths
+
+# cd $PS_DIR_WORKERS
+
+# expect install_image_v2.exp

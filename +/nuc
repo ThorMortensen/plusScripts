@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# max-power "$1" --pingPatience 0 --ip "${@:2}"
+
 TARGET="nuc"
-[[ "$1" == port* ]] && TARGET=$1 
-auth-wrapper ssh "$TARGET"
+[[ "$1" == port* ]] && TARGET="" 
+echo "auth-wrapper ssh "$TARGET""$@""
+auth-wrapper ssh $TARGET $@

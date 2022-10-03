@@ -2,11 +2,20 @@
 source /usr/local/oecore-x86_64/environment-setup-cortexa7t2hf-neon-oe-linux-gnueabi
 WORKING_DIR=$(pwd)
 
+
+############ This is slow AF compared to rsync !
+# if [[ $1 == port* ]]; then
+#   cargo build --target armv7-unknown-linux-gnueabihf && auth-wrapper scp $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$2 $1:/data/support/
+# else 
+#   cargo build --target armv7-unknown-linux-gnueabihf && auth-wrapper scp $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$1 support@192.168.7.1:/data/support/
+# fi
+
 if [[ $1 == port* ]]; then
-  cargo build --target armv7-unknown-linux-gnueabihf && auth-wrapper scp $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$2 $1:/data/support/
+  cargo build --target armv7-unknown-linux-gnueabihf && auth-wrapper rsync -chavzP $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$2 $1:/data/support/
 else 
-  cargo build --target armv7-unknown-linux-gnueabihf && auth-wrapper scp $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$1 support@192.168.7.1:/data/support/
+  cargo build --target armv7-unknown-linux-gnueabihf && auth-wrapper rsync -chavzP $WORKING_DIR/target/armv7-unknown-linux-gnueabihf/debug/$1 support@192.168.7.1:/data/support/
 fi
+
 
 
 # if [[ $1 == nuc ]]; then

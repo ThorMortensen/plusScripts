@@ -1,3 +1,5 @@
 #!/bin/bash
 
-tar -xf  "$@" --force-local
+
+[[ "$1" == state_*.json.gz ]] && { gzip -d  "$@"; exit 0; }
+tar -xf  "$@" --force-local 

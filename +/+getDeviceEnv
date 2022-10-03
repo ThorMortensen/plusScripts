@@ -1,0 +1,8 @@
+
+#!/bin/bash
+
+REOMTE_PID=$(auth-wrapper ssh -t $1 "ps | grep -v grep | grep '$2' | awk '{print \$1}'") 
+CLEAN_RPID="$(echo "$REOMTE_PID"|tr -d '\n\r')"
+
+auth-wrapper ssh -t $1 "sudo cat /proc/$CLEAN_RPID/environ"
+

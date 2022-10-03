@@ -1,0 +1,19 @@
+#!/bin/bash
+
+TARGET=$1
+ARTIFACT_TYPE=$2
+SHA=$3
+
+[[ "$TARGET" == port* ]] || { echo "Not a valid port"; exit 255; }
+
+STATE_FILE_NAME=$(auth-wrapper ssh $TARGET "ls /data/state_*")
+echo "Target $STATE_FILE_NAME"
+
+auth-wrapper rsync -chavzP $TARGET:$STATE_FILE_NAME .
+
+gzip -d $(basename "$STATE_FILE_NAME") 
+
+
+
+
+

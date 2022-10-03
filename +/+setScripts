@@ -1,0 +1,32 @@
+
+#!/bin/bash
+
+
+
+# auth-wrapper ssh -t $@ "sudo cc-hal updatecli versions"
+
+
+  # "candump -tA can0" > can.sh
+
+
+# auth-wrapper ssh -t $@ "echo "alias gps=\"echo '?WATCH={"enable":true,"raw":1}' | nc localhost 2947 | ts '[%Y-%m-%d %H:%M:%S]'\" > .bashrc"
+# auth-wrapper ssh -t $@ "echo "alias can= \"candump -tA can0\"" > .bashrc "
+
+sudo ./scripts/firmware-imx-usb-u-boot.sh 411
+sudo ./scripts/firmware-fastboot.sh 411
+./scripts/firmware-write-emmc.sh 411 logi01 
+
+
+echo "echo '?WATCH={\"enable\":true,\"raw\":1}' | nc localhost 2947 | ts '[%Y-%m-%d %H:%M:%S]'" >> gps && chmod +x gps && echo "candump -tA can0" >> can && chmod +x can && sudo touch /data/LAB-MODE
+
+mkdir -p .ssh && echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDLSVlWEo4yxAo0GQolBa+dNLdVI/gJ3oXERWBbHkutcuF25Ob5C1tVGUIfNRZrX6n2odc5pB91z9t3bwe/95LzZdvZlVinxXDJlef1K+QzKdelAhT46Xgg5M5SG3i3VsOgC5b3f7H5iihrG0YKqd/1NSdG2lYr+CB6hOgA9I/cXNhZeRjFBfgOWOPtaFS8qakgHvQj1CJ1tsS2DvdsJWBgnGdjPty3qcLHBTLxgaA1jiOw6H/kYoEencwd21lt3U6tEYTA67hPL2YqCPLfvPOnJdh3Q2bpbgExcp3VGJmeUIjvICeqnnw09GUDDg1V853up0Yna2bl48JmXX7iOWAOZRJOhyqIQh0bcBiGTpyFERwiY+cBFa0yTogC/uWamIbuLPrjKS8jw9cKU87RTA5KphvtjGnewkfb5QcQsX0LlnuI8VWUkYCB9ousFK5Cb4GqTaGFnhdfyPidrkA4xIHuSOoS5YlYYNJzkjEJ+S9XqHfQRTxrXGBjQSZSmiwnLq3EIIgu/zUEIOPbBvXxnEdeZQXhkdn7cOkugHT/PMRsbVmcLCuIjkgSYA9znlmTe+xij4Ynu9d/LTq+t94gcKiydN4bhHG0+rmXCBP6eCymsBt+kettbJ+E/QD6Y3IZYsVskBm12LKnqR8jAyuO5Dostx0K3GxWm3AHo7Om2A8CPw==" > /data/support/.ssh/authorized_keys
+
+
+./setup-r6.sh 
+
+auth-wrapper scp QFirehose port1:/data/support && auth-wrapper scp BG96MAR04A04M1G_01.102.01.102.zip port1:/data/support
+
+unzip BG96MAR04A04M1G_01.102.01.102.zip  && chmod +x QFirehose && sudo ./QFirehose -f BG96MAR04A04M1G_01.102.01.102/
+
+
+/data/conf/ccapp.env

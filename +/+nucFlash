@@ -6,6 +6,11 @@
 
 if ! [[ "$1" =~ ^[0-9]+$ ]] ; then echo "please enter version and target port!" && exit ; fi
  
+echo
+echo
+echo "Please add jumper" 
+echo "Continue?" 
+read 
 
 sudo ./scripts/firmware-imx-usb-u-boot.sh $1
 sudo ./scripts/firmware-fastboot.sh $1

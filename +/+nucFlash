@@ -3,11 +3,11 @@
  if ! [[ "$1" =~ ^[0-9]+$ ]] ; then echo "please enter version and target port!" && exit ; fi
  
 
-sudo ./scripts/firmware-imx-usb-u-boot.sh 411
-sudo ./scripts/firmware-fastboot.sh 411
+sudo ./scripts/firmware-imx-usb-u-boot.sh $1
+sudo ./scripts/firmware-fastboot.sh $1
 echo "please remove jumper"
 read -p
-./scripts/firmware-write-emmc.sh 411 logi04 
+./scripts/firmware-write-emmc.sh $1 $2 
 
 
 # echo "echo '?WATCH={\"enable\":true,\"raw\":1}' | nc localhost 2947 | ts '[%Y-%m-%d %H:%M:%S]'" >> gps && chmod +x gps && echo "candump -tA can0" >> can && chmod +x can && sudo touch /data/LAB-MODE

@@ -12,6 +12,7 @@ sudo ./scripts/firmware-fastboot.sh $1
 echo
 echo
 echo "Please remove jumper" 
+echo "Continue?" 
 read 
 ./scripts/firmware-write-emmc.sh $1 $2 
 

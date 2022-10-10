@@ -20,7 +20,7 @@ TMP_FILE="$TMP_DIR/$ARTIFACT"
 echo "Local path $TMP_DIR"
 
 function download() {
-    echo $1
+    echo "Local dest: $1"
     if curl --head --fail --silent -o /dev/null "$1";
     then
       echo "The page exists"
@@ -28,14 +28,14 @@ function download() {
       echo "The page does not exist!"
       exit 255
     fi
-
-    curl -C - -s $1 --output $ARTIFACT_TYPE
+    echo "curl -C - -s $1 --output $2"
+    curl -C - -s $1 --output $2
 }
 
 download $RELEASE_URL "$TMP_FILE"
 
-[ -s $TMP_FILE ] || { echo "File is empty"; exit 255; }
+[[ -s $TMP_FILE ]] || { echo "File is empty"; exit 255; }
 
 auth-wrapper scp $TMP_FILE $TARGET:/tmp
 
-auth-wrapper ssh -t $TARGET "source /etc/profile && sudo ccupd -v install /tmp/$ARTIFACT && reboot"
+auth-wrapper ssh -t $TARGET "source /etc/profile && sudo ccupd -v install /tmp/$ARTIFACT "

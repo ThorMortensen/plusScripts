@@ -1,0 +1,5 @@
+#!/bin/bash
+
+pwd | xclip -selection clipboard
+pwd
+echo "Path has been copyied to the clipbaord!"

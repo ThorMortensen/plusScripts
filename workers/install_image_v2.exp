@@ -27,6 +27,9 @@ if {$force_conservative} {
 	}
 }
 
+
+set target [lindex $argv 0];
+
 #
 # 2) differing output - Some programs produce different output each time
 # they run.  The "date" command is an obvious example.  Another is
@@ -45,10 +48,10 @@ if {$force_conservative} {
 set timeout -1
 spawn $env(SHELL)
 match_max 100000
-send -- "auth-wrapper ssh support@192.168.7.1\r"
+send -- "nuc $target\r"
 expect "*@iwg26*\$ "
 sleep 1
-send -- "sudo ccupd install cc-image-imx6ul.ccupd\r\r"
+send -- "sudo ccupd install rootfs-imx6ul.ccupd\r\r"
 # send -- "ls\r"
 expect "*Connection to 192.168.7.1 closed*"
 expect eof

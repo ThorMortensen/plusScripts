@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cargo clippy --release --all-targets --all-features --locked
+
+checks cargo-all

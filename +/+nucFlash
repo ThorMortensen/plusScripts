@@ -1,14 +1,18 @@
 #!/bin/bash
 
-
 . plusScriptsPaths
 . $PS_DIR_WORKERS/bashColor.sh
 
 if ! [[ "$1" =~ ^[0-9]+$ ]] ; then echo "please enter version and target port!" && exit ; fi
  
 echo
-echo
-echo "Please add jumper" 
+echo "You need USB to flash not UART!"
+echo ""
+echo "Steps:"
+echo "  1) Remove power from the device!"
+echo "  2) Add jumper to J7" 
+echo "  3) Connect USB" 
+echo ""
 echo "Continue?" 
 read 
 

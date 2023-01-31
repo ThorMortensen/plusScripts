@@ -9,5 +9,5 @@ PS_DIR_CONFIG=$PS_DIR/config
 PS_DIR_INSTALL=$PS_DIR/install
 PS_DIR_WORKERS=$PS_DIR/workers
 
-GITROOT="$(git rev-parse --show-toplevel)"
+# GITROOT="$(git rev-parse --show-toplevel)"
 

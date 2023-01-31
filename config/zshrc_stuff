@@ -134,5 +134,5 @@ alias åå="code ~/plusScripts/config/zshrc_stuff"
 #  If you want to activate the ESP-RS environment in every terminal session automatically, you can the previous commands to "/home/thor/.zshrc"
 #  However, it is not recommended, as doing so activates  ESP-RS virtual environment in every terminal session (including those where  ESP-RS is not needed), defeating the purpose of the virtual environment and likely affecting other software.
 #  The recommended approach is to source the export file: ". export-esp.sh"
-alias esp-env='export LIBCLANG_PATH="/home/thor/.espressif/tools/xtensa-esp32-elf-clang/esp-14.0.0-20220415-x86_64-unknown-linux-gnu/lib/" && export PATH="/home/thor/.espressif/tools/xtensa-esp32-elf-gcc/8_4_0-esp-2021r2-patch3-x86_64-unknown-linux-gnu/bin/:/home/thor/.espressif/tools/xtensa-esp32s2-elf-gcc/8_4_0-esp-2021r2-patch3-x86_64-unknown-linux-gnu/bin/:/home/thor/.espressif/tools/xtensa-esp32s3-elf-gcc/8_4_0-esp-2021r2-patch3-x86_64-unknown-linux-gnu/bin/:$PATH"'
-
+# alias esp-env='export LIBCLANG_PATH="/home/thor/.espressif/tools/xtensa-esp32-elf-clang/esp-14.0.0-20220415-x86_64-unknown-linux-gnu/lib/" && export PATH="/home/thor/.espressif/tools/xtensa-esp32-elf-gcc/8_4_0-esp-2021r2-patch3-x86_64-unknown-linux-gnu/bin/:/home/thor/.espressif/tools/xtensa-esp32s2-elf-gcc/8_4_0-esp-2021r2-patch3-x86_64-unknown-linux-gnu/bin/:/home/thor/.espressif/tools/xtensa-esp32s3-elf-gcc/8_4_0-esp-2021r2-patch3-x86_64-unknown-linux-gnu/bin/:$PATH"'
+alias esp-env="source /home/thor/export-esp.sh"

@@ -1,0 +1,4 @@
+#!/bin/bash
+. plusScriptsPaths
+
+echo "Init plus scripts. All is executable" && chmod +x $PS_DIR/+

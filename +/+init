@@ -1,4 +1,7 @@
 #!/bin/bash
 . plusScriptsPaths
 
-echo "Init plus scripts. All is executable" && chmod +x $PS_DIR/+
+
+cd $PS_DIR/+
+chmod +x $PS_DIR/+/+*
+echo "Init plus scripts. All is executable"

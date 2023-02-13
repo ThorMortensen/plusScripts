@@ -1,0 +1,9 @@
+
+
+echo "To set env:"
+echo "  - Make 'conf' folder in data partition "
+echo "  - Make a file for the service you want to set env for 'cc-hal-<service>.env' for hal's or 'ccapp.env' for the node app"
+echo "  - Set the env vars there e.i for the app to use a debug config write the following in the 'ccapp.env' file :  "
+echo "      USE_DEBUG_CONFIG=1"
+echo "      DEBUG_CONFIG_PATH=/data/support/test.config.json"
+echo "  - Restart the service 'systemctl restart <service>'"

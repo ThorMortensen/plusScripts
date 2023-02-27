@@ -56,3 +56,11 @@ ExecStart=bash -c "evremap remap /home/thor/plusScripts/config/keyRemapConf.toml
 Reload the systemdctl `sudo systemctl daemon-reload `
 
 Edit your map in here!
+
+
+To start with num-lock enabled try this (this may not work...):
+
+```
+in systemd-numlockontty 
+sudo systemctl enable evremap.service
+```

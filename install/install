@@ -6,10 +6,7 @@ source ../workers/globals
 
 install_dependancys() {
   $PS_DIR_PLUS/+update
-  sudo apt -y install build-essential git ruby sshfs ruby-dev nmap curl 
-  sudo apt -y install libudev-dev pkg-config ranger xautomation xbindkeys tig 
-  sudo apt -y install lnav ncdu subversion ssh libusb-dev pip python3.9
-  sudo apt -y install libdbus-glib-1-dev expect
+  yay -S git ruby sshfs ruby-dev nmap curl libudev-dev pkg-config ranger xautomation xbindkeys tig lnav expect
 }
 
 install_bundler_gems() {
@@ -18,17 +15,17 @@ install_bundler_gems() {
   bundler install
 }
 
-install_gnome_stuff() {
-  create_and_write_if_missing "" ~/Templates/new_file
-  create_and_write_if_missing '#!/bin/bash' ~/Templates/new_script
-  create_and_write_if_missing "subl ." ~/.local/share/nautilus/scripts/Open_In_Sublime
-  chmod +x ~/.local/share/nautilus/scripts/Open_In_Sublime
-}
+# install_gnome_stuff() {
+#   create_and_write_if_missing "" ~/Templates/new_file
+#   create_and_write_if_missing '#!/bin/bash' ~/Templates/new_script
+#   create_and_write_if_missing "subl ." ~/.local/share/nautilus/scripts/Open_In_Sublime
+#   chmod +x ~/.local/share/nautilus/scripts/Open_In_Sublime
+# }
 
 install_zsh_termianl() {
 
   if (whiptail --title "Install ZSH" --yesno "Do you want to install ZSH and oh-my-zsh? (If already installed select NO and only the zshrc file will be updated)" 8 78); then
-    sudo apt -y install zsh
+    yay -S zsh
     #### Install Oh my ZSH
     sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
     git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
@@ -53,14 +50,6 @@ install_zsh_termianl() {
   fi
 }
 
-
-install_fish_termianl() {
-  sudo apt -y install fish
-  chsh -s `which fish`
-  curl -L https://get.oh-my.fish | fish
-  touch ~/.config/fish/config.fish
-  create_and_write_if_missing "source $PS_DIR_CONFIG/fish_stuff" ~/.config/fish/config.fish
-}
 
 add_bash_stuff(){
   write_if_missing "####### To source QOL scripts ######" ~/.bashrc
@@ -122,17 +111,16 @@ add_plus_to_nautilus_gui(){
 #####################################################
 # Main
 #####################################################
+                  # "Fix numpad"  "Change the numpad comma to dot!" \
+                  # "Add + GUI"   "Add + scripts to nautilus" \
 
 while true; do
 
   WHAT_TO_INTALL=$(whiptail --title "Menu example" --menu "Choose an install option" 20 50 10 \
-                  "All"         "Installs everything (FOR UBUNTU!)." \
-                  "All Raspi"   "Installs everything on Debian with no gnome" \
+                  "All"         "Installs everything (FOR ARCH!)." \
                   "Bash stuff"  "Only adds +scripts to bashrc." \
                   "ZSH stuff"   "Only adds +scripts to ZSH." \
-                  "Fix numpad"  "Change the numpad comma to dot!" \
                   "No sudo"     "Remove sudo password" \
-                  "Add + GUI"   "Add + scripts to nautilus" \
                   "Dependences" "Only installs dependences." 3>&1 1>&2 2>&3)
 
   if [ -z "$WHAT_TO_INTALL" ]

@@ -99,8 +99,9 @@ plugins=(
 
 
 alias goto_newest_folder='cd $(ls -td -- */ | head -n 1)'
-alias in='sudo apt install'
-alias un='sudo apt remove'
+alias in='yay'
+alias ins='yay -S'
+alias un='yay -R'
 alias gitroot='cd $(git rev-parse --show-toplevel)'
 
 

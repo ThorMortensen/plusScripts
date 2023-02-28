@@ -22,9 +22,15 @@ From old ssh keys
 chmod 700 ~/.ssh
 chmod 600 ~/.ssh/id_rsa
 chmod 644 ~/.ssh/id_rsa.pub
-eval `ssh-agent -s`
-ssh-add
+
+
 ```
+
+install ssh-agent service `in systemd-ssh-agent`
+
+enable service `systemctl --user enable --now ssh-agent`
+
+add key `ssh-add`
 
 
 ## Konsole setup 

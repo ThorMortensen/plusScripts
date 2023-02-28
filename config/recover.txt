@@ -1,0 +1,19 @@
+https://forum.manjaro.org/t/stuck-during-boot-help-needed-to-chroot-into-encrypted-system/125640/10
+https://discovery.endeavouros.com/system-rescue/arch-chroot/2022/12/
+https://forum.endeavouros.com/t/boot-failing-device-not-found/35743/7
+
+
+
+sudo cryptsetup -v luksOpen /dev/nvme0n1p2 cryptDrive
+sudo mount /dev/nvme0n1p1  /mnt/boot/efi
+sudo mount /dev/mapper/cryptDrive /mnt
+sudo arch-chroot /mnt
+
+pacman -Syu
+dracut-rebuild <------ Use this!!!
+or 
+
+mkinitcpio -P
+
+grub-install /dev/sda
+grub-mkconfig -o /boot/grub/grub.cfg

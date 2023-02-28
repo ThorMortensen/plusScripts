@@ -29,6 +29,7 @@ if {$force_conservative} {
 
 
 set target [lindex $argv 0];
+set payload [lindex $argv 1];
 
 #
 # 2) differing output - Some programs produce different output each time
@@ -51,7 +52,7 @@ match_max 100000
 send -- "nuc $target\r"
 expect "*@iwg26*\$ "
 sleep 1
-send -- "sudo ccupd install rootfs-imx6ul.ccupd\r\r"
+send -- "sudo ccupd install $payload\r\r"
 # send -- "ls\r"
 expect "*Connection to 192.168.7.1 closed*"
 expect eof

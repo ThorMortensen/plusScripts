@@ -1,8 +1,0 @@
-#!/bin/bash
-F="3828"
-
-# if (whiptail --title "Reboot To Windows" --yesno "Are you sure you want to reboot to Windows? (ALL UNSAVED WILL BE LOST!)" 8 78); then
-    echo $F | sudo -S grub-reboot 2 # Where x is Windows zero-based grub menu number
-    echo $F | sudo -S reboot now
-# fi
-

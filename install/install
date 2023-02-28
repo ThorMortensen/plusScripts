@@ -66,12 +66,6 @@ add_common_stuff(){
 
   write_if_missing "alias rr='ranger'" ~/.common_rc
   write_if_missing "alias ø='echo \"sourcing common_rc done!\" && source ~/.common_rc'" ~/.common_rc
-
-  # write_if_missing "alias '\\+i'='sudo apt install'" ~/.common_rc
-  # write_if_missing "alias '\\+r'='sudo apt remove'" ~/.common_rc
-  # write_if_missing "alias '\\+p'='sudo apt purge'" ~/.common_rc
- 
-
 }
 
 disable_sudo(){

@@ -1,4 +1,4 @@
-rustup default 1.54
+rustup default  1.67.1 
 
 source /usr/local/oecore-x86_64/environment-setup-cortexa7t2hf-neon-oe-linux-gnueabi
 

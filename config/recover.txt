@@ -5,15 +5,16 @@ https://forum.endeavouros.com/t/boot-failing-device-not-found/35743/7
 
 
 sudo cryptsetup -v luksOpen /dev/nvme0n1p2 cryptDrive
-sudo mount /dev/nvme0n1p1  /mnt/boot/efi
 sudo mount /dev/mapper/cryptDrive /mnt
+sudo mount /dev/nvme0n1p1  /mnt/boot/efi
 sudo arch-chroot /mnt
 
 pacman -Syu
 dracut-rebuild <------ Use this!!!
 or 
-
 mkinitcpio -P
 
 grub-install /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
+
+mdnjrwz3mt

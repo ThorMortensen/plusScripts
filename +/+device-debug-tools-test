@@ -1,3 +1,8 @@
 
 WORKING_DIR=$(pwd)
-cd ~/workspace/device-debug-tools/ && npm run build && cd $WORKING_DIR && auth-wrapper node ~/workspace/device-debug-tools/build/dist/bin/device-debug-tools.js $@
+cd ~/workspace/device-log-tools/ && npm run build && cd $WORKING_DIR && auth-wrapper node ~/workspace/device-log-tools/build/dist/bin/device-log-tools.js $@
+
+
+
+# WORKING_DIR=$(pwd)
+# cd ~/workspace/device-debug-tools/ && npm run build && cd $WORKING_DIR && auth-wrapper node ~/workspace/device-debug-tools/build/dist/bin/device-debug-tools.js $@

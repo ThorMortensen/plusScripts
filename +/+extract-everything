@@ -1,0 +1,48 @@
+#!/bin/bash
+. plusScriptsPaths
+
+$PS_DIR/+/+extract accel-logs.tar.gz
+$PS_DIR/+/+extract accel-calibration-logs.tar.gz    
+
+function process_file() {
+  filename="$1"
+
+  if [ -e "$filename" ]; then
+    echo "File $filename exists."
+
+    # Check if the archive is empty
+    if [ $(tar -tzf "$filename" | head -1 | wc -l) -gt 0 ]; then
+      echo "The archive is not empty. Extracting..."
+      tar -xzf "$filename"
+      
+      # Run the appropriate drb-decoder command
+      if [ "$filename" == "gyro-logs.tar.gz" ]; then
+        echo "Running drb-decoder for gyro logs..."
+        cd data
+        drb-decoder -t gyro decode -i ./raw-gyro-logs
+        cd ..
+      elif [ "$filename" == "gps-logs.tar.gz" ]; then
+        echo "Running drb-decoder for GPS logs..."
+        cd data
+        drb-decoder -t gps decode -i ./gps-middleware-logs
+        cd ..
+      fi
+    
+    else
+      echo "The archive is empty."
+    fi
+  else
+    echo "File $filename does not exist."
+  fi
+}
+
+files=("gyro-logs.tar.gz" "gps-logs.tar.gz")
+
+for file in "${files[@]}"; do
+  process_file "$file"
+  echo ""
+done
+cd data
+
+drb-decoder -t accel-calibration decode -i ./raw-accel-calibration-logs 
+drb-decoder -t accel decode -i ./raw-accel-logs

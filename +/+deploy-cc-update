@@ -1,0 +1,45 @@
+# Default arguments
+skip_build=false
+device_type="port2"
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+        --skip-build)
+            skip_build=true
+            shift
+            ;;
+        --device-type)
+            device_type="$2"
+            shift
+            shift
+            ;;
+        *)
+            echo "Unknown option: $key"
+            exit 1
+            ;;
+    esac
+done
+
+# Get the current folder name
+current_folder="$(basename "$(pwd)")"
+
+# Check if the current folder is "firmware_hal" or "firmware_yocto"
+if [[ "$current_folder" != "firmware_hal" && "$current_folder" != "firmware_yocto" ]]; then
+    echo "Error: You must be in a folder called 'firmware_hal' or 'firmware_yocto'."
+    exit 1
+fi
+
+# Build
+if [ "$skip_build" = false ]; then
+    ./build-all.sh
+fi
+
+# Run the respective command based on the current folder
+if [ "$current_folder" == "firmware_yocto" ]; then
+    ./ccupd-target.sh rootfs "$device_type"
+elif [ "$current_folder" == "firmware_hal" ]; then
+    ./ccupd_rootfs.sh "$device_type"
+fi

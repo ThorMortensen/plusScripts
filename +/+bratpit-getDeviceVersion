@@ -1,0 +1,15 @@
+
+V3_1="100.65.253.40"
+V3_2="100.65.253.43"
+V2_1="100.65.47.254"
+V2_2="100.64.197.31"
+
+
+echo "V3-1: version:"
++getDeviceVersion "$V3_1"
+echo "V3-2: version:"
++getDeviceVersion "$V3_2"
+echo "V2-1: version:"
++getDeviceVersion "$V2_1"
+echo "V2-2: version:"
++getDeviceVersion "$V2_2"

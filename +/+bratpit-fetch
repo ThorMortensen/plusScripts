@@ -1,0 +1,9 @@
+
+
+V3_1="100.65.253.40"
+V3_2="100.65.253.43"
+V2_1="100.65.47.254"
+V2_2="100.64.197.31"
+
++device-debug-tools-test dump-logs --accel --accelCalibration --gps --pingPatience 0 --units "$V3_1 $V3_2 $V2_1 $V2_2" 
+

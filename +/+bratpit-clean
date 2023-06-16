@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Declare an associative array
+declare -A devices
+devices=( ["V3_1"]="100.65.253.40" ["V3_2"]="100.65.253.43" ["V2_1"]="100.65.47.254" ["V2_2"]="100.64.197.31" )
+
+# Loop over the devices
+for device in "${!devices[@]}"; do
+    ip=${devices[$device]}
+    (
+    if auth-wrapper ssh -t -o "StrictHostKeyChecking=no" support@$ip "sudo rm -rf ../*logs"; then
+        echo "Command completed successfully on $device ($ip)"
+    else
+        echo "Command failed on $device ($ip)"
+    fi
+    ) 
+done
+

@@ -4,19 +4,20 @@
 . plusScriptsPaths
 
 
-[[ "$2" == port* ]] || { echo "Not a valid port"; exit 255; }
+[[ "$1" == port* ]] || { echo "Not a valid port"; exit 255; }
 
 GITROOT="$(git rev-parse --show-toplevel)"
-PAYLOAD=$1
+PAYLOAD="rootfs-imx6ul.ccupd"
+# PAYLOAD=$1
 
 cd $GITROOT
 ./build-all.sh
 
-auth-wrapper rsync -chavzP output/imx6ul/rootfs-ccupd-imx6ul.ccupd "$2":/data/support/
+auth-wrapper rsync -chavzP ./output/cargo-target/target/$PAYLOAD "$1":/data/support/
 
 cd $PS_DIR_WORKERS
 
-expect install_image_v2.exp "$PAYLOAD" "$2" 
+expect install_image_v2.exp "$1" "$PAYLOAD" 
 
 
 

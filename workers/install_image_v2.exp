@@ -54,5 +54,5 @@ expect "*@iwg26*\$ "
 sleep 1
 send -- "sudo ccupd install $payload\r\r"
 # send -- "ls\r"
-expect "*Connection to 192.168.7.1 closed*"
-expect eof
+expect "*Connection*closed*"
+# expect eof

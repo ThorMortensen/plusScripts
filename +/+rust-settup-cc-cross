@@ -1,5 +1,4 @@
-rustup default  1.67.1 
-
-source /usr/local/oecore-x86_64/environment-setup-cortexa7t2hf-neon-oe-linux-gnueabi
-
-cargo build --target armv7-unknown-linux-gnueabihf
+echo "This shit doesn't work!!"
+echo "Use 'cc-cross-env' to setup the cross compilation environment instead"
+echo "And the use:"
+echo "cargo build --target armv7-unknown-linux-gnueabihf"

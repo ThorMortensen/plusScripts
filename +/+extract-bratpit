@@ -1,0 +1,120 @@
+#!/bin/bash
+
+# Declare the mapping of IDs to names
+declare -A ids_to_names
+ids_to_names=(
+    ["d5b07060341531d4"]="V3-1"
+    ["d5b07060461831d4"]="V3-2"
+    ["677f0f960932b9d2"]="V2-1"
+    ["6044b7480a1171d2"]="V2-2"
+)
+
+V3_1="100.65.253.40"
+V3_2="100.65.253.43"
+V2_1="100.65.47.254"
+V2_2="100.64.197.31"
+
++device-debug-tools-test dump-logs --accel --accelCalibration --gps --pingPatience 0 --units "$V3_1 $V3_2 $V2_1 $V2_2" 
+
+
+
+# Generate a timestamp
+timestamp=$(date +%d-%m-%Y)
+
+# Create the root extracted directory with timestamp
+extracted_dir="extracted_$timestamp"
+mkdir -p "$extracted_dir"
+
+# Function to handle the SD card
+handle_sd_card() {
+    # The directory to copy the SD card contents to.
+    DEST_DIR="SD-card"
+
+    # Get the mount point of the SD card
+    SD_MOUNT_DIR=$(lsblk -rpo "name,type,mountpoint" | awk '$2=="part" && $1~/mmcblk/ {print $3}')
+
+    # Check if SD card was found
+    if [[ -z $SD_MOUNT_DIR || ! -d $SD_MOUNT_DIR ]]; then
+        echo "SD card not found. Using existing files if they exist."
+        if [[ ! -d $DEST_DIR || ! -f "$DEST_DIR/decoded" ]]; then
+            echo "No existing SD card files found. Skipping this step."
+            return
+        fi
+    else
+        echo "SD card mount point: $SD_MOUNT_DIR"
+        # Make the destination directory.
+        mkdir -p "$DEST_DIR"
+        # Copy the contents of the SD card to the destination directory.
+        cp -r "$SD_MOUNT_DIR"/* "$DEST_DIR"
+    fi
+
+    # Navigate into the "SD-card" directory
+    cd "$DEST_DIR"
+
+    # Run the "esp-logreader" command
+    esp-logreader --path .
+
+    # Copy the decoded files to the extracted directory
+    cp -rf decoded/ "../$extracted_dir/SD-card"
+
+    # Go back to the original directory.
+    cd ..
+}
+
+# Call the SD card function
+handle_sd_card
+
+# Iterate over the tar.gz files in the current directory
+for file in *.tar.gz
+do
+    # Replace colons in filenames with underscores
+    newfile=${file//:/_}
+    mv "$file" "$newfile"
+
+    # Extract the ID from the filename
+    id=$(echo $newfile | cut -d'-' -f4)
+
+    # Use the ID to get the name
+    name=${ids_to_names[$id]}
+
+    # Create a directory for the extraction
+    mkdir -p "$name"
+
+    # Extract the tar.gz file to the directory
+    tar -xzvf $newfile -C "$name" --strip-components 1
+    if [ $? -ne 0 ]; then
+        echo "tar extraction failed for $newfile"
+        continue
+    fi
+
+    # Navigate into the directory
+    cd "$name"
+
+    # Run the extract-everything command
+    +extract-everything
+    if [ $? -ne 0 ]; then
+        echo "+extract-everything command failed for $newfile"
+        cd ../..
+        continue
+    fi
+
+    # Navigate into the "data" directory
+    cd data
+
+    # Copy the required files to the root "extracted" directory, into a subdirectory with the name of the current unit
+    mkdir -p "../../$extracted_dir/$name"
+    cp gps-middleware-logs-decompressed "../../$extracted_dir/$name"
+    cp raw-accel-logs-decompressed "../../$extracted_dir/$name"
+
+    # If this is a V2 unit, also copy the gyro logs
+    if [[ $name == "V2-1" ]] || [[ $name == "V2-2" ]]; then
+        cp raw-gyro-logs-decompressed "../../$extracted_dir/$name"
+    fi
+
+    # Navigate back to the root directory
+    cd ../..
+
+done
+
+# Finally, compress the "extracted" directory into a zip file
+zip -r "$extracted_dir.zip" "$extracted_dir"

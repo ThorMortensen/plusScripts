@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Get the root directory of the git repository
+GIT_ROOT=$(git rev-parse --show-toplevel)
+
+# Find the "cc-hal" directory
+CC_HAL_DIR=$(find $GIT_ROOT -type d -name "cc-hal")
+
+# Check if the "cc-hal" directory was found
+if [[ -z $CC_HAL_DIR ]]; then
+    echo "The 'cc-hal' directory was not found in the Git repository."
+    exit 1
+fi
+
+# Change to the "cc-hal" directory
+cd $CC_HAL_DIR
+
+# Run the "cargo bitbake" command
+cargo bitbake
+mv cc-hal_0.1.0.bb ../../../YOCTO/firmware_yocto/meta-cc/recipes-cc/cc-hal/
+
+# Return to the initial directory
+cd $OLDPWD

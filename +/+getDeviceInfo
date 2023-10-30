@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#!/bin/bash
+. plusScriptsPaths
+
+# auth-wrapper ssh -t support@$@ "echo -e '\033[1m\033[4mSW versions\033[0m' && sudo cc-hal updatecli versions && echo -e '\033[1m\033[4mDevice\033[0m' && cc-info && echo -e '\033[1m\033[4mMomondo addr\033[0m' && sudo sh -c \"ifconfig wwan0 | grep 'inet addr:' | awk -F: '{print \\\$2}' | awk '{print \\\$1}'\""
+# auth-wrapper ssh -t support@$@ "echo -e '\033[1m\033[4mSW versions:\033[0m' && sudo cc-hal updatecli versions && echo -e '\033[1m\033[4mDevice:\033[0m' && cc-info && echo -e '\033[1m\033[4mMomondo addr:\033[0m' && HOSTNAME=\$(hostname); if [[ \$HOSTNAME == iwg26-v3* ]]; then IFACE=wwan0; elif [[ \$HOSTNAME == iwg26-v2* ]]; then IFACE=ppp0; else IFACE=unknown; fi; sudo sh -c \"ifconfig \$IFACE | grep 'inet addr:' | awk -F: '{print \\\$2}' | awk '{print \\\$1}'\""
+auth-wrapper ssh -t support@$@ "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)"

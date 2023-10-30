@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Generate a random 17-character string
+random_string=WVG$(openssl rand -base64 24 | tr -d "=+/" | cut -c -14)
+
+# Print the random string to the terminal
+echo "Generated string to clipboard: $random_string"
+
+# Put the string into the clipboard
+echo -n "$random_string" | xclip -selection clipboard

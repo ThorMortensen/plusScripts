@@ -3,15 +3,11 @@
 # Declare the mapping of IDs to names
 declare -A ids_to_names
 ids_to_names=(
-    ["d5b07060341531d4"]="V3-1"
+    ["d5b07060052639d4"]="V3-1"
     ["d5b07060461831d4"]="V3-2"
     ["677f0f960932b9d2"]="V2-1"
     ["6044b7480a1171d2"]="V2-2"
 )
-
-
-
-
 
 # Generate a timestamp
 timestamp=$(date +%d-%m-%Y)

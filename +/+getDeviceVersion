@@ -1,4 +1,0 @@
-#!/bin/bash
-
-
-auth-wrapper ssh -t support@$@ "sudo cc-hal updatecli versions"

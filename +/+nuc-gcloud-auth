@@ -1,0 +1,23 @@
+#!/bin/bash
+
+. plusScriptsPaths
+
+# Run the gcloud command and capture its output
+output=$(gcloud auth login --update-adc 2>&1)
+
+# Extract the URL from the output
+extracted_url=$(echo "$output" | grep -oP '(?<=gcloud auth login --remote-bootstrap=").*(?=")')
+
+# Check if the URL extraction was successful
+if [ -n "$extracted_url" ]; then
+    # Copy the URL to the clipboard
+    # For Linux, using xclip:
+    echo "$extracted_url" | xclip -selection clipboard
+
+    # For macOS, using pbcopy:
+    # echo "$extracted_url" | pbcopy
+
+    echo "URL copied to clipboard."
+else
+    echo "URL extraction failed."
+fi

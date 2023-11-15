@@ -1,6 +1,4 @@
 #!/bin/bash
-
-#!/bin/bash
 . plusScriptsPaths
 
 # auth-wrapper ssh -t support@$@ "echo -e '\033[1m\033[4mSW versions\033[0m' && sudo cc-hal updatecli versions && echo -e '\033[1m\033[4mDevice\033[0m' && cc-info && echo -e '\033[1m\033[4mMomondo addr\033[0m' && sudo sh -c \"ifconfig wwan0 | grep 'inet addr:' | awk -F: '{print \\\$2}' | awk '{print \\\$1}'\""

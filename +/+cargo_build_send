@@ -1,0 +1,17 @@
+#!/bin/bash
+
+mode=$1
+binary=$2
+port=$3
+
+if [ "$mode" == "debug" ]; then
+    echo "Building in debug mode"
+    cargo build --target armv7-unknown-linux-gnueabihf && +scp-to-device target/armv7-unknown-linux-gnueabihf/debug/"$binary" "$port"
+elif [ "$mode" == "release" ]; then
+    echo "Building in release mode"
+    cargo build --release --target armv7-unknown-linux-gnueabihf && +scp-to-device target/armv7-unknown-linux-gnueabihf/release/"$binary" "$port"
+else
+    echo "Unknown mode: $mode"
+    exit 1
+fi
+

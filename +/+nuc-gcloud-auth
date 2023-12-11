@@ -1,9 +1,13 @@
 #!/bin/bash
 
-. plusScriptsPaths
+# Define the remote host
+remote_host="username@remote_host"
 
-# Run the gcloud command and capture its output
-output=$(gcloud auth login --update-adc 2>&1)
+# Run the gcloud command on the remote machine and capture the output
+output=$(auth-wrapper ssh -T $remote_host "gcloud auth login --update-adc 2>&1")
+
+# Print the output
+echo "$output"
 
 # Extract the URL from the output
 extracted_url=$(echo "$output" | grep -oP '(?<=gcloud auth login --remote-bootstrap=").*(?=")')
@@ -21,3 +25,8 @@ if [ -n "$extracted_url" ]; then
 else
     echo "URL extraction failed."
 fi
+
+
+
+
+#  nuc

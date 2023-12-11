@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd ~/device-station
+echo "Power off on $1"
+npm run relay "$1" off p i r 
+echo "Waiting..."
+sleep 2
+npm run relay "$1" on p
+echo "Power on on $1"

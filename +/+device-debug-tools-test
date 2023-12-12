@@ -1,6 +1,6 @@
 
 WORKING_DIR=$(pwd)
-cd ~/workspace/device-log-tools/ && npm run build && cd $WORKING_DIR && auth-wrapper node ~/workspace/device-log-tools/build/dist/bin/device-log-tools.js $@
+cd ~/workspace/device-log-tools/ && npm run build && cd $WORKING_DIR && auth-wrapper node ~/workspace/device-log-tools/build/dist/bin/device-log-tools.js "$@"
 
 
 

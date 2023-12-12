@@ -1,0 +1,12 @@
+#!/bin/bash
+# Declare the mapping of IDs to names
+declare -A ids_to_names
+ids_to_names=(
+    ["port2"]="logi02"
+    ["port4"]="logi04"
+)
+
+name=${ids_to_names["$1"]}
+
+auth-wrapper ssh nuc "cd ~/device-station  && echo \"Power off on $name\" && npm run relay \"$name\" off p i r  && echo \"Waiting...\" && sleep 2 && npm run relay \"$name\" on p && echo \"Power on on $name\""
+

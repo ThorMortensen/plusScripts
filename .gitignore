@@ -2,5 +2,6 @@
 config/GITHUB_SETTINGS.yml
 config/z
 *vscode*
+*target*
 *idea*
 install/Gemfile.lock

@@ -1,3 +1,24 @@
+#!/bin/bash
 
-echo "auth-wrapper rsync -avz $1 support@$2:/data/support/" 
-auth-wrapper rsync -avz $1 support@$2:/data/support/ 
+persist_name=$(basename "$0")
+
+file_trans=$2
+device=$1
+
+if [ -z "$device" ]
+then
+  device=$(plus-menu --items "port2 port4" --persist-path "$persist_name-device" --prompt-msg "Select device") 
+  echo "$device"
+fi
+
+if [ -z "$file_trans" ]
+then
+  path_hash=$(echo -n "$(pwd)" | sha256sum | awk '{print $1}' | cut -c 1-8)
+  files=$(ls -A1 | grep -v '~$' | tr '\n' ' ' | sed 's/ *$//')
+  file_trans=$(plus-menu --items "$files" --persist-path "$persist_name-$path_hash" --prompt-msg "Select file/folder to transfer" ) 
+  echo "$file_trans"
+fi
+
+
+echo "auth-wrapper rsync -avz $file_trans support@$device:/data/support/" 
+auth-wrapper rsync -avz $file_trans support@$device:/data/support/ 

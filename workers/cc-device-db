@@ -1,0 +1,21 @@
+#!/bin/bash
+
+
+
+
+declare -A device_types
+device_types=(
+  ["iwg26"]=
+  ["iwg26-v1"]=
+  ["iwg26-v2"]=
+  ["iwg26-v2-vag"]=
+  ["iwg26-v3-ag"]=
+  ["iwg26-v3-ag-r4"]=
+  ["iwg26-v3-ag-vag"]=
+  ["iwg26-v3-ag-dual-bt"]=
+  ["iwg26-v3-ag-dual"]=
+  ["iwg26-v3-ag-triple"]=
+  ["iwg26-v3-ag-full"]=
+)
+
+function 

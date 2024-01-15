@@ -43,19 +43,34 @@ get_ip_address() {
     fi
 }
 
+get_state_info() {
+    sudo cc-pmcli gpios 
+    # echo "------------------"
+    # sudo cc-pmcli state | tr ',' '\n' | awk -F: '{print $1 ": " $2}'
+    # echo "------------------"
+
+}
 # Main code wrapped in a function for ease of testing
 main() {
+    echo "second arg: $2"
+
+    print_title "Device type:"
+    hostname
+
     print_title "SW versions:"
     sudo cc-hal updatecli versions
 
     print_title "Device:"
     cc-info
 
-    print_title "Momondo addr:"
+    print_title "Onomondo addr:"
     local host=$(hostname)
 
     local iface=$(determine_iface $host)
     get_ip_address $iface
+
+    print_title "State:"
+    get_state_info
 }
 
 # Call the main function

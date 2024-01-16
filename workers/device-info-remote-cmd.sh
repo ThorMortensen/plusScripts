@@ -52,8 +52,6 @@ get_state_info() {
 }
 # Main code wrapped in a function for ease of testing
 main() {
-    echo "second arg: $2"
-
     print_title "Device type:"
     hostname
 

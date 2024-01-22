@@ -1,6 +1,51 @@
 #!/bin/bash
 . plusScriptsPaths
 
-# auth-wrapper ssh -t support@$@ "echo -e '\033[1m\033[4mSW versions\033[0m' && sudo cc-hal updatecli versions && echo -e '\033[1m\033[4mDevice\033[0m' && cc-info && echo -e '\033[1m\033[4mMomondo addr\033[0m' && sudo sh -c \"ifconfig wwan0 | grep 'inet addr:' | awk -F: '{print \\\$2}' | awk '{print \\\$1}'\""
-# auth-wrapper ssh -t support@$@ "echo -e '\033[1m\033[4mSW versions:\033[0m' && sudo cc-hal updatecli versions && echo -e '\033[1m\033[4mDevice:\033[0m' && cc-info && echo -e '\033[1m\033[4mMomondo addr:\033[0m' && HOSTNAME=\$(hostname); if [[ \$HOSTNAME == iwg26-v3* ]]; then IFACE=wwan0; elif [[ \$HOSTNAME == iwg26-v2* ]]; then IFACE=ppp0; else IFACE=unknown; fi; sudo sh -c \"ifconfig \$IFACE | grep 'inet addr:' | awk -F: '{print \\\$2}' | awk '{print \\\$1}'\""
-auth-wrapper ssh -t support@$@ "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)"
+
+print_title() {
+    echo -e "\033[1;4;36m$1\033[0m"
+}
+
+echo "Fetching info from $@ ..."
+
+
+fw_shas=$(auth-wrapper ssh support@$@ "sudo cc-hal updatecli versions") 
+bootloader=$(echo "$fw_shas" | awk -F': ' '/bootloader/ {print $2}')
+app=$(echo "$fw_shas" | awk -F': ' '/app/ {print $2}')
+kernel=$(echo "$fw_shas" | awk -F': ' '/kernel/ {print $2}')
+rootfs=$(echo "$fw_shas" | awk -F': ' '/rootfs/ {print $2}')
+cpu_id=$(auth-wrapper ssh support@$@ "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
+
+json_output=$(plus-lookup --bootloader "$bootloader" --app "$app" --kernel "$kernel" --rootfs "$rootfs" --device-id "$cpu_id")
+fw_id=$(echo "$json_output" | jq -r '.fw_id')
+rg_name=$(echo "$json_output" | jq -r '.rg_name')
+rg_id=$(echo "$json_output" | jq -r '.rg_id')
+sim_id=$(echo "$json_output" | jq -r '.sim_id')
+vin=$(echo "$json_output" | jq -r '.vin')
+config_name=$(echo "$json_output" | jq -r '.config_name')
+
+device_type=$(auth-wrapper ssh support@$@ "hostname") 
+momondo_addr=$(auth-wrapper ssh support@$@ "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)") 
+state=$(auth-wrapper ssh support@$@ "sudo cc-pmcli gpios") 
+gps=$(auth-wrapper ssh support@$@ "sudo cc-gpscli location")
+
+
+print_title "Device info:"
+echo "Type: $device_type"
+echo "ID: $cpu_id"
+print_title "SW versions:" 
+echo "FW ID: $fw_id"
+echo "RollGr: $rg_name"
+echo "RollID: $rg_id"
+echo "Rootfs: $rootfs"
+echo "App: $app"
+echo "Kernel: $kernel"
+echo "Bootloader: $bootloader"
+print_title "Onomondo addr:"
+echo "$momondo_addr"
+echo "SIM ID: $sim_id"
+print_title "State:"
+echo "PWR: $state"
+echo "GPS: $gps"
+echo "VIN: $vin"
+echo "Config: $config_name"

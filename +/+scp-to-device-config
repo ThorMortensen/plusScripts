@@ -1,0 +1,57 @@
+#!/bin/bash
+
+
+
+# const CC_API_URL = 'https://api.connectedcars.io/graphql'
+# const CC_ORGANIZATION = 'cctech:workshop'
+
+# export async function getJwt(): Promise<string> {
+#   const tokenRres = await runCommand('gcloud', ['auth', 'print-identity-token'], 85)
+#   if (tokenRres.error) {
+#     // eslint-disable-next-line no-console
+#     console.error(tokenRres.error)
+#     throw new Error('failed to get token from gcloud', tokenRres.error)
+#   }
+#   const data = JSON.stringify({ token: tokenRres.stdout })
+
+#   const res: {
+#     data: {
+#       token: string
+#       level: 'AM1'
+#       expires: number
+#     }
+#   } = await axios.post('https://auth-api.connectedcars.io/auth/login/googleConverter', data, {
+#     headers: {
+#       'X-Organization-Namespace': CC_ORGANIZATION,
+#       Accept: 'application/json',
+#       'Content-Type': 'application/json'
+#     }
+#   })
+
+#   return res.data.token
+# }
+
+persist_name=$(basename "$0")
+
+file_trans=$2
+device=$1
+
+if [ -z "$device" ]
+then
+  device=$(plus-menu --items "port2 port4" --persist-path "$persist_name-device" --prompt-msg "Select device") 
+  echo "$device"
+fi
+
+if [ -z "$file_trans" ]
+then
+  path_hash=$(echo -n "$(pwd)" | sha256sum | awk '{print $1}' | cut -c 1-8)
+  files=$(ls -A1 | grep -v '~$' | tr '\n' ' ' | sed 's/ *$//')
+  file_trans=$(plus-menu --items "$files" --persist-path "$persist_name-$path_hash" --prompt-msg "Select file/folder to transfer" ) 
+  echo "$file_trans"
+fi
+
+
+echo "auth-wrapper rsync -avz $file_trans $device:/data/support/config.json" 
+auth-wrapper rsync -avz "$file_trans" "$device":/data/support/config.json
+echo -e "\e[1mRestarting ccapp please wait ...\e[0m"
+auth-wrapper ssh -t $device "sudo systemctl restart ccapp@*"

@@ -52,23 +52,23 @@ get_state_info() {
 }
 # Main code wrapped in a function for ease of testing
 main() {
-    print_title "Device type:"
-    hostname
+    # print_title "Device type:"
+    # hostname
 
-    print_title "SW versions:"
-    sudo cc-hal updatecli versions
+    # print_title "SW versions:"
+    # sudo cc-hal updatecli versions
 
-    print_title "Device:"
-    cc-info
+    # print_title "Device:"
+    # cc-info
 
-    print_title "Onomondo addr:"
+    # print_title "Onomondo addr:"
     local host=$(hostname)
 
     local iface=$(determine_iface $host)
     get_ip_address $iface
 
-    print_title "State:"
-    get_state_info
+#     print_title "State:"
+#     get_state_info
 }
 
 # Call the main function

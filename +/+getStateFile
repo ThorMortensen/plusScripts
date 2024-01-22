@@ -11,7 +11,7 @@ echo "Target $STATE_FILE_NAME"
 
 auth-wrapper rsync -chavzP $TARGET:$STATE_FILE_NAME .
 
-gzip -d $(basename "$STATE_FILE_NAME") 
+gzip -d -f $(basename "$STATE_FILE_NAME") 
 
 
 

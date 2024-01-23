@@ -10,7 +10,27 @@ print_link() {
     echo -e "\033[1;4;34m$1\033[0m"
 }
 
-echo "Fetching info from $@ ..."
+
+start_time=$(date +%s)
+
+
+
+spinner=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
+
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Start the spinner in the background
+(
+  while :; do
+    for i in "${spinner[@]}"; do
+      printf "\rFetching info from $@ ${YELLOW}${i}${NC} "
+      sleep 0.1
+    done
+  done
+) &
+# Save the PID of the spinner
+spinner_pid=$!
 
 
 fw_shas=$(auth-wrapper ssh support@$@ "sudo cc-hal updatecli versions") 
@@ -35,6 +55,13 @@ state=$(auth-wrapper ssh support@$@ "sudo cc-pmcli gpios")
 gps=$(auth-wrapper ssh support@$@ "sudo cc-gpscli location")
 
 
+kill $spinner_pid
+
+end_time=$(date +%s)
+duration=$((end_time - start_time))
+
+
+echo "in $duration s"
 print_title "Device info:"
 echo "Type: $device_type"
 echo "DevID: $cpu_id"

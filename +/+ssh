@@ -2,4 +2,4 @@
 
 . +parseDeviceId
 
-auth-wrapper ssh -o "StrictHostKeyChecking=no" support@$DEVICE_IP "${@:2}"
+auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$DEVICE_IP "${@:2}"

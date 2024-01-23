@@ -2,6 +2,7 @@
 . plusScriptsPaths
 
 
+
 print_title() {
     echo -e "\033[1;4;36m$1\033[0m"
 }
@@ -12,8 +13,6 @@ print_link() {
 
 
 start_time=$(date +%s)
-
-
 
 spinner=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
 
@@ -32,13 +31,21 @@ NC='\033[0m' # No Color
 # Save the PID of the spinner
 spinner_pid=$!
 
+# Define a function to handle the SIGINT signal
+handle_sigint() {
+    kill $spinner_pid
+    exit 1
+}
 
-fw_shas=$(auth-wrapper ssh support@$@ "sudo cc-hal updatecli versions") 
+trap handle_sigint SIGINT
+
+fw_shas=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$@ "sudo cc-hal updatecli versions") 
 bootloader=$(echo "$fw_shas" | awk -F': ' '/bootloader/ {print $2}')
 app=$(echo "$fw_shas" | awk -F': ' '/app/ {print $2}')
 kernel=$(echo "$fw_shas" | awk -F': ' '/kernel/ {print $2}')
 rootfs=$(echo "$fw_shas" | awk -F': ' '/rootfs/ {print $2}')
-cpu_id=$(auth-wrapper ssh support@$@ "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
+cpu_id=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$@ "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
+using_debug_conf=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$@ "cat /data/conf/ccapp.env 2>/dev/null | grep USE_DEBUG_CONFIG=1")
 
 json_output=$(plus-lookup --bootloader "$bootloader" --app "$app" --kernel "$kernel" --rootfs "$rootfs" --device-id "$cpu_id")
 fw_id=$(echo "$json_output" | jq -r '.fw_id')
@@ -49,17 +56,21 @@ vin=$(echo "$json_output" | jq -r '.vin')
 config_name=$(echo "$json_output" | jq -r '.config_name')
 vehicle_id=$(echo "$json_output" | jq -r '.vehicle_id')
 
-device_type=$(auth-wrapper ssh support@$@ "hostname") 
-momondo_addr=$(auth-wrapper ssh support@$@ "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)") 
-state=$(auth-wrapper ssh support@$@ "sudo cc-pmcli gpios") 
-gps=$(auth-wrapper ssh support@$@ "sudo cc-gpscli location")
+device_type=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$@ "hostname") 
+momondo_addr=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$@ "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)") 
+state=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$@ "sudo cc-pmcli gpios") 
+gps=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$@ "sudo cc-gpscli location")
+
+if [[ $using_debug_conf == *"USE_DEBUG_CONFIG=1"* ]]; then
+    debug_path=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$@ "cat /data/conf/ccapp.env | grep DEBUG_CONFIG_PATH")
+    config_name="Debug-config ${debug_path#*=}"
+fi
 
 
 kill $spinner_pid
 
 end_time=$(date +%s)
 duration=$((end_time - start_time))
-
 
 echo "in $duration s"
 print_title "Device info:"

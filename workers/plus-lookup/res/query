@@ -1,0 +1,43 @@
+query ListFirmwares {
+  firmwareReleases {
+    id
+    app
+    appBranch
+    kernel
+    kernelBranch
+    bootloader
+    bootloaderBranch
+    rootfs
+    rootfsBranch
+    skipDeltas
+    firmwareCapabilities
+    testResults {
+      jobPreset
+      result
+    }   
+  }
+}
+
+query RolloutGroups {
+  firmwareRolloutGroups(provider: cc, first: 1000) {
+    items {
+      id
+      name
+      firmwareReleaseId
+    }
+  }
+}
+
+
+query DeviceInfo($unit_serial: String!){
+  unit(provider: cc, unitSerial: $unit_serial) {
+    firmwareRolloutGroup{
+      id
+      name
+    }
+    vehicle{id}
+    simId
+    vin{vin}
+    config{config}
+  }
+}

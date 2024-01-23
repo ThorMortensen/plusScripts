@@ -6,6 +6,10 @@ print_title() {
     echo -e "\033[1;4;36m$1\033[0m"
 }
 
+print_link() {
+    echo -e "\033[1;4;34m$1\033[0m"
+}
+
 echo "Fetching info from $@ ..."
 
 
@@ -23,6 +27,7 @@ rg_id=$(echo "$json_output" | jq -r '.rg_id')
 sim_id=$(echo "$json_output" | jq -r '.sim_id')
 vin=$(echo "$json_output" | jq -r '.vin')
 config_name=$(echo "$json_output" | jq -r '.config_name')
+vehicle_id=$(echo "$json_output" | jq -r '.vehicle_id')
 
 device_type=$(auth-wrapper ssh support@$@ "hostname") 
 momondo_addr=$(auth-wrapper ssh support@$@ "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)") 
@@ -32,15 +37,16 @@ gps=$(auth-wrapper ssh support@$@ "sudo cc-gpscli location")
 
 print_title "Device info:"
 echo "Type: $device_type"
-echo "ID: $cpu_id"
+echo "DevID: $cpu_id"
+echo "VclID: $vehicle_id"
 print_title "SW versions:" 
 echo "FW ID: $fw_id"
 echo "RollGr: $rg_name"
 echo "RollID: $rg_id"
-echo "Rootfs: $rootfs"
-echo "App: $app"
-echo "Kernel: $kernel"
-echo "Bootloader: $bootloader"
+echo "App: ${app:0:10}"
+echo "Rfs: ${rootfs:0:10}"
+echo "Knl: ${kernel:0:10}"
+echo "Bld: ${bootloader:0:10}"
 print_title "Onomondo addr:"
 echo "$momondo_addr"
 echo "SIM ID: $sim_id"
@@ -49,3 +55,6 @@ echo "PWR: $state"
 echo "GPS: $gps"
 echo "VIN: $vin"
 echo "Config: $config_name"
+print_title "Links:"
+echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/vehicles/$vehicle_id")
+echo Onomondo: $(print_link "https://app.onomondo.com/sims/$sim_id")

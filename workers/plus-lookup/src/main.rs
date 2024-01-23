@@ -31,20 +31,23 @@ enum LookupError {
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None, )]
 struct Args {
-    #[arg(short, long, requires_all = ["app", "rootfs", "kernel"])]
+    #[arg(long, requires_all = ["app", "rootfs", "kernel"])]
     bootloader: Option<String>,
 
-    #[arg(short, long, requires_all = ["bootloader", "rootfs", "kernel"])]
+    #[arg(long, requires_all = ["bootloader", "rootfs", "kernel"])]
     app: Option<String>,
 
-    #[arg(short, long, requires_all = ["bootloader", "app", "kernel"])]
+    #[arg(long, requires_all = ["bootloader", "app", "kernel"])]
     rootfs: Option<String>,
 
-    #[arg(short, long, requires_all = ["bootloader", "app", "rootfs"])]
+    #[arg(long, requires_all = ["bootloader", "app", "rootfs"])]
     kernel: Option<String>,
 
-    #[arg(short, long)]
+    #[arg(long)]
     device_id: Option<String>,
+
+    #[arg(long)]
+    release_id: Option<String>,
 }
 
 #[derive(Default, Debug, Serialize)]
@@ -56,32 +59,23 @@ struct DeviceData {
     vin: Option<String>,
     config_name: Option<String>,
     vehicle_id: Option<String>,
+    app_sha: Option<String>,
+    app_branch: Option<String>,
+    bootloader_sha: Option<String>,
+    bootloader_branch: Option<String>,
+    rootfs_sha: Option<String>,
+    rootfs_branch: Option<String>,
+    kernel_sha: Option<String>,
+    kernel_branch: Option<String>,
 }
 
-// impl Display for DeviceData {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         let mut data = String::new();
-//         if let Some(fw_id) = &self.fw_id {
-//             data.push_str(&format!("fw_id: {}\n", fw_id));
-//         }
-//         if let Some(rg_name) = &self.rg_name {
-//             data.push_str(&format!("rg_name: {}\n", rg_name));
-//         }
-//         if let Some(rg_id) = &self.rg_id {
-//             data.push_str(&format!("rg_id: {}\n", rg_id));
-//         }
-//         if let Some(sim_id) = &self.sim_id {
-//             data.push_str(&format!("sim_id: {}\n", sim_id));
-//         }
-//         if let Some(vin) = &self.vin {
-//             data.push_str(&format!("vin: {}\n", vin));
-//         }
-//         if let Some(config_name) = &self.config_name {
-//             data.push_str(&format!("config_name: {}\n", config_name));
-//         }
-//         write!(f, "{}", data)
-//     }
-// }
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "res/scma.json",
+    query_path = "res/query",
+    response_derives = "Debug"
+)]
+struct ListFirmwares;
 
 fn get_client(jwt_token: &str) -> Result<Client, LookupError> {
     let mut headers = HeaderMap::new();
@@ -142,25 +136,7 @@ async fn get_fw_id(
     rootfs_sha: String,
     kernel_sha: String,
 ) -> Result<Option<String>, LookupError> {
-    #[derive(GraphQLQuery)]
-    #[graphql(
-        schema_path = "res/scma.json",
-        query_path = "res/query",
-        response_derives = "Debug"
-    )]
-    struct ListFirmwares;
-
-    let client = get_client(jwt_token)?;
-
-    let fw_list_response_body = post_graphql::<ListFirmwares, _>(
-        &client,
-        "https://api.connectedcars.io/graphql",
-        list_firmwares::Variables,
-    )
-    .await?;
-
-    let fw_list: list_firmwares::ResponseData =
-        fw_list_response_body.data.expect("missing response data");
+    let fw_list = get_fw_list(jwt_token).await?;
 
     let fw_id = fw_list.firmware_releases.iter().find(|fw| {
         fw.app == app_sha
@@ -170,6 +146,41 @@ async fn get_fw_id(
     });
 
     Ok(fw_id.map(|fw| fw.id.clone()))
+}
+
+async fn get_fw_shas(jwt_token: &str, fw_id: String) -> Result<DeviceData, LookupError> {
+    let fw_list = get_fw_list(jwt_token).await?;
+
+    let fw_id = fw_list.firmware_releases.iter().find(|fw| fw.id == fw_id);
+
+    if let Some(fw) = fw_id {
+        Ok(DeviceData {
+            app_sha: Some(fw.app.clone()),
+            app_branch: Some(fw.app_branch.clone()),
+            bootloader_sha: Some(fw.bootloader.clone()),
+            bootloader_branch: Some(fw.bootloader_branch.clone()),
+            rootfs_sha: Some(fw.rootfs.clone()),
+            rootfs_branch: Some(fw.rootfs_branch.clone()),
+            kernel_sha: Some(fw.kernel.clone()),
+            kernel_branch: Some(fw.kernel_branch.clone()),
+            ..Default::default()
+        })
+    } else {
+        Ok(DeviceData::default())
+    }
+}
+
+async fn get_fw_list(jwt_token: &str) -> Result<list_firmwares::ResponseData, LookupError> {
+    let client = get_client(jwt_token)?;
+    let fw_list_response_body = post_graphql::<ListFirmwares, _>(
+        &client,
+        "https://api.connectedcars.io/graphql",
+        list_firmwares::Variables,
+    )
+    .await?;
+    let fw_list: list_firmwares::ResponseData =
+        fw_list_response_body.data.expect("missing response data");
+    Ok(fw_list)
 }
 
 async fn get_device_info(jwt_token: &str, di: &str) -> Result<DeviceData, LookupError> {
@@ -285,6 +296,18 @@ async fn main() {
         fw_id = get_fw_id(&token, app_sha, bootloader_sha, rootfs_sha, kernel_sha)
             .await
             .unwrap();
+    }
+
+    if let Some(rid) = &args.release_id {
+        let fw_data = get_fw_shas(&token, rid.to_string()).await.unwrap();
+        device_data.app_sha = fw_data.app_sha;
+        device_data.app_branch = fw_data.app_branch;
+        device_data.bootloader_sha = fw_data.bootloader_sha;
+        device_data.bootloader_branch = fw_data.bootloader_branch;
+        device_data.rootfs_sha = fw_data.rootfs_sha;
+        device_data.rootfs_branch = fw_data.rootfs_branch;
+        device_data.kernel_sha = fw_data.kernel_sha;
+        device_data.kernel_branch = fw_data.kernel_branch;
     }
 
     device_data.fw_id = fw_id;

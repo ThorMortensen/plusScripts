@@ -1,0 +1,39 @@
+#!/bin/bash
+. plusScriptsPaths
+RELEASE_ID=$1
+TARGET=$2
+
+
+[[ "$TARGET" == port* ]] || { echo "Not a valid port"; exit 255; }
+
+logi_name=${ids_to_names["$TARGET"]}
+device_type=$3
+
+
+# Define a function to handle the SIGINT signal
+handle_sigint() {
+    stop_spinner
+    exit 1
+}
+trap handle_sigint SIGINT
+
+
+if [[ -z "$device_type" ]]; then
+  start_spinner "Fetching device type from $TARGET"
+  timeout 5 auth-wrapper ssh nuc "cd ~/device-station && npm run relay \"$logi_name\" off r > /dev/null 2>&1 && npm run relay \"$logi_name\" on p i > /dev/null 2>&1"
+  device_type=$(timeout 5 auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 support@$TARGET "hostname")
+  stop_spinner
+  if [[ -z "$device_type" ]]; then
+  echo "Could not get device type. Please provide it as the third argument."
+  exit 255
+  fi
+  echo "Device is: $device_type"
+fi
+
+# Check if the release folder exists on the nuc
+if ! auth-wrapper ssh nuc "test -d ~/device-station/downloads/$RELEASE_ID"; then
+  echo "Release folder $RELEASE_ID does not exist on nuc!"
+  echo "Please download it first: +downloadRelease (release id?) $RELEASE_ID" 
+  exit 255
+fi
+auth-wrapper ssh nuc "cd ~/device-station && echo \"Flashing $TARGET\" && npm run flash ./downloads/$RELEASE_ID $logi_name $device_type"

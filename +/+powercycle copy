@@ -1,0 +1,21 @@
+#!/bin/bash
+
+
+. plusScriptsPaths
+
+name=${ids_to_names["$1"]}
+
+
+# Define a function to handle the SIGINT signal
+handle_sigint() {
+    stop_spinner
+    exit 1
+}
+trap handle_sigint SIGINT
+
+start_spinner "Power off $name"
+auth-wrapper ssh nuc "cd ~/device-station && npm run relay \"$name\" off p i r > /dev/null 2>&1"
+sleep 2
+auth-wrapper ssh nuc "cd ~/device-station && npm run relay \"$name\" on p > /dev/null 2>&1"
+stop_spinner
+echo "$name is now on"

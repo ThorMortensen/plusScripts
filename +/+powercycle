@@ -1,8 +1,0 @@
-#!/bin/bash
-
-. plusScriptsPaths
-
-name=${ids_to_names["$1"]}
-
-auth-wrapper ssh nuc "cd ~/device-station  && echo \"Power off on $name\" && npm run relay \"$name\" off p i r  && echo \"Waiting...\" && sleep 2 && npm run relay \"$name\" on p && echo \"Power on on $name\""
-

@@ -1,0 +1,105 @@
+#!/bin/bash
+. plusScriptsPaths
+RELEASE_ID=$1
+RELEASE_NAME=$2
+
+
+
+
+
+lookup_release() {
+  start_spinner "Fetching shas for release $RELEASE_ID"
+  json_output=$(plus-lookup --release-id $RELEASE_ID)
+
+  app_sha=$(echo "$json_output" | jq -r '.app_sha')
+  app_branch=$(echo "$json_output" | jq -r '.app_branch')
+  bootloader_sha=$(echo "$json_output" | jq -r '.bootloader_sha')
+  bootloader_branch=$(echo "$json_output" | jq -r '.bootloader_branch')
+  rootfs_sha=$(echo "$json_output" | jq -r '.rootfs_sha')
+  rootfs_branch=$(echo "$json_output" | jq -r '.rootfs_branch')
+  kernel_sha=$(echo "$json_output" | jq -r '.kernel_sha')
+  kernel_branch=$(echo "$json_output" | jq -r '.kernel_branch')
+
+  # if any is "null" exit
+  if [[ "$app_sha" == "null" || "$app_branch" == "null" || "$bootloader_sha" == "null" || "$bootloader_branch" == "null" || "$rootfs_sha" == "null" || "$rootfs_branch" == "null" || "$kernel_sha" == "null" || "$kernel_branch" == "null" ]]; then
+    stop_spinner
+    echo "Release \"$RELEASE_ID\" not found"
+    exit 1
+  fi
+
+  release_info=$(cat << EOF
+export FIT_IMAGE_SHA="$kernel_sha"
+export FIT_IMAGE_BRANCH="$kernel_branch"
+export BOOTLOADER_SHA="$bootloader_sha"
+export BOOTLOADER_BRANCH="$bootloader_branch"
+export KERNEL_SHA="$kernel_sha"
+export KERNEL_BRANCH="$kernel_branch"
+export ROOTFS_SHA="$rootfs_sha"
+export ROOTFS_BRANCH="$rootfs_branch"
+export APP_SHA="$app_sha"
+export APP_BRANCH="$app_branch"
+EOF
+)
+
+  stop_spinner
+}
+
+save_release(){
+  local release_name=$1
+  local release_info=$2
+  echo "Saving release $release_name"
+  echo "$release_info" > $PS_DIR_RELEASES/$release_name
+}
+
+download_release_on_nuc() {
+  local release_name=$1
+  local release_info=$2
+echo "Downloading release $release_name"
+echo "$release_info"
+
+auth-wrapper ssh nuc << EOF
+rm -rf ./device-station/downloads/$release_name
+$release_info
+./device-station/scripts/firmware-download.sh ./device-station/downloads/$release_name
+EOF
+}
+
+# Define a function to handle the SIGINT signal
+handle_sigint() {
+    stop_spinner
+    exit 1
+}
+trap handle_sigint SIGINT
+
+release_info=""
+
+# If reelase name is empty use release id as name
+if [[ -z "$RELEASE_NAME" ]]; then
+  RELEASE_NAME=$RELEASE_ID
+fi
+
+# if no arguments serve release folder names
+if [[ -z "$RELEASE_ID" ]]; then
+  persist_name=$(basename "$0")
+  releasen_names=$(ls -A1 $PS_DIR_RELEASES | grep -v '~$' | tr '\n' ' ' | sed 's/ *$//')
+  selected_release=$(plus-menu --items "$releasen_names" --persist-path "$persist_name-release" --prompt-msg "Select a release to download") 
+  echo "$selected_release"
+  RELEASE_NAME=$selected_release
+  release_info=$(cat $PS_DIR_RELEASES/$RELEASE_NAME)
+# else
+
+fi
+
+# Check if release already exists
+if [[ -f "$PS_DIR_RELEASES/$RELEASE_NAME" ]]; then
+  echo "Release $RELEASE_NAME already exists"
+  release_info=$(cat $PS_DIR_RELEASES/$RELEASE_NAME)
+else
+  lookup_release
+  save_release $RELEASE_NAME "$release_info"
+fi
+
+
+download_release_on_nuc $RELEASE_NAME "$release_info"
+
+

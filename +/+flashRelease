@@ -1,8 +1,14 @@
 #!/bin/bash
 . plusScriptsPaths
-RELEASE_ID=$1
-TARGET=$2
+RELEASE_ID=$2
+TARGET=$1
 
+# Check if there's only one argument
+if [ -z "$RELEASE_ID" ]; then
+  select_port
+  TARGET=$SELECTED_DEVICE
+  RELEASE_ID=""
+fi
 
 [[ "$TARGET" == port* ]] || { echo "Not a valid port"; exit 255; }
 
@@ -18,22 +24,35 @@ handle_sigint() {
 trap handle_sigint SIGINT
 
 
+# if no arguments prompt release folder names
+if [[ -z "$RELEASE_ID" ]]; then
+  releasen_names=$(ls -A1 $PS_DIR_RELEASES | grep -v '~$' | tr '\n' ' ' | sed 's/ *$//')
+  selected_release=$(plus-menu --items "$releasen_names" --persist-path "$GLOBAL_RELEASE_SELECTED" --prompt-msg "Select a release to flash") 
+  echo "$selected_release"
+  RELEASE_ID=$selected_release
+fi
+
+# +downloadRelease "$RELEASE_ID"
+
+# Check if the release exist 
+if ! auth-wrapper ssh nuc "test -d ~/device-station/downloads/$RELEASE_ID"; then
+  echo "Release folder $RELEASE_ID does not exist on nuc!"
+  echo "Please download it first: +downloadRelease (release id?) $RELEASE_ID" 
+  exit 255
+fi
+
 if [[ -z "$device_type" ]]; then
   start_spinner "Fetching device type from $TARGET"
   timeout 5 auth-wrapper ssh nuc "cd ~/device-station && npm run relay \"$logi_name\" off r > /dev/null 2>&1 && npm run relay \"$logi_name\" on p i > /dev/null 2>&1"
   device_type=$(timeout 5 auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 support@$TARGET "hostname")
   stop_spinner
   if [[ -z "$device_type" ]]; then
-  echo "Could not get device type. Please provide it as the third argument."
-  exit 255
+  echo "Could not get device type. Please select or provide it as the third argument. "
+  select_device_variant
+  device_type=$SELECTED_DEVICE_VARIANT
   fi
   echo "Device is: $device_type"
 fi
 
-# Check if the release folder exists on the nuc
-if ! auth-wrapper ssh nuc "test -d ~/device-station/downloads/$RELEASE_ID"; then
-  echo "Release folder $RELEASE_ID does not exist on nuc!"
-  echo "Please download it first: +downloadRelease (release id?) $RELEASE_ID" 
-  exit 255
-fi
+
 auth-wrapper ssh nuc "cd ~/device-station && echo \"Flashing $TARGET\" && npm run flash ./downloads/$RELEASE_ID $logi_name $device_type"

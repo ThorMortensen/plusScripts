@@ -80,9 +80,9 @@ fi
 
 # if no arguments serve release folder names
 if [[ -z "$RELEASE_ID" ]]; then
-  persist_name=$(basename "$0")
+  # persist_name=$(basename "$0")
   releasen_names=$(ls -A1 $PS_DIR_RELEASES | grep -v '~$' | tr '\n' ' ' | sed 's/ *$//')
-  selected_release=$(plus-menu --items "$releasen_names" --persist-path "$persist_name-release" --prompt-msg "Select a release to download") 
+  selected_release=$(plus-menu --items "$releasen_names" --persist-path "$GLOBAL_RELEASE_SELECTED" --prompt-msg "Select a release to download") 
   echo "$selected_release"
   RELEASE_NAME=$selected_release
   release_info=$(cat $PS_DIR_RELEASES/$RELEASE_NAME)

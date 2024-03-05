@@ -3,21 +3,29 @@
 
 # Define a function to handle the SIGINT signal
 
-
-start_spinner "Fetching device info from "$1""
 handle_sigint() {
     stop_spinner
     exit 1
 }
 trap handle_sigint SIGINT
 
-fw_shas=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$1" "sudo cc-hal updatecli versions") 
+device=$1
+
+if [ -z "$device" ] 
+then
+  select_port 
+  device="$SELECTED_DEVICE"
+fi
+
+start_spinner "Fetching device info from "$device""
+
+fw_shas=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "sudo cc-hal updatecli versions") 
 bootloader=$(echo "$fw_shas" | awk -F': ' '/bootloader/ {print $2}')
 app=$(echo "$fw_shas" | awk -F': ' '/app/ {print $2}')
 kernel=$(echo "$fw_shas" | awk -F': ' '/kernel/ {print $2}')
 rootfs=$(echo "$fw_shas" | awk -F': ' '/rootfs/ {print $2}')
-cpu_id=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$1" "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
-using_debug_conf=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$1" "cat /data/conf/ccapp.env 2>/dev/null | grep USE_DEBUG_CONFIG=1")
+cpu_id=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
+using_debug_conf=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "cat /data/conf/ccapp.env 2>/dev/null | grep USE_DEBUG_CONFIG=1")
 
 json_output=$(plus-lookup --bootloader "$bootloader" --app "$app" --kernel "$kernel" --rootfs "$rootfs" --device-id "$cpu_id")
 fw_id=$(echo "$json_output" | jq -r '.fw_id')
@@ -28,19 +36,19 @@ vin=$(echo "$json_output" | jq -r '.vin')
 config_name=$(echo "$json_output" | jq -r '.config_name')
 vehicle_id=$(echo "$json_output" | jq -r '.vehicle_id')
 
-device_type=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$1" "hostname") 
-momondo_addr=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$1" "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)") 
-state=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$1" "sudo cc-pmcli gpios") 
-gps=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$1" "sudo cc-gpscli location")
+device_type=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "hostname") 
+momondo_addr=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)") 
+state=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "sudo cc-pmcli gpios") 
+gps=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "sudo cc-gpscli location")
 
 if [[ $using_debug_conf == *"USE_DEBUG_CONFIG=1"* ]]; then
-    debug_path=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$1" "cat /data/conf/ccapp.env | grep DEBUG_CONFIG_PATH")
+    debug_path=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "cat /data/conf/ccapp.env | grep DEBUG_CONFIG_PATH")
     config_name="Debug-config ${debug_path#*=}"
 fi
 
 stop_spinner
 
-if [[ "$2" != "-full" ]]; then
+if [[ "$2" != "--full" ]]; then
   app=${app:0:10}
   bootloader=${bootloader:0:10}
   kernel=${kernel:0:10}
@@ -69,8 +77,12 @@ echo "PWR: $state"
 echo "GPS: $gps"
 echo "VIN: $vin"
 echo "Config: $config_name"
-if [ "$vehicle_id" != "null" ] && [ "$sim_id" != "null" ]; then
+if [ "$vehicle_id" != "null" ] || [ "$sim_id" != "null" ]; then
   print_title "Links:"
-  echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/vehicles/$vehicle_id")
-  echo Onomondo: $(print_link "https://app.onomondo.com/sims/$sim_id")
+  if [ "$vehicle_id" != "null" ]; then
+    echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/vehicles/$vehicle_id")
+  fi
+  if [ "$sim_id" != "null" ]; then
+    echo Onomondo: $(print_link "https://app.onomondo.com/sims/$sim_id")
+  fi
 fi

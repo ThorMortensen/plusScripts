@@ -1,36 +1,5 @@
 #!/bin/bash
 
-
-
-# const CC_API_URL = 'https://api.connectedcars.io/graphql'
-# const CC_ORGANIZATION = 'cctech:workshop'
-
-# export async function getJwt(): Promise<string> {
-#   const tokenRres = await runCommand('gcloud', ['auth', 'print-identity-token'], 85)
-#   if (tokenRres.error) {
-#     // eslint-disable-next-line no-console
-#     console.error(tokenRres.error)
-#     throw new Error('failed to get token from gcloud', tokenRres.error)
-#   }
-#   const data = JSON.stringify({ token: tokenRres.stdout })
-
-#   const res: {
-#     data: {
-#       token: string
-#       level: 'AM1'
-#       expires: number
-#     }
-#   } = await axios.post('https://auth-api.connectedcars.io/auth/login/googleConverter', data, {
-#     headers: {
-#       'X-Organization-Namespace': CC_ORGANIZATION,
-#       Accept: 'application/json',
-#       'Content-Type': 'application/json'
-#     }
-#   })
-
-#   return res.data.token
-# }
-
 persist_name=$(basename "$0")
 
 file_trans=$2

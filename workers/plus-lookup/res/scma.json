@@ -357,6 +357,53 @@
               "args": [
                 {
                   "defaultValue": null,
+                  "description": null,
+                  "name": "key",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Latitude used to calculate distance to charging stations",
+                  "name": "originLatitude",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Float",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Longitude used to calculate distance to charging stations",
+                  "name": "originLongitude",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Float",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Gets single charging station by id",
+              "isDeprecated": false,
+              "name": "chargingStation",
+              "type": {
+                "kind": "OBJECT",
+                "name": "ChargingStation",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
                   "description": "North bound of the rectangle in degrees of latitude",
                   "name": "northBound",
                   "type": {
@@ -447,6 +494,24 @@
                     "kind": "SCALAR",
                     "name": "Int",
                     "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Socket types to include in the result",
+                  "name": "socketTypes",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "ChargingStationSocketType",
+                        "ofType": null
+                      }
+                    }
                   }
                 }
               ],
@@ -2212,6 +2277,105 @@
               }
             },
             {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "workshopIds",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "SCALAR",
+                        "name": "ID",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filters by group roles. Passing null includes all roles.",
+                  "name": "roles",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "GroupRole",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": "{field: email, direction: ASC}",
+                  "description": null,
+                  "name": "orderBy",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "GroupInvitesOrder",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the elements in the list that come before this cursor.",
+                  "name": "before",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Cursor",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the elements in the list that come after this cursor. This is ignored, if before is set.",
+                  "name": "after",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Cursor",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the first _n_ elements from the list. Either this or last is required.",
+                  "name": "first",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the last _n_ elements from the list. Either this or last is required. This is ignored, if first is set.",
+                  "name": "last",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Get a list of user invites to groups for a list of workshops.",
+              "isDeprecated": false,
+              "name": "groupInvites",
+              "type": {
+                "kind": "OBJECT",
+                "name": "GroupInvitesResult",
+                "ofType": null
+              }
+            },
+            {
               "args": [],
               "deprecationReason": null,
               "description": "Returns a list of insurance companies.",
@@ -2304,7 +2468,7 @@
                 }
               ],
               "deprecationReason": null,
-              "description": "Returns whether an app is deprecated.\n\nCurrently deprecated apps are below v1.78.2, or at least v12.0.0 and below v12.78.2",
+              "description": "Returns whether an app is deprecated.\n\nCurrently deprecated apps are below v1.78.17, or at least v12.0.0 and below v12.78.17",
               "isDeprecated": false,
               "name": "isAppDeprecated",
               "type": {
@@ -2715,6 +2879,42 @@
                 },
                 {
                   "defaultValue": null,
+                  "description": "Filter error code leads by multiple ecus",
+                  "name": "errorCodeEcus",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filter error code leads by different severities",
+                  "name": "errorCodeSeverities",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "ErrorCodeSeverity",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
                   "description": "Filter leads by their remaining expiration time in days.\n    If set to 0, it will return expired entries only\n    This only affects leads based on quotes",
                   "name": "expirationTimeInDays",
                   "type": {
@@ -3052,6 +3252,42 @@
                     "kind": "ENUM",
                     "name": "ErrorCodeSeverity",
                     "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filter error code leads by multiple ecus",
+                  "name": "errorCodeEcus",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filter error code leads by different severities",
+                  "name": "errorCodeSeverities",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "ErrorCodeSeverity",
+                        "ofType": null
+                      }
+                    }
                   }
                 },
                 {
@@ -3889,6 +4125,201 @@
                       "ofType": null
                     }
                   }
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "The upload id to fetch.",
+                  "name": "uploadId",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Get an organization unit upload by id.\n\n**Permissions**\nThis query requires the `can_manage_support` permission organization-wide.",
+              "isDeprecated": false,
+              "name": "organizationUnitUpload",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationUnitUpload",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "The organization to get uploads for or null for all organizations.",
+                  "name": "organizationKey",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": "{field: created_at, direction: ASC}",
+                  "description": null,
+                  "name": "orderBy",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "OrganizationUnitUploadOrder",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the elements in the list that come before this cursor.",
+                  "name": "before",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Cursor",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the elements in the list that come after this cursor. This is ignored, if before is set.",
+                  "name": "after",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Cursor",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the first _n_ elements from the list. Either this or last is required.",
+                  "name": "first",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the last _n_ elements from the list. Either this or last is required. This is ignored, if first is set.",
+                  "name": "last",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Get a list of all unit uploads for an organization.\n\n**Permissions**\nThis query requires the `can_manage_support` permission organization-wide.",
+              "isDeprecated": false,
+              "name": "organizationUnitUploads",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "OrganizationUnitUploadResult",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "uploadId",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filter by status. A null status shows all unit upload statuses.",
+                  "name": "status",
+                  "type": {
+                    "kind": "ENUM",
+                    "name": "UnitUploadStatus",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Optional text query for searching unit identifiers.",
+                  "name": "query",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the elements in the list that come before this cursor.",
+                  "name": "before",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Cursor",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the elements in the list that come after this cursor. This is ignored, if before is set.",
+                  "name": "after",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Cursor",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the first _n_ elements from the list. Either this or last is required.",
+                  "name": "first",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Returns the last _n_ elements from the list. Either this or last is required. This is ignored, if first is set.",
+                  "name": "last",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Get a list of all unit statuses for an upload for an organization.\n\n**Permissions**\nThis query requires the `can_manage_support` permission organization-wide.",
+              "isDeprecated": false,
+              "name": "organizationUnitUploadStatuses",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "OrganizationUnitUploadStatusesResult",
+                  "ofType": null
                 }
               }
             },
@@ -5027,6 +5458,16 @@
                     "name": "ID",
                     "ofType": null
                   }
+                },
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "email",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
                 }
               ],
               "deprecationReason": null,
@@ -5135,6 +5576,24 @@
                     "kind": "INPUT_OBJECT",
                     "name": "TestUserTypesFilter",
                     "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filters users by their group role.",
+                  "name": "roles",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "GroupRole",
+                        "ofType": null
+                      }
+                    }
                   }
                 },
                 {
@@ -5298,6 +5757,24 @@
                     "kind": "INPUT_OBJECT",
                     "name": "TestUserTypesFilter",
                     "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filters users by their group role.",
+                  "name": "roles",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "GroupRole",
+                        "ofType": null
+                      }
+                    }
                   }
                 }
               ],
@@ -7314,6 +7791,42 @@
                     "kind": "ENUM",
                     "name": "ErrorCodeSeverity",
                     "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filter error code leads by multiple ecus",
+                  "name": "errorCodeEcus",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filter error code leads by different severities",
+                  "name": "errorCodeSeverities",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "ErrorCodeSeverity",
+                        "ofType": null
+                      }
+                    }
                   }
                 },
                 {
@@ -10838,6 +11351,42 @@
                   }
                 }
               }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "revokeUserWorkshopAccessAfterDays",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "deleteUnattachedWorkshopUsersAfterDays",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "minimizeDataCollectionAfterDays",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
             }
           ],
           "inputFields": null,
@@ -12868,6 +13417,12 @@
               "description": null,
               "isDeprecated": false,
               "name": "mb"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "demo"
             }
           ],
           "fields": null,
@@ -13248,6 +13803,30 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "googleClients",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "GoogleClient",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": "Use `googleClients` instead.",
+              "description": null,
+              "isDeprecated": true,
               "name": "googleClientId",
               "type": {
                 "kind": "SCALAR",
@@ -13257,9 +13836,9 @@
             },
             {
               "args": [],
-              "deprecationReason": null,
+              "deprecationReason": "No longer used.",
               "description": "This field requires the `can_manage_users` permission for fleets or workshops organization-wide.",
-              "isDeprecated": false,
+              "isDeprecated": true,
               "name": "googleSecret",
               "type": {
                 "kind": "SCALAR",
@@ -13910,7 +14489,25 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "abarth"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "aiways"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "alfa_romeo"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "alpine"
             },
             {
               "deprecationReason": null,
@@ -13952,7 +14549,31 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "byd"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "cadillac"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "carver"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "changan"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "chery"
             },
             {
               "deprecationReason": null,
@@ -14012,7 +14633,19 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "de_tomaso"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "dodge"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "ds"
             },
             {
               "deprecationReason": null,
@@ -14048,7 +14681,25 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "fuso"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "gac"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "garia"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "geely"
             },
             {
               "deprecationReason": null,
@@ -14060,13 +14711,49 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "genesis"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "gmc"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "harley_davidson"
             },
             {
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "haval"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "hino"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "holden"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "honda"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "hongqi"
             },
             {
               "deprecationReason": null,
@@ -14084,6 +14771,18 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "ineos_grenadier"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "infiniti"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "isuzu"
             },
             {
@@ -14091,6 +14790,12 @@
               "description": null,
               "isDeprecated": false,
               "name": "iveco"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "jac"
             },
             {
               "deprecationReason": null,
@@ -14156,7 +14861,19 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "leap_motors"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "lexus"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "ligier"
             },
             {
               "deprecationReason": null,
@@ -14234,7 +14951,19 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "microlino"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "mitsubishi"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "morgan"
             },
             {
               "deprecationReason": null,
@@ -14259,6 +14988,12 @@
               "description": null,
               "isDeprecated": false,
               "name": "opel"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "ora"
             },
             {
               "deprecationReason": null,
@@ -14300,7 +15035,19 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "ram"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "renault"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "rimac"
             },
             {
               "deprecationReason": null,
@@ -14313,6 +15060,12 @@
               "description": null,
               "isDeprecated": false,
               "name": "saab"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "saic"
             },
             {
               "deprecationReason": null,
@@ -14331,6 +15084,18 @@
               "description": null,
               "isDeprecated": false,
               "name": "seat"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "seres"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "silence"
             },
             {
               "deprecationReason": null,
@@ -14390,6 +15155,18 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "tvr"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "vauxhall"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "volkswagen"
             },
             {
@@ -14415,6 +15192,24 @@
               "description": null,
               "isDeprecated": false,
               "name": "western_star"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "xbus"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "xev"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "xpeng"
             }
           ],
           "fields": null,
@@ -14546,6 +15341,90 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "platform",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "GoogleClientPlatform",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "clientId",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "redirectUrl",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "GoogleClient",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "web"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "ios"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "android"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "GoogleClientPlatform",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "locale",
               "type": {
                 "kind": "NON_NULL",
@@ -14646,7 +15525,43 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "abarth",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "aiways",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "alfa_romeo",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "alpine",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -14730,7 +15645,55 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "byd",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "cadillac",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "carver",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "changan",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "chery",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -14850,7 +15813,31 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "de_tomaso",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "dodge",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "ds",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -14922,7 +15909,43 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "fuso",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "gac",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "garia",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "geely",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -14946,6 +15969,30 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "genesis",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "gmc",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "harley_davidson",
               "type": {
                 "kind": "OBJECT",
@@ -14958,7 +16005,55 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "haval",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "hino",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "holden",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "honda",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "hongqi",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -14994,6 +16089,30 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "ineos_grenadier",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "infiniti",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "isuzu",
               "type": {
                 "kind": "OBJECT",
@@ -15007,6 +16126,18 @@
               "description": null,
               "isDeprecated": false,
               "name": "iveco",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "jac",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -15138,7 +16269,31 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "leap_motors",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "lexus",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "ligier",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -15294,7 +16449,31 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "microlino",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "mitsubishi",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "morgan",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -15343,6 +16522,18 @@
               "description": null,
               "isDeprecated": false,
               "name": "opel",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "ora",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -15426,7 +16617,31 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "ram",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "renault",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "rimac",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -15451,6 +16666,18 @@
               "description": null,
               "isDeprecated": false,
               "name": "saab",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "saic",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -15487,6 +16714,30 @@
               "description": null,
               "isDeprecated": false,
               "name": "seat",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "seres",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "silence",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -15606,6 +16857,30 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "tvr",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "vauxhall",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "volkswagen",
               "type": {
                 "kind": "OBJECT",
@@ -15655,6 +16930,42 @@
               "description": null,
               "isDeprecated": false,
               "name": "western_star",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "xbus",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "xev",
+              "type": {
+                "kind": "OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfo",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "xpeng",
               "type": {
                 "kind": "OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfo",
@@ -16062,6 +17373,18 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "enable_manual_inspection_service_input"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "enable_manual_oil_change_service_input"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "view_news_content"
             },
             {
@@ -16092,7 +17415,25 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "has_live_soc_support"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "allow_lookup"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "allow_login_in_cc_app"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "checks_ownership_change"
             }
           ],
           "fields": null,
@@ -16327,7 +17668,31 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "hasLiveSOCSupport",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "allowLookup",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "allowLoginInCCApp",
               "type": {
                 "kind": "SCALAR",
                 "name": "Boolean",
@@ -21176,6 +22541,79 @@
             {
               "args": [],
               "deprecationReason": null,
+              "description": "Returns the high voltage battery health in percent for the vehicle.\n\n  **Permissions**\n  This field requires the `can_see_fuel` permission for the vehicle.",
+              "isDeprecated": false,
+              "name": "highVoltageBatteryHealthPercent",
+              "type": {
+                "kind": "OBJECT",
+                "name": "VehicleCanHighVoltageBatteryHealthPercent",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "Filter elements to on or after this date (RFC 3339)",
+                  "name": "first",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Date",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filter elements to on or before this date (RFC 3339)",
+                  "name": "last",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Date",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": "DESC",
+                  "description": "Sort elements by time in this direction",
+                  "name": "order",
+                  "type": {
+                    "kind": "ENUM",
+                    "name": "SortDirection",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": "1000",
+                  "description": "Filter elements to this page size",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Returns a list of high voltage battery health percentages for the vehicle. This field should only be used, when querying a single vehicle.\n\n  **Permissions**\n  This field requires the `can_see_fuel` permission for the vehicle.",
+              "isDeprecated": false,
+              "name": "highVoltageBatteryHealthPercentages",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "VehicleCanHighVoltageBatteryHealthPercent",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
               "description": "Returns the current high voltage battery temperature in celsius for the vehicle.\n\n**Permissions**\nThis field requires the `can_see_fuel` permission for the vehicle.",
               "isDeprecated": false,
               "name": "highVoltageBatteryTemperature",
@@ -21703,6 +23141,67 @@
                   "ofType": {
                     "kind": "OBJECT",
                     "name": "VehicleCanRangeTotalKm",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "Filter elements to on or after this date (RFC 3339)",
+                  "name": "first",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Date",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filter elements to on or before this date (RFC 3339)",
+                  "name": "last",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Date",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": "DESC",
+                  "description": "Sort elements by time in this direction",
+                  "name": "order",
+                  "type": {
+                    "kind": "ENUM",
+                    "name": "SortDirection",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": "1000",
+                  "description": "Filter elements to this page size",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Returns a list of average km per liter for the vehicle. This field should only be used, when querying a single vehicle.\n\n      **Permissions**\n      This field requires the `can_see_fuel` permission for the vehicle.",
+              "isDeprecated": false,
+              "name": "averageKmsPerLiter",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "VehicleAverageKmPerLiter",
                     "ofType": null
                   }
                 }
@@ -24631,6 +26130,30 @@
             {
               "args": [],
               "deprecationReason": null,
+              "description": "The consents granted to the vehicle.",
+              "isDeprecated": false,
+              "name": "consents",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "ConsentGrantedAt",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
               "name": "proofOfOwnershipStatus",
@@ -25328,8 +26851,44 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "Returns the Onomondo SIM ID for CC units and the ICCID for TL units.",
+              "description": "Returns the ICCID of the SIM card.",
               "isDeprecated": false,
+              "name": "iccId",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Returns the provider of the SIM card.",
+              "isDeprecated": false,
+              "name": "simProvider",
+              "type": {
+                "kind": "ENUM",
+                "name": "SimProvider",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Returns SIM provider link",
+              "isDeprecated": false,
+              "name": "simProviderLink",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": "Superseded by `iccId`, `simProvider`, and `simProviderLink`.",
+              "description": "Returns the Onomondo SIM ID for CC units and the ICCID for TL units.",
+              "isDeprecated": true,
               "name": "simId",
               "type": {
                 "kind": "SCALAR",
@@ -26346,6 +27905,35 @@
           "interfaces": [],
           "kind": "OBJECT",
           "name": "UnitRecall",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "onomondo"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "telenor"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "tele2"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "SimProvider",
           "possibleTypes": null
         },
         {
@@ -28146,6 +29734,12 @@
               "description": null,
               "isDeprecated": false,
               "name": "can_see_claimed_trip"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "can_manage_consents"
             }
           ],
           "fields": null,
@@ -28702,6 +30296,18 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "vehicle_status_without_position"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "vehicle_position"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "workshop_assistance"
             },
             {
@@ -28755,6 +30361,22 @@
             {
               "args": [],
               "deprecationReason": null,
+              "description": "A key that uniquely identifies the invite",
+              "isDeprecated": false,
+              "name": "key",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
               "name": "category",
@@ -28778,6 +30400,30 @@
                 "kind": "SCALAR",
                 "name": "ID",
                 "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Get a list of all the groups that this invite includes",
+              "isDeprecated": false,
+              "name": "groups",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "Group",
+                      "ofType": null
+                    }
+                  }
+                }
               }
             },
             {
@@ -30609,6 +32255,65 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "percent",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "time",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Date",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "VehicleCanHighVoltageBatteryHealthPercent",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "id",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "celsius",
               "type": {
                 "kind": "NON_NULL",
@@ -30947,6 +32652,49 @@
           "interfaces": [],
           "kind": "OBJECT",
           "name": "VehicleCanRangeTotalKm",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "avgKmPerLiter",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "date",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Date",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "VehicleAverageKmPerLiter",
           "possibleTypes": null
         },
         {
@@ -39438,9 +41186,9 @@
             },
             {
               "args": [],
-              "deprecationReason": null,
+              "deprecationReason": "Not used anymore",
               "description": "Mileage in kilometers calculated from odometer readings",
-              "isDeprecated": false,
+              "isDeprecated": true,
               "name": "odometerMileage",
               "type": {
                 "kind": "SCALAR",
@@ -42046,6 +43794,49 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "consent",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "ConsentType",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "grantedAt",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Date",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "ConsentGrantedAt",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "promptTime",
               "type": {
                 "kind": "SCALAR",
@@ -43981,10 +45772,26 @@
           "fields": [
             {
               "args": [],
+              "deprecationReason": "Use trustpilotId instead.",
+              "description": null,
+              "isDeprecated": true,
+              "name": "id",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "id",
+              "name": "trustpilotId",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -44672,17 +46479,29 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "Distance in meters from origin",
+              "description": null,
               "isDeprecated": false,
-              "name": "distance",
+              "name": "key",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
                   "kind": "SCALAR",
-                  "name": "Float",
+                  "name": "String",
                   "ofType": null
                 }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Distance in meters from origin",
+              "isDeprecated": false,
+              "name": "distance",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
               }
             },
             {
@@ -44849,6 +46668,22 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "key",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "type",
               "type": {
                 "kind": "NON_NULL",
@@ -44878,6 +46713,18 @@
               "description": null,
               "isDeprecated": false,
               "name": "amount",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Current available sockets of the total amount.\nThis is only available for some data providers",
+              "isDeprecated": false,
+              "name": "available",
               "type": {
                 "kind": "SCALAR",
                 "name": "Int",
@@ -44965,6 +46812,18 @@
               "description": null,
               "isDeprecated": false,
               "name": "cee_blue"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "gbt_ac"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "gbt_dc"
             }
           ],
           "fields": null,
@@ -47641,6 +49500,22 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "id",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "key",
               "type": {
                 "kind": "NON_NULL",
@@ -49030,6 +50905,70 @@
                   "ofType": null
                 }
               }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Average kilometers per non-electric vehicle over the last 30 days",
+              "isDeprecated": false,
+              "name": "averageKmPerVehicleWithoutEVs",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "ComparePeriodValues",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Average kilometers per day, per non-electric vehicle over the last 30 days",
+              "isDeprecated": false,
+              "name": "averageKmPerDayPerVehicleWithoutEVs",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "ComparePeriodValues",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Average kilometers per day for non-electric vehicles over the last 30 days",
+              "isDeprecated": false,
+              "name": "averageKmPerDayWithoutEVs",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "ComparePeriodValues",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Total kilometers for non-electric all vehicles over the last 30 days",
+              "isDeprecated": false,
+              "name": "compareTotalKmWithoutEVs",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "ComparePeriodValues",
+                  "ofType": null
+                }
+              }
             }
           ],
           "inputFields": null,
@@ -49473,6 +51412,38 @@
                 "name": "Float",
                 "ofType": null
               }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Average driving events (acceleration, braking, turning) per non-electric vehicle per 100km. Only \"high\" events are counted",
+              "isDeprecated": false,
+              "name": "averageDrivingEventsPerVehiclePer100KmWithoutEVs",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Total driving events (acceleration, braking, turning) per non-electric vehicle per 100km. Only \"high\" events are counted",
+              "isDeprecated": false,
+              "name": "totalDrivingEventsPerVehiclePer100KmWithoutEVs",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              }
             }
           ],
           "inputFields": null,
@@ -49611,9 +51582,41 @@
             {
               "args": [],
               "deprecationReason": null,
+              "description": "The total kilometers driven across all non-electric vehicles in the fleet in the last 30 days",
+              "isDeprecated": false,
+              "name": "totalKmWithoutEVs",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
               "description": "The total fuel usage in liters across all vehicles in the fleet in the last 30 days",
               "isDeprecated": false,
               "name": "totalFuelUsage",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "The total fuel usage in liters across all non-electric vehicles in the fleet in the last 30 days",
+              "isDeprecated": false,
+              "name": "totalFuelUsageWithoutEVs",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -50293,9 +52296,9 @@
                   }
                 }
               ],
-              "deprecationReason": null,
+              "deprecationReason": "Not used anymore",
               "description": "Get the average alarm closing time, and the performance relative to the target for the last `numberOfDays`.\n        For `numberOfDays` the default is 1, max is 60 and min is 1 (last 24 hours).\n        The relative target is only returned if only one workshop id queried and that workshop has an `alarmTimeTarget`",
-              "isDeprecated": false,
+              "isDeprecated": true,
               "name": "averageAlarmClosingTime",
               "type": {
                 "kind": "NON_NULL",
@@ -50741,6 +52744,125 @@
           "interfaces": [],
           "kind": "OBJECT",
           "name": "ServiceReminderBookings",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "A list of items.",
+              "isDeprecated": false,
+              "name": "items",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "UserInvite",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Information to aid in pagination.",
+              "isDeprecated": false,
+              "name": "pageInfo",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "GroupInvitesResult",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": "The field to order unit uploads by.",
+              "name": "field",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "GroupInvitesOrderField",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": "The ordering direction.",
+              "name": "direction",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "SortDirection",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "GroupInvitesOrder",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "email"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "invitation_send_time"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "invitation_expiry_time"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "GroupInvitesOrderField",
           "possibleTypes": null
         },
         {
@@ -54905,6 +57027,431 @@
         {
           "description": null,
           "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "organization",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "GlobalOrganization",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "uploadId",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "absoluteFileUrl",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "unitCount",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "unitsOk",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "unitsReassigned",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "unitsFailed",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "user",
+              "type": {
+                "kind": "OBJECT",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "shipmentDate",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Date",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "orderNumber",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "recipient",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "createdAt",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Date",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "OrganizationUnitUpload",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "A list of items.",
+              "isDeprecated": false,
+              "name": "items",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "OrganizationUnitUpload",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Information to aid in pagination.",
+              "isDeprecated": false,
+              "name": "pageInfo",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "OrganizationUnitUploadResult",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": "The field to order unit uploads by.",
+              "name": "field",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "OrganizationUnitUploadOrderField",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": "The ordering direction.",
+              "name": "direction",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "SortDirection",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "OrganizationUnitUploadOrder",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "created_at"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "OrganizationUnitUploadOrderField",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "A list of items.",
+              "isDeprecated": false,
+              "name": "items",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "OrganizationUnitUploadStatus",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Information to aid in pagination.",
+              "isDeprecated": false,
+              "name": "pageInfo",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PageInfo",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "OrganizationUnitUploadStatusesResult",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "unitIdentifier",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "status",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "OrganizationUnitUploadStatus",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "ok"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "failed"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "reassigned"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "UnitUploadStatus",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
           "fields": null,
           "inputFields": null,
           "interfaces": null,
@@ -56541,6 +59088,12 @@
               "description": null,
               "isDeprecated": false,
               "name": "mb"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "demo"
             }
           ],
           "fields": null,
@@ -64268,6 +66821,33 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
+                      "name": "SendPushNotificationInput",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Send a single campaign message.\n    \n**Permissions**\nThis mutation requires one of:\n - The context user to have the `campaign_manager` test user flag.\n - The `can_manage_support` permission for workshops organization-wide.",
+              "isDeprecated": false,
+              "name": "sendPushNotification",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "input",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
                       "name": "SetUnitEnvironmentInput",
                       "ofType": null
                     }
@@ -65292,6 +67872,37 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
+                      "name": "UploadOrganizationUnitsInput",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Uploads a CSV file of units for an organization. Returns a list of all the unit identifiers found in the file and their resulting status.\n\nThe file is expected to contain:\n  \n  * A single entry per row. Can be either a sticker ID (CC only), unit ID (CC and traffilog), or IMEI number (traffilog only).\n  * Only _one_ type of entry in a file.\n\n**Permissions**\nThis mutation requires the `can_manage_support` permission organization-wide.",
+              "isDeprecated": false,
+              "name": "uploadOrganizationUnits",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "UploadOrganizationUnitsResult",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "input",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
                       "name": "UploadVehicleImageInput",
                       "ofType": null
                     }
@@ -65411,6 +68022,36 @@
                   "name": "String",
                   "ofType": null
                 }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "firebaseProjectId",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "bundleId",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "deviceExternalId",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               }
             }
           ],
@@ -68352,7 +70993,27 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "hasLiveSOCSupport",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "allowLookup",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "allowLoginInCCApp",
               "type": {
                 "kind": "SCALAR",
                 "name": "Boolean",
@@ -69166,6 +71827,16 @@
                   "name": "String",
                   "ofType": null
                 }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "overrideInviteUserPrerequisite",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
               }
             }
           ],
@@ -76104,6 +78775,117 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "vin",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "userId",
+              "type": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "title",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "type",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "CampaignNotificationType",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "content",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "CampaignMessageInput",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "inAppOnly",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "skipMarketingConsentCheck",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "skipNotificationWithin24HourCheck",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "SendPushNotificationInput",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "unitId",
               "type": {
                 "kind": "NON_NULL",
@@ -78605,6 +81387,36 @@
                   }
                 }
               }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "revokeUserWorkshopAccessAfterDays",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "deleteUnattachedWorkshopUsersAfterDays",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "minimizeDataCollectionAfterDays",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
             }
           ],
           "interfaces": null,
@@ -78865,21 +81677,19 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "googleClientId",
+              "name": "googleClients",
               "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            {
-              "defaultValue": null,
-              "description": null,
-              "name": "googleSecret",
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "GoogleClientInput",
+                    "ofType": null
+                  }
+                }
               }
             },
             {
@@ -79273,6 +82083,55 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "platform",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "GoogleClientPlatform",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "clientId",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "redirectUrl",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "GoogleClientInput",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "locale",
               "type": {
                 "kind": "NON_NULL",
@@ -79326,7 +82185,37 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "abarth",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "aiways",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "alfa_romeo",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "alpine",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -79396,7 +82285,47 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "byd",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "cadillac",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "carver",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "changan",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "chery",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -79496,7 +82425,27 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "de_tomaso",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "dodge",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "ds",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -79556,7 +82505,37 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "fuso",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "gac",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "garia",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "geely",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -79576,6 +82555,26 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "genesis",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "gmc",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "harley_davidson",
               "type": {
                 "kind": "INPUT_OBJECT",
@@ -79586,7 +82585,47 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "haval",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "hino",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "holden",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "honda",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "hongqi",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -79616,6 +82655,26 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "ineos_grenadier",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "infiniti",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "isuzu",
               "type": {
                 "kind": "INPUT_OBJECT",
@@ -79627,6 +82686,16 @@
               "defaultValue": null,
               "description": null,
               "name": "iveco",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "jac",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -79736,7 +82805,27 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "leap_motors",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "lexus",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "ligier",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -79866,7 +82955,27 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "microlino",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "mitsubishi",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "morgan",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -79907,6 +83016,16 @@
               "defaultValue": null,
               "description": null,
               "name": "opel",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "ora",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -79976,7 +83095,27 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "ram",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "renault",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "rimac",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -79997,6 +83136,16 @@
               "defaultValue": null,
               "description": null,
               "name": "saab",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "saic",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -80027,6 +83176,26 @@
               "defaultValue": null,
               "description": null,
               "name": "seat",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "seres",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "silence",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -80126,6 +83295,26 @@
             {
               "defaultValue": null,
               "description": null,
+              "name": "tvr",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "vauxhall",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
               "name": "volkswagen",
               "type": {
                 "kind": "INPUT_OBJECT",
@@ -80167,6 +83356,36 @@
               "defaultValue": null,
               "description": null,
               "name": "western_star",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "xbus",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "xev",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "OrganizationNamespaceBrandContactInfoInput",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "xpeng",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "OrganizationNamespaceBrandContactInfoInput",
@@ -81144,11 +84363,68 @@
                 "name": "Boolean",
                 "ofType": null
               }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "consents",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "ConsentGrantedAtInput",
+                    "ofType": null
+                  }
+                }
+              }
             }
           ],
           "interfaces": null,
           "kind": "INPUT_OBJECT",
           "name": "UpdateVehicleInput",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "consent",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "ConsentType",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "grantedAt",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Date",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "ConsentGrantedAtInput",
           "possibleTypes": null
         },
         {
@@ -81704,6 +84980,160 @@
           "interfaces": null,
           "kind": "INPUT_OBJECT",
           "name": "UploadCampaignAudienceInput",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Number of unique units found in the file",
+              "isDeprecated": false,
+              "name": "unitCount",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "unitsOk",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "unitsReassigned",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "unitsFailed",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Number of duplicate units found in the input file",
+              "isDeprecated": false,
+              "name": "unitDuplicates",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "UploadOrganizationUnitsResult",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "organizationKey",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "shipmentDate",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Date",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "orderNumber",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "recipient",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "UploadOrganizationUnitsInput",
           "possibleTypes": null
         },
         {

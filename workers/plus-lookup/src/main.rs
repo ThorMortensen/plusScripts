@@ -5,10 +5,11 @@ use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, CONTENT_TYPE};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JSON;
+use std::borrow::Borrow;
 use std::error::Error;
 use std::fmt::Display;
-use std::io;
 use std::process::Command;
+use std::{env, io};
 use tokio::main;
 
 #[derive(thiserror::Error, Debug)]
@@ -48,6 +49,28 @@ struct Args {
 
     #[arg(long)]
     release_id: Option<String>,
+}
+
+impl Args {
+    fn _make_debug_variant() -> Self {
+        //--bootloader dbb049c90b2b307df14423a25816be2a8a990ddf
+        //--app a7903582a2b09f269935668c08c582379a9c9461
+        //--rootfs dbb049c90b2b307df14423a25816be2a8a990ddf
+        //--kernel dbb049c90b2b307df14423a25816be2a8a990ddf
+        //--device-id d5b0941d302d61d4
+        //--release-id 888
+
+        Self {
+            bootloader: Some("dbb049c90b2b307df14423a25816be2a8a990ddf".into()),
+            app: Some("a7903582a2b09f269935668c08c582379a9c9461".into()),
+            rootfs: Some("dbb049c90b2b307df14423a25816be2a8a990ddf".into()),
+            kernel: Some("dbb049c90b2b307df14423a25816be2a8a990ddf".into()),
+            // device_id: Some("d5b0941d302d61d4".into()),
+            // release_id: Some("888".into()),
+            device_id: None,
+            release_id: None,
+        }
+    }
 }
 
 #[derive(Default, Debug, Serialize)]
@@ -172,12 +195,16 @@ async fn get_fw_shas(jwt_token: &str, fw_id: String) -> Result<DeviceData, Looku
 
 async fn get_fw_list(jwt_token: &str) -> Result<list_firmwares::ResponseData, LookupError> {
     let client = get_client(jwt_token)?;
+
+    dbg!(client.clone());
+
     let fw_list_response_body = post_graphql::<ListFirmwares, _>(
         &client,
         "https://api.connectedcars.io/graphql",
         list_firmwares::Variables,
     )
     .await?;
+
     let fw_list: list_firmwares::ResponseData =
         fw_list_response_body.data.expect("missing response data");
     Ok(fw_list)
@@ -206,6 +233,7 @@ async fn get_device_info(jwt_token: &str, di: &str) -> Result<DeviceData, Lookup
     );
 
     let device_info: device_info::ResponseData = device_info_response_body.await?.data.unwrap();
+    dbg!(device_info.borrow());
 
     if let Some(unit) = device_info.unit {
         if let Some(fw) = unit.firmware_rollout_group {
@@ -246,7 +274,8 @@ pub async fn get_jwt() -> Result<String, Box<dyn Error>> {
 
     let output = Command::new("gcloud")
         .args(["auth", "print-identity-token"])
-        .output()?;
+        .output()
+        .expect("failed to execute gcloud auth print-identity-token");
 
     if !output.status.success() {
         eprintln!("failed to get token from gcloud");
@@ -279,10 +308,20 @@ pub async fn get_jwt() -> Result<String, Box<dyn Error>> {
 
 #[main]
 async fn main() {
-    let args = Args::parse();
+    // let args = if cfg!(debug_assertions) {
+    //     Args::_make_debug_variant()
+    // } else {
+    //     Args::parse()
+
+    // };
+
+    let args = Args::_make_debug_variant();
+
     let mut fw_id = None;
     let mut device_data = DeviceData::default();
     let token = get_jwt().await.unwrap();
+
+    dbg!(token.clone());
 
     if let Some(di) = &args.device_id {
         device_data = get_device_info(&token, di).await.unwrap();

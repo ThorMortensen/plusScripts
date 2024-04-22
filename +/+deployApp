@@ -1,3 +1,3 @@
 
 
-./app-ccupd.sh && +scp-to-device app-imx6ul.ccupd port4 && auth-wrapper ssh -t port4 "source /etc/profile && sudo ccupd install /data/support/app-imx6ul.ccupd"
+./app-ccupd.sh && +scp-to-device $1 app-imx6ul.ccupd && auth-wrapper ssh -t $1 "source /etc/profile && sudo ccupd install /data/support/app-imx6ul.ccupd"

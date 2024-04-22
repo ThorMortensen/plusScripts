@@ -77,12 +77,13 @@ echo "PWR: $state"
 echo "GPS: $gps"
 echo "VIN: $vin"
 echo "Config: $config_name"
-if [ "$vehicle_id" != "null" ] || [ "$sim_id" != "null" ]; then
-  print_title "Links:"
-  if [ "$vehicle_id" != "null" ]; then
-    echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/vehicles/$vehicle_id")
-  fi
-  if [ "$sim_id" != "null" ]; then
-    echo Onomondo: $(print_link "https://app.onomondo.com/sims/$sim_id")
-  fi
+print_title "Links:"
+if [ "$vehicle_id" != "null" ]; then
+  echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/vehicles/$vehicle_id")
+else
+  echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/units/$cpu_id")
+fi
+
+if [ "$sim_id" != "null" ]; then
+  echo Onomondo: $(print_link "https://app.onomondo.com/sims/$sim_id")
 fi

@@ -5,11 +5,9 @@ use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, CONTENT_TYPE};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JSON;
-use std::borrow::Borrow;
 use std::error::Error;
-use std::fmt::Display;
+use std::io;
 use std::process::Command;
-use std::{env, io};
 use tokio::main;
 
 #[derive(thiserror::Error, Debug)]
@@ -78,7 +76,8 @@ struct DeviceData {
     fw_id: Option<String>,
     rg_name: Option<String>,
     rg_id: Option<String>,
-    sim_id: Option<String>,
+    sim_provider: Option<String>,
+    sim_provider_link: Option<String>,
     vin: Option<String>,
     config_name: Option<String>,
     vehicle_id: Option<String>,
@@ -111,7 +110,7 @@ fn get_client(jwt_token: &str) -> Result<Client, LookupError> {
         "Authorization",
         HeaderValue::from_str(&format!("Bearer {}", jwt_token)).unwrap(),
     );
-    headers.insert("Origin", HeaderValue::from_static("device-station"));
+    // headers.insert("Origin", HeaderValue::from_static("device-station")); // THIS IS NOT WORKING !!
 
     Ok(Client::builder()
         .user_agent("graphql-rust/0.10.0")
@@ -196,8 +195,6 @@ async fn get_fw_shas(jwt_token: &str, fw_id: String) -> Result<DeviceData, Looku
 async fn get_fw_list(jwt_token: &str) -> Result<list_firmwares::ResponseData, LookupError> {
     let client = get_client(jwt_token)?;
 
-    dbg!(client.clone());
-
     let fw_list_response_body = post_graphql::<ListFirmwares, _>(
         &client,
         "https://api.connectedcars.io/graphql",
@@ -233,15 +230,17 @@ async fn get_device_info(jwt_token: &str, di: &str) -> Result<DeviceData, Lookup
     );
 
     let device_info: device_info::ResponseData = device_info_response_body.await?.data.unwrap();
-    dbg!(device_info.borrow());
 
     if let Some(unit) = device_info.unit {
         if let Some(fw) = unit.firmware_rollout_group {
             device_data.rg_id = Some(fw.id.clone());
             device_data.rg_name = Some(fw.name);
         }
-        if let Some(sim) = unit.sim_id {
-            device_data.sim_id = Some(sim);
+        if let Some(sim_provider) = unit.sim_provider {
+            device_data.sim_provider = Some(format!("{:?}", sim_provider));
+        }
+        if let Some(sim_link) = unit.sim_provider_link {
+            device_data.sim_provider_link = Some(sim_link);
         }
         if let Some(vin) = unit.vin {
             device_data.vin = Some(vin.vin);
@@ -308,20 +307,12 @@ pub async fn get_jwt() -> Result<String, Box<dyn Error>> {
 
 #[main]
 async fn main() {
-    // let args = if cfg!(debug_assertions) {
-    //     Args::_make_debug_variant()
-    // } else {
-    //     Args::parse()
-
-    // };
-
-    let args = Args::_make_debug_variant();
+    // let args = Args::_make_debug_variant();
+    let args = Args::parse();
 
     let mut fw_id = None;
     let mut device_data = DeviceData::default();
     let token = get_jwt().await.unwrap();
-
-    dbg!(token.clone());
 
     if let Some(di) = &args.device_id {
         device_data = get_device_info(&token, di).await.unwrap();

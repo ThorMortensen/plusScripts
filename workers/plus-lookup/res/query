@@ -28,15 +28,15 @@ query RolloutGroups {
   }
 }
 
-
 query DeviceInfo($unit_serial: String!){
   unit(provider: cc, unitSerial: $unit_serial) {
     firmwareRolloutGroup{
       id
       name
     }
+    simProvider
+    simProviderLink
     vehicle{id}
-    simId
     vin{vin}
     config{config}
   }

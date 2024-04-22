@@ -22,10 +22,10 @@ get_ip_address() {
 
     # Check if we were successful
     if [ -z "$ip_address" ]; then
-        echo "Modem is not online, no IP address found"
+        echo "No IP address found, is modem online?"
         return 1  # Return a non-zero exit code for failure
     else
-        echo "IP Address is: $ip_address"
+        echo "$ip_address"
         return 0  # Return zero for success
     fi
 }
@@ -37,8 +37,6 @@ main() {
 
     local iface=$(determine_iface $host)
     get_ip_address $iface
-
-
 }
 
 main

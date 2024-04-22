@@ -31,19 +31,20 @@ json_output=$(plus-lookup --bootloader "$bootloader" --app "$app" --kernel "$ker
 fw_id=$(echo "$json_output" | jq -r '.fw_id')
 rg_name=$(echo "$json_output" | jq -r '.rg_name')
 rg_id=$(echo "$json_output" | jq -r '.rg_id')
-sim_id=$(echo "$json_output" | jq -r '.sim_id')
+sim_provider=$(echo "$json_output" | jq -r '.sim_provider')
+sim_provider_link=$(echo "$json_output" | jq -r '.sim_provider_link')
 vin=$(echo "$json_output" | jq -r '.vin')
 config_name=$(echo "$json_output" | jq -r '.config_name')
 vehicle_id=$(echo "$json_output" | jq -r '.vehicle_id')
 
 device_type=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "hostname") 
-momondo_addr=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)") 
+ip_addr=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)") 
 state=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "sudo cc-pmcli gpios") 
 gps=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "sudo cc-gpscli location")
 
 if [[ $using_debug_conf == *"USE_DEBUG_CONFIG=1"* ]]; then
     debug_path=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "cat /data/conf/ccapp.env | grep DEBUG_CONFIG_PATH")
-    config_name="Debug-config ${debug_path#*=}"
+    config_name="Debug-config at: ${debug_path#*=}"
 fi
 
 stop_spinner
@@ -69,9 +70,8 @@ echo "App: ${app}"
 echo "Rfs: ${rootfs}"
 echo "Knl: ${kernel}"
 echo "Bld: ${bootloader}"
-print_title "Onomondo addr:"
-echo "$momondo_addr"
-echo "SIM ID: $sim_id"
+print_title "IP addr:"
+echo "$ip_addr"
 print_title "State:"
 echo "PWR: $state"
 echo "GPS: $gps"
@@ -84,6 +84,6 @@ else
   echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/units/$cpu_id")
 fi
 
-if [ "$sim_id" != "null" ]; then
-  echo Onomondo: $(print_link "https://app.onomondo.com/sims/$sim_id")
+if [ "$sim_provider" != "null" ]; then
+  echo "$sim_provider: $(print_link "$sim_provider_link")"
 fi

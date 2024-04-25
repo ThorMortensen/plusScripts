@@ -1,3 +1,5 @@
+use base64::engine::general_purpose::STANDARD_NO_PAD;
+use base64::Engine;
 use clap::Parser;
 use graphql_client::reqwest::post_graphql;
 use graphql_client::GraphQLQuery;
@@ -6,9 +8,12 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JSON;
 use std::error::Error;
-use std::io;
+use std::{fs, io};
+use std::path::PathBuf;
 use std::process::Command;
+use std::str::FromStr;
 use tokio::main;
+use chrono::Utc;
 
 #[derive(thiserror::Error, Debug)]
 enum LookupError {
@@ -47,6 +52,12 @@ struct Args {
 
     #[arg(long)]
     release_id: Option<String>,
+
+    #[arg(long)]
+    jwt: bool,
+
+    #[arg(long)]
+    jwt_save: Option<PathBuf>,
 }
 
 impl Args {
@@ -67,6 +78,8 @@ impl Args {
             // release_id: Some("888".into()),
             device_id: None,
             release_id: None,
+            jwt: false,
+            jwt_save: Some(PathBuf::from_str("/tmp/test-jwt.token").unwrap()),
         }
     }
 }
@@ -260,7 +273,36 @@ async fn get_device_info(jwt_token: &str, di: &str) -> Result<DeviceData, Lookup
     Ok(device_data)
 }
 
-pub async fn get_jwt() -> Result<String, Box<dyn Error>> {
+fn is_token_expired(jwt: &str) -> Result<bool, Box<dyn std::error::Error>> {
+    let parts: Vec<&str> = jwt.split('.').collect();
+    if parts.len() != 3 {
+        return Err("Invalid JWT structure".into());
+    }
+
+    let payload = STANDARD_NO_PAD.decode(parts[1])?;
+    let payload_str = String::from_utf8(payload)?;
+    let payload_json: serde_json::Value = serde_json::from_str(&payload_str)?;
+
+    if let Some(exp) = payload_json["exp"].as_u64() {
+        let now = Utc::now().timestamp() as u64;
+        Ok(exp <= now)
+    } else {
+        Err("Expiration time is missing in JWT".into())
+    }
+}
+
+
+pub async fn get_jwt(save_path: Option<PathBuf>) -> Result<String, Box<dyn Error>> {
+
+    if let Some(path) = save_path.as_ref() {
+        if path.exists() {
+            let token = fs::read_to_string(path)?;
+            if !is_token_expired(&token)? {
+                return Ok(token);
+            }
+        }
+    }
+
     #[derive(Serialize)]
     struct Data {
         token: String,
@@ -302,6 +344,11 @@ pub async fn get_jwt() -> Result<String, Box<dyn Error>> {
         .json::<ResponseData>()
         .await?;
 
+    if let Some(path) = save_path {
+        fs::create_dir_all(path.parent().unwrap())?;
+        fs::write(path, &res.token)?;
+    }
+
     Ok(res.token)
 }
 
@@ -312,7 +359,18 @@ async fn main() {
 
     let mut fw_id = None;
     let mut device_data = DeviceData::default();
-    let token = get_jwt().await.unwrap();
+    let token = match get_jwt(args.jwt_save).await{
+        Ok(token) => token,
+        Err(e) => {
+            eprintln!("Did you forget to login?? Error: {}", e);
+            return;
+        }
+    };
+
+    if args.jwt {
+        println!("{}", token);
+        return;
+    }
 
     if let Some(di) = &args.device_id {
         device_data = get_device_info(&token, di).await.unwrap();

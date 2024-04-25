@@ -41,6 +41,20 @@ export APP_BRANCH="$app_branch"
 EOF
 )
 
+
+  release_info=$(cat << EOF 
+'{
+  "appSha":"$app_sha",
+  "appBranch":"$app_branch",
+  "rootfsSha":"$rootfs_sha",
+  "rootfsBranch":"$rootfs_branch",
+  "kernelSha":"$kernel_sha",
+  "kernelBranch":"$kernel_branch",
+  "bootloaderSha":"$bootloader_sha",
+  "bootloaderBranch":"$bootloader_branch"
+}'
+EOF
+)
   stop_spinner
 }
 
@@ -55,12 +69,10 @@ download_release_on_nuc() {
   local release_name=$1
   local release_info=$2
 echo "Downloading release $release_name"
-echo "$release_info"
 
 auth-wrapper ssh nuc << EOF
 rm -rf ./device-station/downloads/$release_name
-$release_info
-./device-station/scripts/firmware-download.sh ./device-station/downloads/$release_name
+cd device-station &&  npm run download $release_info $release_name
 EOF
 }
 
@@ -103,3 +115,4 @@ fi
 download_release_on_nuc $RELEASE_NAME "$release_info"
 
 
+# node download.js '{"appSha":"value1","appBranch":"value2","rootfsSha":"value3","rootfsBranch":"value4","kernelSha":"value5","kernelBranch":"value6","bootloaderSha":"value7","bootloaderBranch":"value8"}'

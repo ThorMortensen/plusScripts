@@ -79,4 +79,6 @@ select_device_variant() {
   SELECTED_DEVICE_VARIANT=$(plus-menu --items "$device_variants" --persist-path "$persist_name-device-variant" --prompt-msg "Select device variant")
 }
 
+JWT_TOKEN_PATH="/tmp/jwt-token"
+
 

@@ -1,0 +1,298 @@
+# Keyboard shortcuts:
+#
+#   Prettify query:  Shift-Ctrl-P (or press the prettify button)
+#
+#  Merge fragments:  Shift-Ctrl-M (or press the merge button)
+#
+#        Run Query:  Ctrl-Enter (or press the play button)
+#
+#    Auto Complete:  Ctrl-Space (or just start typing)
+#
+# query deviceInfo {}
+
+
+
+query listFirmwareGroups {
+  firmwareRolloutGroups(provider: cc, first: 100) {
+    items {
+      id
+      name
+      firmwareReleaseId
+    }
+  }
+}
+
+query listFirmwares {
+  firmwareReleases {
+    id
+    app
+    appBranch
+    kernel
+    kernelBranch
+    bootloader
+    bootloaderBranch
+    rootfs
+    rootfsBranch
+    skipDeltas
+    firmwareCapabilities
+    testResults {
+      jobPreset
+      result
+    }   
+  }
+}
+
+mutation addUnitToGroup {
+  addUnitFirmwareRollout (input: {
+        unitProvider:cc
+    unitId: "63e2fa90402419d2"
+    firmwareRolloutGroupId: 44
+  }) {
+    unitId
+    firmwareRolloutGroupId
+  }
+}
+
+mutation AddRolloutGroup {
+  addFirmwareRolloutGroup ( input: {
+    name: "575-in-car-test"
+    unitProvider: cc
+    firmwareReleaseId: 575
+    rolloutStrategy: instant
+    description: "for release test"
+    rolloutStrategyDays: null,
+  } ) {
+    id
+  }
+}
+
+mutation moveUnit {
+  updateUnitFirmwareRollout (input: {
+    unitProvider:cc
+    unitIds: ["da2f9fb33506b9d4" ] # 
+    firmwareRolloutGroupId: 161 #inhouse test: 44 #LE: 161, DBG: 5, ECU sim: 180
+    rolledOut: false
+  })
+}
+
+mutation moveUnitToRolloutGroup {
+  updateUnitFirmwareRollout(input: {
+    unitProvider:cc 
+    firmwareRolloutGroupId:186, 
+    unitIds:["d5b07060232f31d4"], # V3: d5b0941d302d61d4, V2: 6044b7480a1171d2
+    rolledOut:false
+  })
+}
+
+# ---- Release unit Morten ----
+#  mutation moveUnit {
+#    updateUnitFirmwareRollout (input: {
+#      unitProvider:cc
+#      unitIds: ["63e179650f42a1d2" ]
+#      firmwareRolloutGroupId: 5 #155
+#      rolledOut: false
+#    })
+#  }
+
+
+
+
+mutation RedeployFirmware {
+  updateFirmwareReleaseForGroup(input: {
+        unitProvider: cc
+    firmwareRolloutGroupId: 161
+    firmwareReleaseId: 600 # new 575, old 548
+  })
+}
+
+
+mutation makeTestRelease {
+  addFirmwareReleaseInHouse(input: {
+    baseFirmwareReleaseId: 483
+    bootloaderSha:"7c9105621cf56ae6e34f1798d843db50f4938772"
+    bootloaderBranch:"master"
+    kernelSha:"7c9105621cf56ae6e34f1798d843db50f4938772"
+    kernelBranch:"master"
+    rootfsSha:"7c9105621cf56ae6e34f1798d843db50f4938772"
+    rootfsBranch:"master"
+    appSha: "fb8a1b35ec9d6f632a9b976cc534c5ba9996a94d"
+    appBranch: "accel2"
+    
+  }){
+    id
+  }
+}
+
+mutation makeRealRelease {
+  addFirmwareRelease(input: {
+    bootloaderSha:"fe1aaf24b442a3e4217b18a7e7cf9368361390a1"
+    bootloaderBranch:"release-2023q4"
+    kernelSha:"fe1aaf24b442a3e4217b18a7e7cf9368361390a1"
+    kernelBranch:"release-2023q4"
+    rootfsSha:"fe1aaf24b442a3e4217b18a7e7cf9368361390a1"
+    rootfsBranch:"release-2023q4"
+    appSha: "a3d511a0785d622c22299c4ebfe7c19f86f8ce5f"
+    appBranch: "accel2"
+		skipDeltas: true
+    firmwareCapabilities: [
+  		"app-metrics",
+  		"profiling-calibrations",
+  		"gps-odometer",
+  		"can-adaptions",
+  		"can-fd",
+  		"regions",
+  		"v3-compatible",
+  		"cellular-metric"
+		]
+  }){
+    id
+  }
+}
+
+
+
+mutation addCCDebugUnit {
+  addCCDebugUnit(input: {
+    note:"V2 Dual can"
+    registrationId: "32afa7089acb5153"
+    unitId: "6044b7480a1171d2"
+    systemNumber:"iW-G26B-R6.1-OK23380100997"
+    boardNumber:"iW-G26B-R6.1-OK23380100997"
+    stickerId:"OK23380100997"
+    imeiNumber:"865291046866520"
+    iccId:"89457387300000576614"
+    macId:"c8:2c:2b:40:34:bb"
+    simActivated: true
+    debug:true
+    initialFirmwareReleaseId:413
+    hardwareProvider:iwave
+    hardware: "iwg26-v3-ag-dual-bt"
+  })
+}
+
+
+mutation setConfig {
+ setCCUnitConfig(input: {
+  	unitSerial: ""
+		config: ""
+  	diagnosticEcus: ""
+	})
+}
+
+
+mutation sendunitcommands {
+  addUnitSamples(input: {
+    unitId: "63e179640a2f11d2"
+    unitProvider: cc
+    allowDuplicateRequests: true
+    ignorePendingBefore: 0
+    samples: [
+      {
+        interface: CAN0
+        application: UDS
+        rxId: "7E0"
+        txId: "7E1"
+        serviceAndParam: "0111"
+        transport: ISOTP
+      }
+    ]
+  })
+}
+
+#mutation UnitConfigRolloutGroup
+
+
+
+query getUnitSamples {
+  unitsSampleResponses(unitIds: ["63e179640a2f11d2"], unitProvider: cc){
+    id
+    unitId
+    unitProvider
+    txId
+    rxId
+    interface
+    transport
+    application
+    serviceAndParam
+    response
+    recordedAt
+    createdAt
+    hasConsent
+    failed
+  }
+}
+
+query DeviceInfo{
+  unit(provider: cc, unitSerial: "d5b0941d252d61d4") {
+    firmwareRolloutGroup{
+      id
+      name
+    }
+    simProvider
+    simProviderLink
+    featureFlags {
+      useHalCanStack
+      dontBlockUpdate
+      ignoreMaxConsecutiveCanErrors
+      useParameterCollectorForVirtual
+      disableHalSentry
+    }
+    vehicle{id}
+    vin{vin}
+    config{config}
+  }
+}
+
+# -------- Config stuff --------
+
+
+query listConfigGroups {
+	configRolloutGroups(provider: cc, first: 100) {
+    items {
+      id
+      name
+			vehicleConfigsUrlOverride
+    }
+  }
+  
+}
+
+mutation debugConfig {
+  addConfigRolloutGroup(input:{
+    description:"profiling calibration debug config",
+    name:"profiling-calibration-debug",
+    unitProvider:cc,
+    rolloutStrategy: instant,
+    vehicleConfigsUrlOverride:"https://cellular-metric-vehicle-configs.testing.connectedcars.io",
+    configVersion:"4060e245655027b9498414a6d6e4a62f39b8a8de"
+  }){
+    id
+  }
+}
+
+mutation updateConfigSha{
+ updateConfigVersionForGroup(input:{
+  configRolloutGroupId: 77,
+  configVersion:"82df496dfb16a05637366e0e222a8d1a8b5da007"
+  unitProvider:cc
+  vehicleConfigsUrlOverride:""
+})
+}
+
+mutation createConfiGroupg {
+  addUnitConfigRollout(input:{
+    unitProvider:cc,
+    unitId:"63e2fa75200509d2",
+    configRolloutGroupId: 0
+  }){
+    rolledOut
+  }
+}
+
+
+mutation deleteConfigGroup{
+  deleteConfigRolloutGroup(input:{
+    id:77
+  })
+}
+

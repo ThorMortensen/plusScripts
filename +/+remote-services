@@ -1,0 +1,28 @@
+#!/bin/bash
+. plusScriptsPaths
+
+device=$1
+
+if [ -z "$device" ] 
+then
+  select_port 
+  device="$SELECTED_DEVICE"
+fi
+
+
+remote_services=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "sudo systemctl list-units --type=service")
+# cc_services=$(echo "$remote_services" | awk '/^  cc/{gsub(/@[a-zA-Z0-9]+/, "*"); gsub(/\.service/, ""); print $1}' | tr '\n' ' ')
+cc_services=$(echo "$remote_services" | awk '/^  cc/{gsub(/@[a-zA-Z0-9]+/, ""); gsub(/\.service/, ""); print $1}' )
+# selected_service=$(plus-menu --items "$cc_services" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow") 
+
+echo "$remote_services"
+echo "----------- CC-Services -------------"
+echo "$cc_services"
+
+save_services=$(plus-menu --items "YES NO"  --prompt-msg "Save CC services?") 
+
+if [ "$save_services" == "YES" ]
+then
+  echo "$cc_services" | tr '\n' ' ' | sed 's/ *$//' > "$REMOTE_SERVICE_CASH"
+  echo "CC services cash has been updated"
+fi

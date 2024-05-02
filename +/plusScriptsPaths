@@ -9,7 +9,7 @@ PS_DIR_CONFIG=$PS_DIR/config
 PS_DIR_INSTALL=$PS_DIR/install
 PS_DIR_WORKERS=$PS_DIR/workers
 PS_DIR_RELEASES=$PS_DIR/releases
-
+PS_DIR_PERSIST="$HOME/.plus-script-persist"
 # GITROOT="$(git rev-parse --show-toplevel)"
 
 print_title() {
@@ -61,6 +61,8 @@ ids_to_names=(
 )
 GLOBAL_RELEASE_SELECTED="global-release-selected"
 GLOBAL_PORT_SELECTED="global-port-selected"
+GLOBAL_SERVICE_SELECTED="global-service-selected"
+REMOTE_SERVICE_CASH="$PS_DIR_PERSIST/remote-service-cash"
 
 persist_name=$(basename "$0")
 

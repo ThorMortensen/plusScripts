@@ -12,8 +12,7 @@ cd ../../../YOCTO/firmware_yocto/meta-cc/recipes-cc/cc-hal/
 dst_branch=$(git rev-parse --abbrev-ref HEAD)
 
 if [[ "$src_branch" != "$dst_branch"* ]]; then
-  echo "Source branch does not start with the same name as destination branch. Aborting."
-  exit 1
+  echo "Source branch does not start with the same name as destination branch."
 else 
   echo "Updating branch $dst_branch"
 fi

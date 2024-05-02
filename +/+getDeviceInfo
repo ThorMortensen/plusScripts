@@ -17,7 +17,7 @@ then
   device="$SELECTED_DEVICE"
 fi
 
-start_spinner "Fetching device info from "$device""
+start_spinner "Fetching device info from $device"
 
 fw_shas=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "sudo cc-hal updatecli versions") 
 bootloader=$(echo "$fw_shas" | awk -F': ' '/bootloader/ {print $2}')

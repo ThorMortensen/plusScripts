@@ -1,10 +1,10 @@
-export FIT_IMAGE_SHA="0c82f50d6445a06c2fcd9a83b15460adb0b2c44b"
-export FIT_IMAGE_BRANCH="release-2023q4"
-export BOOTLOADER_SHA="0c82f50d6445a06c2fcd9a83b15460adb0b2c44b"
-export BOOTLOADER_BRANCH="release-2023q4"
-export KERNEL_SHA="0c82f50d6445a06c2fcd9a83b15460adb0b2c44b"
-export KERNEL_BRANCH="release-2023q4"
-export ROOTFS_SHA="0c82f50d6445a06c2fcd9a83b15460adb0b2c44b"
-export ROOTFS_BRANCH="release-2023q4"
-export APP_SHA="a07f5658a8448cb681ce31af9e0d8a879407b676"
-export APP_BRANCH="release-2023q4"
+'{
+  "appSha":"a07f5658a8448cb681ce31af9e0d8a879407b676",
+  "appBranch":"release-2023q4",
+  "rootfsSha":"0c82f50d6445a06c2fcd9a83b15460adb0b2c44b",
+  "rootfsBranch":"release-2023q4",
+  "kernelSha":"0c82f50d6445a06c2fcd9a83b15460adb0b2c44b",
+  "kernelBranch":"release-2023q4",
+  "bootloaderSha":"0c82f50d6445a06c2fcd9a83b15460adb0b2c44b",
+  "bootloaderBranch":"release-2023q4"
+}'

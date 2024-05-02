@@ -1,0 +1,10 @@
+'{
+  "appSha":"e7cdd8c3e71ef995e8096d719ecf97b0f3340743",
+  "appBranch":"update-calibration-fields",
+  "rootfsSha":"d9341f87fdfeb3572abafecb3e02149a577ef065",
+  "rootfsBranch":"journald-log-format",
+  "kernelSha":"d9341f87fdfeb3572abafecb3e02149a577ef065",
+  "kernelBranch":"journald-log-format",
+  "bootloaderSha":"d9341f87fdfeb3572abafecb3e02149a577ef065",
+  "bootloaderBranch":"journald-log-format"
+}'

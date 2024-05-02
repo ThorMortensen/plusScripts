@@ -1,0 +1,37 @@
+#!/bin/bash
+. plusScriptsPaths
+
+device=$1
+selected_service=$2
+
+if [ $# -eq 1 ]
+then
+  device=""
+  selected_service=$1
+fi
+
+if [ -z "$device" ] 
+then
+  select_port 
+  device="$SELECTED_DEVICE"
+fi
+
+if [ -z "$selected_service" ] 
+then
+  if [ -f "$REMOTE_SERVICE_CASH" ]; then
+    selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow") 
+  else
+    echo "No cashed services found"
+    source "$PS_DIR"/+/+remote-services "$device" 
+    selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow") 
+  fi
+fi
+
+if [ "$selected_service" == "ccapp" ] 
+then
+  selected_service="$selected_service*"
+fi
+
+
+auth-wrapper ssh -t support@"$device" "sudo journalctl -fu $selected_service"
+

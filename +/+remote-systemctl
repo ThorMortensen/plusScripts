@@ -1,0 +1,69 @@
+#!/bin/bash
+. plusScriptsPaths
+
+device=$1
+selected_service=$2
+cmd=$3
+
+if [ $# -eq 1 ]
+then
+  device=""
+  selected_service=$1
+fi
+
+if [ $# -eq 2 ]
+then
+  device=$1
+  selected_service=$2
+fi
+
+if [ -z "$device" ] 
+then
+  select_port 
+  device="$SELECTED_DEVICE"
+fi
+
+if [ -z "$selected_service" ] 
+then
+  if [ -f "$REMOTE_SERVICE_CASH" ]; then
+    selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow") 
+  else
+    echo "No cashed services found"
+    source "$PS_DIR"/+/+remote-services "$device" 
+    selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow") 
+  fi
+fi
+
+if [ -z "$cmd" ] 
+then
+  cmd=$(plus-menu --items "start stop restart status" --persist-path "remote-systemctl-cmd" --prompt-msg "Select a command to execute on the service")
+fi
+
+if [ "$cmd" == "stop" ] 
+then
+  selected_service="$selected_service*"
+fi
+
+if [ "$service" == "ccapp" ] 
+then
+  selected_service="$selected_service*"
+fi
+
+
+if [ "$cmd" == "status" ] 
+then
+  status=$(auth-wrapper ssh support@"$device" "sudo systemctl $cmd $selected_service")
+  echo "$status"
+  
+  if echo "$status" | grep -q "active (running)"; then
+    echo -e "\e[32mservice is running\e[0m"
+  elif echo "$status" | grep -q "inactive (dead)"; then
+    echo -e "\e[33mservice has stopped\e[0m"
+  elif echo "$status" | grep -q "failed"; then
+    echo -e "\e[31mservice has encountered an error\e[0m"
+  fi
+else
+  auth-wrapper ssh support@"$device" "sudo systemctl $cmd $selected_service"
+  echo "service $selected_service $cmd"
+fi
+

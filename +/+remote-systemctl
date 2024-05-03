@@ -1,6 +1,13 @@
 #!/bin/bash
 . plusScriptsPaths
 
+handle_sigint() {
+    stop_spinner
+    exit 1
+}
+trap handle_sigint SIGINT
+
+
 device=$1
 selected_service=$2
 cmd=$3
@@ -34,36 +41,80 @@ then
   fi
 fi
 
-if [ -z "$cmd" ] 
-then
-  cmd=$(plus-menu --items "start stop restart status" --persist-path "remote-systemctl-cmd" --prompt-msg "Select a command to execute on the service")
-fi
-
-if [ "$cmd" == "stop" ] 
-then
-  selected_service="$selected_service*"
-fi
-
-if [ "$service" == "ccapp" ] 
-then
-  selected_service="$selected_service*"
-fi
 
 
-if [ "$cmd" == "status" ] 
-then
-  status=$(auth-wrapper ssh support@"$device" "sudo systemctl $cmd $selected_service")
-  echo "$status"
-  
-  if echo "$status" | grep -q "active (running)"; then
-    echo -e "\e[32mservice is running\e[0m"
-  elif echo "$status" | grep -q "inactive (dead)"; then
-    echo -e "\e[33mservice has stopped\e[0m"
-  elif echo "$status" | grep -q "failed"; then
-    echo -e "\e[31mservice has encountered an error\e[0m"
+
+loop="NO"
+partition_selected="0"
+clean_service="$selected_service"
+
+
+while true ; do 
+  if [ -z "$cmd" ] 
+  then
+    cmd=$(plus-menu --items "start stop restart status" --persist-path "remote-systemctl-cmd" --prompt-msg "Select command for \"$selected_service\"")
   fi
-else
-  auth-wrapper ssh support@"$device" "sudo systemctl $cmd $selected_service"
-  echo "service $selected_service $cmd"
-fi
+
+  if [ "$selected_service" == "ccapp"  ] 
+  then
+    if [ "$cmd" == "start" ] 
+    then
+      partition=$(plus-menu --items "a b" --default "$partition_selected" --prompt-msg "Start \"ccapp\" on partition a or b?")
+      selected_service="ccapp@$partition"
+    else 
+      selected_service="$selected_service*"
+    fi
+
+    if [ "$cmd" == "stop" ] 
+    then
+       current_part=$(auth-wrapper ssh support@"$device" "ls /app/a")
+       if [ -z "$current_part" ] 
+       then
+          echo -e "Stopping \e[32mccapp\e[0m at partition \e[1mb\e[0m"
+         partition_selected="1"
+       else
+           echo -e "Stopping \e[32mccapp\e[0m at partition \e[1ma\e[0m"
+         partition_selected="0"
+       fi
+      selected_service="$selected_service*"
+    fi
+  else 
+    if [ "$cmd" == "stop" ] 
+    then
+      selected_service="$selected_service*"
+    fi
+  fi
+
+  start_spinner "service $selected_service $cmd"
+  if [ "$cmd" == "status" ] 
+  then
+  
+    status=$(auth-wrapper ssh support@"$device" "sudo systemctl $cmd $selected_service")
+    echo "$status"
+    
+    if echo "$status" | grep -q "active (running)"; then
+      echo -e "\e[32mservice is running\e[0m"
+    elif echo "$status" | grep -q "inactive (dead)"; then
+      echo -e "\e[33mservice has stopped\e[0m"
+    elif echo "$status" | grep -q "failed"; then
+      echo -e "\e[31mservice has encountered an error\e[0m"
+    fi
+  else
+    auth-wrapper ssh support@"$device" "sudo systemctl $cmd $selected_service"
+    # echo "service $selected_service $cmd"
+  fi
+  stop_spinner
+
+  cmd="" # reset cmd to allow for another command
+  selected_service="$clean_service" 
+
+  if [ "$loop" == "NO" ] 
+  then
+    loop=$(plus-menu --items "NO YES" --prompt-msg "Loop?")
+    if [ "$loop" == "NO" ] 
+    then
+      break
+    fi
+  fi
+done 
 

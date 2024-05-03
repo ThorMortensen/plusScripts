@@ -17,6 +17,10 @@ struct Args {
     /// Message to user
     #[arg(short, long)]
     prompt_msg: Option<String>,
+
+    /// Default value
+    #[arg(short, long)]
+    default: Option<usize>,
 }
 
 fn main() {
@@ -29,7 +33,9 @@ fn main() {
         None => "Select: ".to_string(),
     };
 
-    if let Some(path) = args.persist_path {
+    if let Some(default) = args.default {
+        last_used = default;
+    } else if let Some(path) = args.persist_path {
         let home_dir = dirs::home_dir().expect("Home directory not found");
         let base_path = home_dir.join(".plus-script-persist");
 

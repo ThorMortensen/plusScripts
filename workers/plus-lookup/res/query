@@ -36,6 +36,7 @@ query DeviceInfo($unit_serial: String!){
     }
     simProvider
     simProviderLink
+    stickerId
     vehicle{id}
     vin{vin}
     config{config}

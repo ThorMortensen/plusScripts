@@ -9,6 +9,14 @@ handle_sigint() {
 }
 trap handle_sigint SIGINT
 
+wiki_print=false
+
+if [ "$1" == "--wiki" ] 
+then
+  wiki_print=true
+  shift
+fi
+
 device=$1
 
 if [ -z "$device" ] 
@@ -33,9 +41,11 @@ rg_name=$(echo "$json_output" | jq -r '.rg_name')
 rg_id=$(echo "$json_output" | jq -r '.rg_id')
 sim_provider=$(echo "$json_output" | jq -r '.sim_provider')
 sim_provider_link=$(echo "$json_output" | jq -r '.sim_provider_link')
+sim_id=$(echo "$json_output" | jq -r '.sim_id')
 vin=$(echo "$json_output" | jq -r '.vin')
 config_name=$(echo "$json_output" | jq -r '.config_name')
 vehicle_id=$(echo "$json_output" | jq -r '.vehicle_id')
+sticker_id=$(echo "$json_output" | jq -r '.sticker_id')
 
 device_type=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "hostname") 
 ip_addr=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)") 
@@ -62,6 +72,7 @@ print_title "Device info:"
 echo "Type: $device_type"
 echo "DevID: $cpu_id"
 echo "VclID: $vehicle_id"
+echo "StkrID: $sticker_id"
 print_title "SW versions:" 
 echo "FW ID: $fw_id"
 echo "RollGr: $rg_name"
@@ -72,6 +83,7 @@ echo "Knl: ${kernel}"
 echo "Bld: ${bootloader}"
 print_title "IP addr:"
 echo "$ip_addr"
+echo "SimID: $sim_id"
 print_title "State:"
 echo "PWR: $state"
 echo "GPS: $gps"
@@ -87,3 +99,14 @@ fi
 if [ "$sim_provider" != "null" ]; then
   echo "$sim_provider: $(print_link "$sim_provider_link")"
 fi
+
+if [ "$wiki_print" = true ]; then
+  echo ""
+  echo "\`\`\`"
+  echo "$sticker_id"
+  echo "$cpu_id"
+  echo "$sim_id"
+  echo "$ip_addr"
+  echo "\`\`\`"
+fi
+

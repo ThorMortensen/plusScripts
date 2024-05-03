@@ -4,7 +4,7 @@ pub mod list_firmwares {
     #![allow(dead_code)]
     use std::result::Result;
     pub const OPERATION_NAME: &str = "ListFirmwares";
-    pub const QUERY : & str = "query ListFirmwares {\n  firmwareReleases {\n    id\n    app\n    appBranch\n    kernel\n    kernelBranch\n    bootloader\n    bootloaderBranch\n    rootfs\n    rootfsBranch\n    skipDeltas\n    firmwareCapabilities\n    testResults {\n      jobPreset\n      result\n    }   \n  }\n}\n\nquery RolloutGroups {\n  firmwareRolloutGroups(provider: cc, first: 1000) {\n    items {\n      id\n      name\n      firmwareReleaseId\n    }\n  }\n}\n\nquery DeviceInfo($unit_serial: String!){\n  unit(provider: cc, unitSerial: $unit_serial) {\n    firmwareRolloutGroup{\n      id\n      name\n    }\n    simProvider\n    simProviderLink\n    vehicle{id}\n    vin{vin}\n    config{config}\n  }\n}\n" ;
+    pub const QUERY : & str = "query ListFirmwares {\n  firmwareReleases {\n    id\n    app\n    appBranch\n    kernel\n    kernelBranch\n    bootloader\n    bootloaderBranch\n    rootfs\n    rootfsBranch\n    skipDeltas\n    firmwareCapabilities\n    testResults {\n      jobPreset\n      result\n    }   \n  }\n}\n\nquery RolloutGroups {\n  firmwareRolloutGroups(provider: cc, first: 1000) {\n    items {\n      id\n      name\n      firmwareReleaseId\n    }\n  }\n}\n\nquery DeviceInfo($unit_serial: String!){\n  unit(provider: cc, unitSerial: $unit_serial) {\n    firmwareRolloutGroup{\n      id\n      name\n    }\n    simProvider\n    simProviderLink\n    stickerId\n    vehicle{id}\n    vin{vin}\n    config{config}\n  }\n}\n" ;
     use super::*;
     use serde::{Deserialize, Serialize};
     #[allow(dead_code)]
@@ -67,7 +67,7 @@ pub mod rollout_groups {
     #![allow(dead_code)]
     use std::result::Result;
     pub const OPERATION_NAME: &str = "RolloutGroups";
-    pub const QUERY : & str = "query ListFirmwares {\n  firmwareReleases {\n    id\n    app\n    appBranch\n    kernel\n    kernelBranch\n    bootloader\n    bootloaderBranch\n    rootfs\n    rootfsBranch\n    skipDeltas\n    firmwareCapabilities\n    testResults {\n      jobPreset\n      result\n    }   \n  }\n}\n\nquery RolloutGroups {\n  firmwareRolloutGroups(provider: cc, first: 1000) {\n    items {\n      id\n      name\n      firmwareReleaseId\n    }\n  }\n}\n\nquery DeviceInfo($unit_serial: String!){\n  unit(provider: cc, unitSerial: $unit_serial) {\n    firmwareRolloutGroup{\n      id\n      name\n    }\n    simProvider\n    simProviderLink\n    vehicle{id}\n    vin{vin}\n    config{config}\n  }\n}\n" ;
+    pub const QUERY : & str = "query ListFirmwares {\n  firmwareReleases {\n    id\n    app\n    appBranch\n    kernel\n    kernelBranch\n    bootloader\n    bootloaderBranch\n    rootfs\n    rootfsBranch\n    skipDeltas\n    firmwareCapabilities\n    testResults {\n      jobPreset\n      result\n    }   \n  }\n}\n\nquery RolloutGroups {\n  firmwareRolloutGroups(provider: cc, first: 1000) {\n    items {\n      id\n      name\n      firmwareReleaseId\n    }\n  }\n}\n\nquery DeviceInfo($unit_serial: String!){\n  unit(provider: cc, unitSerial: $unit_serial) {\n    firmwareRolloutGroup{\n      id\n      name\n    }\n    simProvider\n    simProviderLink\n    stickerId\n    vehicle{id}\n    vin{vin}\n    config{config}\n  }\n}\n" ;
     use super::*;
     use serde::{Deserialize, Serialize};
     #[allow(dead_code)]
@@ -113,7 +113,7 @@ pub mod device_info {
     #![allow(dead_code)]
     use std::result::Result;
     pub const OPERATION_NAME: &str = "DeviceInfo";
-    pub const QUERY : & str = "query ListFirmwares {\n  firmwareReleases {\n    id\n    app\n    appBranch\n    kernel\n    kernelBranch\n    bootloader\n    bootloaderBranch\n    rootfs\n    rootfsBranch\n    skipDeltas\n    firmwareCapabilities\n    testResults {\n      jobPreset\n      result\n    }   \n  }\n}\n\nquery RolloutGroups {\n  firmwareRolloutGroups(provider: cc, first: 1000) {\n    items {\n      id\n      name\n      firmwareReleaseId\n    }\n  }\n}\n\nquery DeviceInfo($unit_serial: String!){\n  unit(provider: cc, unitSerial: $unit_serial) {\n    firmwareRolloutGroup{\n      id\n      name\n    }\n    simProvider\n    simProviderLink\n    vehicle{id}\n    vin{vin}\n    config{config}\n  }\n}\n" ;
+    pub const QUERY : & str = "query ListFirmwares {\n  firmwareReleases {\n    id\n    app\n    appBranch\n    kernel\n    kernelBranch\n    bootloader\n    bootloaderBranch\n    rootfs\n    rootfsBranch\n    skipDeltas\n    firmwareCapabilities\n    testResults {\n      jobPreset\n      result\n    }   \n  }\n}\n\nquery RolloutGroups {\n  firmwareRolloutGroups(provider: cc, first: 1000) {\n    items {\n      id\n      name\n      firmwareReleaseId\n    }\n  }\n}\n\nquery DeviceInfo($unit_serial: String!){\n  unit(provider: cc, unitSerial: $unit_serial) {\n    firmwareRolloutGroup{\n      id\n      name\n    }\n    simProvider\n    simProviderLink\n    stickerId\n    vehicle{id}\n    vin{vin}\n    config{config}\n  }\n}\n" ;
     use super::*;
     use serde::{Deserialize, Serialize};
     #[allow(dead_code)]
@@ -170,6 +170,8 @@ pub mod device_info {
         pub sim_provider: Option<SimProvider>,
         #[serde(rename = "simProviderLink")]
         pub sim_provider_link: Option<String>,
+        #[serde(rename = "stickerId")]
+        pub sticker_id: String,
         pub vehicle: Option<DeviceInfoUnitVehicle>,
         pub vin: Option<DeviceInfoUnitVin>,
         pub config: Option<DeviceInfoUnitConfig>,

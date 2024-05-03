@@ -1,8 +1,0 @@
-#!/bin/bash
-
-. plusScriptsPaths
-
-cd $PS_DIR_WORKERS
-
-ruby -W0 netScanner.rb $1
-

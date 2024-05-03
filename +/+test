@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# cd $(git rev-parse --show-toplevel)
-
-
-FOO_S=$(plus-menu --items foo1 foo2 foo3 --persist-path "test2")
-FOO_S=$(plus-menu --items foo1 foo2 foo3 --persist-path "test2")
-
-echo "FOO_S: $FOO_S"

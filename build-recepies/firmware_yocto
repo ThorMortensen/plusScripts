@@ -1,0 +1,45 @@
+#!/bin/bash
+shift # remove the first argument its empty
+
+install() {
+  echo "Command not supported: $1"
+}
+
+build() {
+  ./build-all.sh
+}
+
+deploy() {
+    echo "Deploying to $1"
+  ./ccupd-target.sh $1
+}
+
+test() {
+  echo "Command not supported: $1"
+}
+
+pre_push() {
+  echo "Command not supported: $1"
+}
+
+case "$1" in
+  install)
+    install "$@"
+    ;;
+  build)
+    build "$@"
+    ;;
+  deploy)
+    deploy "$@"
+    ;;
+  test)
+    test "$@"
+    ;;
+  pre_push)
+    pre_push "$@"
+    ;;
+  *)
+    echo "Command not supported: $1"
+    exit 1
+    ;;
+esac

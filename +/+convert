@@ -1,7 +1,0 @@
-#!/bin/bash
-
-. plusScriptsPaths
-
-cd $PS_DIR_WORKERS
-
-ruby -W0 converter.rb $@

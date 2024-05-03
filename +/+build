@@ -1,0 +1,23 @@
+#!/bin/bash
+
+. plusScriptsPaths
+
+cmd=""
+
+if [ -z "$1" ]; then
+  cmd="build"
+  shift
+fi
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+project_name=$(git remote get-url origin | awk -F '/' '{print $NF}' | sed 's/\.git$//')
+
+
+if [ -f "$PS_DIR_BUILD_RES/$project_name" ]; then
+  echo "Build type: $project_name"
+  source "$PS_DIR_BUILD_RES/$project_name"  "$cmd" "$@"
+else
+  echo "No build script for $project_name"
+  exit 1
+fi

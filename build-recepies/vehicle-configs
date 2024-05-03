@@ -1,0 +1,48 @@
+#!/bin/bash
+shift # remove the first argument its empty
+
+install() {
+  npm install
+}
+
+build() {
+  npm run build:js && npm run gen-types && npm run build
+}
+
+deploy() {
+  echo "Command not supported: $1"
+}
+
+test() {
+  if [ "$2" == "update-snap" ]; then
+    npm run test -- -u
+  else 
+    npm run test
+  fi
+}
+
+pre_push() {
+  test "$@"
+}
+
+case "$1" in
+  install)
+    install "$@"
+    ;;
+  build)
+    build "$@"
+    ;;
+  deploy)
+    deploy "$@"
+    ;;
+  test)
+    test "$@"
+    ;;
+  pre_push)
+    pre_push "$@"
+    ;;
+  *)
+    echo "Command not supported: $1"
+    exit 1
+    ;;
+esac

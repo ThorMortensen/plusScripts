@@ -1,1 +1,0 @@
-npm run download $2 && npm run flash ./downloads/$2 $1

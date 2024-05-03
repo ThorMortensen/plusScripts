@@ -1,5 +1,6 @@
 use base64::engine::general_purpose::STANDARD_NO_PAD;
 use base64::Engine;
+use chrono::Utc;
 use clap::Parser;
 use graphql_client::reqwest::post_graphql;
 use graphql_client::GraphQLQuery;
@@ -8,12 +9,11 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JSON;
 use std::error::Error;
-use std::{fs, io};
 use std::path::PathBuf;
 use std::process::Command;
 use std::str::FromStr;
+use std::{fs, io};
 use tokio::main;
-use chrono::Utc;
 
 #[derive(thiserror::Error, Debug)]
 enum LookupError {
@@ -88,9 +88,11 @@ impl Args {
 struct DeviceData {
     fw_id: Option<String>,
     rg_name: Option<String>,
+    sticker_id: Option<String>,
     rg_id: Option<String>,
     sim_provider: Option<String>,
     sim_provider_link: Option<String>,
+    sim_id: Option<String>,
     vin: Option<String>,
     config_name: Option<String>,
     vehicle_id: Option<String>,
@@ -253,7 +255,9 @@ async fn get_device_info(jwt_token: &str, di: &str) -> Result<DeviceData, Lookup
             device_data.sim_provider = Some(format!("{:?}", sim_provider));
         }
         if let Some(sim_link) = unit.sim_provider_link {
-            device_data.sim_provider_link = Some(sim_link);
+            device_data.sim_provider_link = Some(sim_link.clone());
+            let sim_id: &str = sim_link.split('/').last().unwrap_or("");
+            device_data.sim_id = Some(sim_id.to_string());
         }
         if let Some(vin) = unit.vin {
             device_data.vin = Some(vin.vin);
@@ -268,6 +272,7 @@ async fn get_device_info(jwt_token: &str, di: &str) -> Result<DeviceData, Lookup
                 .and_then(serde_json::Value::as_str)
                 .map(String::from);
         }
+        device_data.sticker_id = Some(unit.sticker_id);
     }
 
     Ok(device_data)
@@ -291,9 +296,7 @@ fn is_token_expired(jwt: &str) -> Result<bool, Box<dyn std::error::Error>> {
     }
 }
 
-
 pub async fn get_jwt(save_path: Option<PathBuf>) -> Result<String, Box<dyn Error>> {
-
     if let Some(path) = save_path.as_ref() {
         if path.exists() {
             let token = fs::read_to_string(path)?;
@@ -359,7 +362,7 @@ async fn main() {
 
     let mut fw_id = None;
     let mut device_data = DeviceData::default();
-    let token = match get_jwt(args.jwt_save).await{
+    let token = match get_jwt(args.jwt_save).await {
         Ok(token) => token,
         Err(e) => {
             eprintln!("Did you forget to login?? Error: {}", e);

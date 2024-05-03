@@ -2468,7 +2468,7 @@
                 }
               ],
               "deprecationReason": null,
-              "description": "Returns whether an app is deprecated.\n\nCurrently deprecated apps are below v1.78.17, or at least v12.0.0 and below v12.78.17",
+              "description": "Returns whether an app is deprecated.\n\nCurrently deprecated apps are below v1.78.24, or at least v12.0.0 and below v12.78.24",
               "isDeprecated": false,
               "name": "isAppDeprecated",
               "type": {
@@ -3516,20 +3516,6 @@
                 {
                   "defaultValue": null,
                   "description": null,
-                  "name": "provider",
-                  "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "Provider",
-                      "ofType": null
-                    }
-                  }
-                },
-                {
-                  "defaultValue": null,
-                  "description": null,
                   "name": "vins",
                   "type": {
                     "kind": "LIST",
@@ -3547,7 +3533,7 @@
                 },
                 {
                   "defaultValue": null,
-                  "description": null,
+                  "description": "This can be either unit serials or cc sticker ids.",
                   "name": "unitSerials",
                   "type": {
                     "kind": "LIST",
@@ -4424,7 +4410,7 @@
                   "name": "unitProvider",
                   "type": {
                     "kind": "ENUM",
-                    "name": "Provider",
+                    "name": "UnitProvider",
                     "ofType": null
                   }
                 },
@@ -4917,7 +4903,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "ENUM",
-                      "name": "Provider",
+                      "name": "UnitProvider",
                       "ofType": null
                     }
                   }
@@ -5086,8 +5072,8 @@
                     "kind": "NON_NULL",
                     "name": null,
                     "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
+                      "kind": "ENUM",
+                      "name": "UnitProvider",
                       "ofType": null
                     }
                   }
@@ -5151,8 +5137,8 @@
                     "kind": "NON_NULL",
                     "name": null,
                     "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
+                      "kind": "ENUM",
+                      "name": "UnitProvider",
                       "ofType": null
                     }
                   }
@@ -11214,7 +11200,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "ENUM",
-                    "name": "Provider",
+                    "name": "UnitProvider",
                     "ofType": null
                   }
                 }
@@ -13392,25 +13378,13 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
-              "name": "dmr"
-            },
-            {
-              "deprecationReason": null,
-              "description": null,
-              "isDeprecated": false,
-              "name": "semler"
+              "name": "cc"
             },
             {
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
               "name": "traffilog"
-            },
-            {
-              "deprecationReason": null,
-              "description": null,
-              "isDeprecated": false,
-              "name": "cc"
             },
             {
               "deprecationReason": null,
@@ -13423,13 +13397,19 @@
               "description": null,
               "isDeprecated": false,
               "name": "demo"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "bmw"
             }
           ],
           "fields": null,
           "inputFields": null,
           "interfaces": null,
           "kind": "ENUM",
-          "name": "Provider",
+          "name": "UnitProvider",
           "possibleTypes": null
         },
         {
@@ -13458,6 +13438,18 @@
               "description": null,
               "isDeprecated": false,
               "name": "mb"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "demo"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "bmw"
             }
           ],
           "fields": null,
@@ -21410,7 +21402,7 @@
               "name": "unitProvider",
               "type": {
                 "kind": "ENUM",
-                "name": "Provider",
+                "name": "UnitProvider",
                 "ofType": null
               }
             },
@@ -22472,6 +22464,79 @@
                   "ofType": {
                     "kind": "OBJECT",
                     "name": "VehicleChargePercentage",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "Returns if the vehicle is currently charging.\n      \n**Permissions**\nThis field requires the `can_see_fuel` permission for the vehicle.",
+              "isDeprecated": false,
+              "name": "chargingState",
+              "type": {
+                "kind": "OBJECT",
+                "name": "VehicleCanChargingState",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": "Filter elements to on or after this date (RFC 3339)",
+                  "name": "first",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Date",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": "Filter elements to on or before this date (RFC 3339)",
+                  "name": "last",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Date",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": "DESC",
+                  "description": "Sort elements by time in this direction",
+                  "name": "order",
+                  "type": {
+                    "kind": "ENUM",
+                    "name": "SortDirection",
+                    "ofType": null
+                  }
+                },
+                {
+                  "defaultValue": "1000",
+                  "description": "Filter elements to this page size",
+                  "name": "limit",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Returns a list of charging states for the vehicle. This field should only be used, when querying a single vehicle.\n      \n**Permissions**\nThis field requires the `can_see_fuel` permission for the vehicle.",
+              "isDeprecated": false,
+              "name": "chargingStates",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "VehicleCanChargingState",
                     "ofType": null
                   }
                 }
@@ -23543,7 +23608,7 @@
                 }
               ],
               "deprecationReason": null,
-              "description": "Returns the fuel tank size for the vehicle\n\n**Permissions**\nThis field requires the `can_see_fuel` permission for the vehicle.",
+              "description": "Returns the fuel tank size for the vehicle",
               "isDeprecated": false,
               "name": "fuelTankSize",
               "type": {
@@ -26041,6 +26106,30 @@
             {
               "args": [],
               "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "lockedTerms",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
               "description": "Latest position of vehicle filtered to avoid gps noise",
               "isDeprecated": false,
               "name": "filteredPosition",
@@ -26367,7 +26456,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -28404,6 +28493,59 @@
           "interfaces": null,
           "kind": "ENUM",
           "name": "UnitInstructionType",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": [
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "dmr"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "semler"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "traffilog"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "cc"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "mb"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "demo"
+            },
+            {
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "bmw"
+            }
+          ],
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "ENUM",
+          "name": "Provider",
           "possibleTypes": null
         },
         {
@@ -31529,6 +31671,65 @@
           "interfaces": [],
           "kind": "OBJECT",
           "name": "VehicleChargePercentage",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "id",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "enabled",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "time",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Date",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "kind": "OBJECT",
+          "name": "VehicleCanChargingState",
           "possibleTypes": null
         },
         {
@@ -40261,6 +40462,18 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "rawCode",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "severity",
               "type": {
                 "kind": "ENUM",
@@ -47158,7 +47371,7 @@
               "name": "unitProvider",
               "type": {
                 "kind": "ENUM",
-                "name": "Provider",
+                "name": "UnitProvider",
                 "ofType": null
               }
             },
@@ -49215,7 +49428,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": null,
+              "description": "If this is set, the term is a child of the term with this key",
               "isDeprecated": false,
               "name": "parentKey",
               "type": {
@@ -49227,7 +49440,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": null,
+              "description": "If true, the user need to be prompted for this term before continuing (unless the term is a description)",
               "isDeprecated": false,
               "name": "required",
               "type": {
@@ -49243,7 +49456,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": null,
+              "description": "If true, the user need to be prompted for this term before continuing (unless the term is a description)",
               "isDeprecated": false,
               "name": "requiredVehicle",
               "type": {
@@ -49278,6 +49491,22 @@
               "description": "True if the terms text is the default text",
               "isDeprecated": false,
               "name": "isDefault",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": "True if the terms text should display a toggle options",
+              "isDeprecated": false,
+              "name": "hasToggle",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -59070,41 +59299,6 @@
         },
         {
           "description": null,
-          "enumValues": [
-            {
-              "deprecationReason": null,
-              "description": null,
-              "isDeprecated": false,
-              "name": "cc"
-            },
-            {
-              "deprecationReason": null,
-              "description": null,
-              "isDeprecated": false,
-              "name": "traffilog"
-            },
-            {
-              "deprecationReason": null,
-              "description": null,
-              "isDeprecated": false,
-              "name": "mb"
-            },
-            {
-              "deprecationReason": null,
-              "description": null,
-              "isDeprecated": false,
-              "name": "demo"
-            }
-          ],
-          "fields": null,
-          "inputFields": null,
-          "interfaces": null,
-          "kind": "ENUM",
-          "name": "UnitProvider",
-          "possibleTypes": null
-        },
-        {
-          "description": null,
           "enumValues": null,
           "fields": [
             {
@@ -66875,7 +67069,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-                      "name": "SetCCUnitConfig",
+                      "name": "SetCCUnitConfigInput",
                       "ofType": null
                     }
                   }
@@ -67637,6 +67831,33 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "User",
+                "ofType": null
+              }
+            },
+            {
+              "args": [
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "input",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "UpdateUnitConfigRolloutInput",
+                      "ofType": null
+                    }
+                  }
+                }
+              ],
+              "deprecationReason": null,
+              "description": "Update a unit config rollout rolledOut or configRolloutGroupId. Returns the units that were found and the\n  number of changed rows\n**Permissions**\nThis mutation requires the `can_manage_support` permission for workshops organization-wide.",
+              "isDeprecated": false,
+              "name": "updateUnitConfigRollout",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
                 "ofType": null
               }
             },
@@ -68752,7 +68973,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -70117,7 +70338,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -71831,7 +72052,7 @@
             },
             {
               "defaultValue": null,
-              "description": null,
+              "description": "Override the prerequisite that a user has to have access to the target group to be added.",
               "name": "overrideInviteUserPrerequisite",
               "type": {
                 "kind": "SCALAR",
@@ -72026,7 +72247,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -72128,7 +72349,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -72154,7 +72375,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -72204,7 +72425,7 @@
               "name": "unitProvider",
               "type": {
                 "kind": "ENUM",
-                "name": "Provider",
+                "name": "UnitProvider",
                 "ofType": null
               }
             },
@@ -76591,7 +76812,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -77686,7 +77907,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -78906,7 +79127,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -78981,7 +79202,7 @@
           ],
           "interfaces": null,
           "kind": "INPUT_OBJECT",
-          "name": "SetCCUnitConfig",
+          "name": "SetCCUnitConfigInput",
           "possibleTypes": null
         },
         {
@@ -80244,7 +80465,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -80425,7 +80646,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -81300,7 +81521,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "ENUM",
-                    "name": "Provider",
+                    "name": "UnitProvider",
                     "ofType": null
                   }
                 }
@@ -83962,7 +84183,74 @@
                 "name": null,
                 "ofType": {
                   "kind": "ENUM",
-                  "name": "Provider",
+                  "name": "UnitProvider",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "unitIds",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "configRolloutGroupId",
+              "type": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "rolledOut",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            }
+          ],
+          "interfaces": null,
+          "kind": "INPUT_OBJECT",
+          "name": "UpdateUnitConfigRolloutInput",
+          "possibleTypes": null
+        },
+        {
+          "description": null,
+          "enumValues": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "unitProvider",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "UnitProvider",
                   "ofType": null
                 }
               }
@@ -84050,7 +84338,7 @@
               "name": "unitProvider",
               "type": {
                 "kind": "ENUM",
-                "name": "Provider",
+                "name": "UnitProvider",
                 "ofType": null
               }
             },
@@ -84377,6 +84665,24 @@
                   "ofType": {
                     "kind": "INPUT_OBJECT",
                     "name": "ConsentGrantedAtInput",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            {
+              "defaultValue": null,
+              "description": null,
+              "name": "lockedTerms",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
                     "ofType": null
                   }
                 }

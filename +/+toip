@@ -1,9 +1,0 @@
-#!/bin/bash
-function getip {
-  asd=`curl -s --request GET --url https://api.onomondo.com/sims/$1 --header "Authorization: $ONOMONDO_KEY" `
-  ip=`echo $asd | egrep -o 'ipv4":"[0-9.]+' | egrep -o '[0-9.]+'  | tail -n 1`
-  echo $ip
-}
-
-
-getip $@

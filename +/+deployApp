@@ -1,3 +1,0 @@
-
-
-./app-ccupd.sh && +scp-to-device $1 app-imx6ul.ccupd && auth-wrapper ssh -t $1 "source /etc/profile && sudo ccupd install /data/support/app-imx6ul.ccupd"

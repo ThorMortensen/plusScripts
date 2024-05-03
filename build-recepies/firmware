@@ -1,0 +1,48 @@
+#!/bin/bash
+shift # remove the first argument its empty
+
+install() {
+  npm install
+}
+
+build() {
+  npm run build
+}
+
+deploy() {
+  ./app-ccupd.sh && +scp-to-device $1 app-imx6ul.ccupd && auth-wrapper ssh -t $1 "source /etc/profile && sudo ccupd install /data/support/app-imx6ul.ccupd"
+}
+
+test() {
+  if [ "$2" == "update-snap" ]; then
+    npm run test -- -u
+  else 
+    npm run test
+  fi
+}
+
+pre_push() {
+  npm run pre-push
+}
+
+case "$1" in
+  install)
+    install "$@"
+    ;;
+  build)
+    build "$@"
+    ;;
+  deploy)
+    deploy "$@"
+    ;;
+  test)
+    test "$@"
+    ;;
+  pre_push)
+    pre_push "$@"
+    ;;
+  *)
+    echo "Command not supported: $1"
+    exit 1
+    ;;
+esac

@@ -1,0 +1,50 @@
+#!/bin/bash
+
+shift # remove the first argument its empty
+
+install() {
+  echo "Command not supported: $1"
+  echo "Move to the root of the part you want to install and run:"
+  echo "cargo install --path ."
+}
+
+build() {
+  CARGO_PROFILE=fast-release ./build-all.sh
+}
+
+depploy() {
+  echo "Deploying to $1"
+  ./ccupd_rootfs.sh $1
+}
+
+test() {
+  cargo test
+}
+
+pre_push() {
+  cargo clippy --release --all-targets --all-features --locked
+  checks cargo-all
+}
+
+case "$1" in
+  install)
+    install "$@"
+    ;;
+  build)
+    build "$@"
+    ;;
+  deploy)
+    build "$@"
+    deploy "$@"
+    ;;
+  test)
+    test "$@"
+    ;;
+  pre_push)
+    pre_push "$@"
+    ;;    
+  *)
+    echo "Command not supported: $1"
+    exit 1
+    ;;
+esac

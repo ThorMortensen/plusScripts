@@ -1,17 +1,30 @@
 #!/bin/bash
-shift # remove the first argument its empty
 
 install() {
   echo "Command not supported: $1"
 }
 
 build() {
-  ./build-all.sh
+  BUILD_PLATFORMS=${BUILD_PLATFORMS:='linux/amd64 linux/arm64'}
+
+  # External variables
+  PROJECT_ID=${PROJECT_ID:='connectedcars-staging'}
+  COMMIT_SHA=${COMMIT_SHA:='local'}
+  BRANCH_NAME=${BRANCH_NAME:=$(git symbolic-ref --short -q HEAD)}
+  BUILD_IMAGE=${BUILD_IMAGE:='y'}
+  BUILD_SDK=${BUILD_SDK:='n'}
+  PUSH=${PUSH:='n'}
+
+  DOCKER_OPTIONS=${DOCKER_OPTIONS:-}
+
+  echo "Build image artifacts"
+  ./build-image.sh
 }
 
 deploy() {
-    echo "Deploying to $1"
-  ./ccupd-target.sh $1
+    echo "Deploying to $2"
+    build "$@"
+  ./ccupd-target.sh rootfs $2
 }
 
 test() {

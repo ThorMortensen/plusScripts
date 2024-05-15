@@ -1,6 +1,5 @@
 #!/bin/bash
 
-shift # remove the first argument its empty
 
 install() {
   echo "Command not supported: $1"
@@ -12,9 +11,23 @@ build() {
   CARGO_PROFILE=fast-release ./build-all.sh
 }
 
-depploy() {
-  echo "Deploying to $1"
-  ./ccupd_rootfs.sh $1
+
+
+
+deploy() {
+  echo "Deploying to $2"
+  
+  if [ -z "$3" ]; then
+    build "$@"
+    ./ccupd_rootfs.sh $2
+  else 
+    source /usr/local/oecore-x86_64/environment-setup-cortexa7t2hf-neon-oe-linux-gnueabi || exit 1
+    cargo build --target armv7-unknown-linux-gnueabihf --profile fast-release  || exit 1
+    # +scp-to-device port2 target/armv7-unknown-linux-gnueabihf/fast-release/$3 
+    auth-wrapper rsync -avz "target/armv7-unknown-linux-gnueabihf/fast-release/$3" "$2":/data/support/"$3" && dye bold green "Deployed $3" || dye bold red  "No file called $3. Deployment failed."
+  fi
+
+
 }
 
 test() {
@@ -26,6 +39,11 @@ pre_push() {
   checks cargo-all
 }
 
+echo "1: $1"
+echo "2: $2"
+echo "3: $3"
+echo "4: $4"
+
 case "$1" in
   install)
     install "$@"
@@ -34,7 +52,6 @@ case "$1" in
     build "$@"
     ;;
   deploy)
-    build "$@"
     deploy "$@"
     ;;
   test)

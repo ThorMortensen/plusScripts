@@ -90,6 +90,28 @@ if [[ -z "$RELEASE_NAME" ]]; then
   RELEASE_NAME=$RELEASE_ID
 fi
 
+if [[ "$RELEASE_NAME" == "master" ]]; then
+  yocto_master_sha=$(git ls-remote git@github.com:connectedcars/firmware_yocto.git master | awk '{ print $1 }')
+  app_master_sha=$(git ls-remote git@github.com:connectedcars/firmware.git master | awk '{ print $1 }')
+  echo "Updateing master release"
+  echo "Yocto master sha: $yocto_master_sha"
+  echo "App master sha: $app_master_sha"
+  cat << EOF > $PS_DIR_RELEASES/master
+  '{
+    "appSha": "$app_master_sha",
+    "appBranch": "master",
+    "rootfsSha": "$yocto_master_sha",
+    "rootfsBranch": "master",
+    "kernelSha": "$yocto_master_sha",
+    "kernelBranch": "master",
+    "bootloaderSha": "$yocto_master_sha",
+    "bootloaderBranch": "master"
+  }'
+EOF
+fi
+
+
+
 # if no arguments serve release folder names
 if [[ -z "$RELEASE_ID" ]]; then
   # persist_name=$(basename "$0")

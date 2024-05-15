@@ -1,0 +1,63 @@
+#!/bin/bash
+. plusScriptsPaths
+
+device=$1
+selected_config=$2
+
+if [ $# -eq 1 ]
+then
+  device=""
+  selected_config=$1
+fi
+
+if [ -z "$selected_config" ]; then
+  echo "No config file selected"
+  exit 1
+fi
+
+if [ -z "$device" ] 
+then
+  select_port 
+  device="$SELECTED_DEVICE"
+fi
+
+file_path="/data/conf/ccapp.env"
+
+ccapp_env=$(auth-wrapper ssh support@"$device" "[ -f $file_path ] && cat $file_path")
+
+if [ -z "$ccapp_env" ]; then
+  echo "ccapp.env not found. Making a new one."
+  ccapp_env=$(auth-wrapper ssh support@"$device" "sudo touch $file_path")
+
+else 
+  echo "Current ccapp.env:"
+  echo  "$ccapp_env"
+fi
+
+
+settings=("USE_DEBUG_CONFIG=1" "LOG_LEVEL=debug" "DEBUG_CONFIG_PATH=/data/support/config.json")
+
+for setting in "${settings[@]}"; do
+  key=$(echo "$setting" | cut -d'=' -f1)
+  if ! echo "$ccapp_env" | grep -q "^$key="; then
+    ccapp_env="$ccapp_env
+$setting"
+  else
+    current_value=$(echo "$ccapp_env" | grep "^$key=" | cut -d'=' -f2)
+    if [ "$current_value" != "${setting#*=}" ]; then
+      ccapp_env=$(echo "$ccapp_env" | sed "s|^$key=.*|$setting|")
+    fi
+  fi
+done
+echo 
+echo "New ccapp.env:"
+echo  "$ccapp_env"
+
+
+auth-wrapper ssh support@"$device" "echo \"$ccapp_env\" | sudo tee $file_path > /dev/null"
+
+echo "auth-wrapper rsync -avz $selected_config $device:/data/support/config.json" 
+auth-wrapper rsync -avz "$selected_config" "$device":/data/support/config.json
+
+echo 
+echo "Restart the app to apply the changes"

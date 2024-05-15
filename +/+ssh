@@ -1,5 +1,5 @@
 #!/bin/bash
 
-. +parseDeviceId
+# . +parseDeviceId
 
 auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$DEVICE_IP "${@:2}"

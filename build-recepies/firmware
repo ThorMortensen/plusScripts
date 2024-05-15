@@ -1,5 +1,4 @@
 #!/bin/bash
-shift # remove the first argument its empty
 
 install() {
   npm install
@@ -10,11 +9,12 @@ build() {
 }
 
 deploy() {
-  ./app-ccupd.sh && +scp-to-device $1 app-imx6ul.ccupd && auth-wrapper ssh -t $1 "source /etc/profile && sudo ccupd install /data/support/app-imx6ul.ccupd"
+  ./app-ccupd.sh && +scp-to-device $2 app-imx6ul.ccupd && auth-wrapper ssh -t $2 "source /etc/profile && sudo ccupd install /data/support/app-imx6ul.ccupd"
 }
 
 test() {
   if [ "$2" == "update-snap" ]; then
+    echo "Updating snapshot..."
     npm run test -- -u
   else 
     npm run test
@@ -24,6 +24,8 @@ test() {
 pre_push() {
   npm run pre-push
 }
+
+
 
 case "$1" in
   install)

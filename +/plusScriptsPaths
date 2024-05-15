@@ -60,6 +60,12 @@ stop_spinner() {
     printf "\r\033[K"
 }
 
+# Define a function to handle the SIGINT signal
+handle_sigint() {
+    stop_spinner
+    exit 1
+}
+trap handle_sigint SIGINT
 
 # Declare the mapping of IDs to names
 declare -A ids_to_names
@@ -91,4 +97,39 @@ select_device_variant() {
 
 JWT_TOKEN_PATH="/tmp/jwt-token"
 
+
+dye() {
+  local format=""
+  local color=""
+  local text=""
+
+  for arg in "$@"; do
+    case $arg in
+      bold|italic|blink)
+        case $arg in
+          bold) format=1 ;;
+          italic) format=3 ;;
+          blink) format=5 ;;
+        esac
+        ;;
+      black|red|green|yellow|blue|magenta|cyan|white)
+        case $arg in
+          black) color=30 ;;
+          red) color=31 ;;
+          green) color=32 ;;
+          yellow) color=33 ;;
+          blue) color=34 ;;
+          magenta) color=35 ;;
+          cyan) color=36 ;;
+          white) color=37 ;;
+        esac
+        ;;
+      *)
+        text="$arg"
+        ;;
+    esac
+  done
+
+  echo -e "\e[${format:-0};${color:-0}m${text}\e[0m"
+}
 

@@ -1,5 +1,4 @@
 #!/bin/bash
-shift # remove the first argument its empty
 
 install() {
   npm install
@@ -10,7 +9,7 @@ build() {
 }
 
 deploy() {
-  echo "Command not supported: $1"
+  BUILD_DIR="$(pwd)"/build/dist/ OUTPUT_DIR=generated-config node "$(pwd)"/build/dist/bin/generate-config.js src/configs/vag/vw/vw-id4-id5-e2-2003-electric-2024-2025.ts
 }
 
 test() {

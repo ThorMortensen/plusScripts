@@ -1,5 +1,4 @@
 #!/bin/bash
-shift # remove the first argument its empty
 
 install() {
   echo "Command not supported: $1"

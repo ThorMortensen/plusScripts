@@ -32,6 +32,20 @@ then
   selected_service="$selected_service*"
 fi
 
+start_spinner "Connecting to $device"
 
-auth-wrapper ssh -t support@"$device" "sudo journalctl -fu $selected_service"
+while true; do
+  if auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=1 support@"$device" exit &> /dev/null; then
+    stop_spinner
+    dye green "Connected to $device"
+    auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=1 -o ServerAliveCountMax=1 support@"$device" "sudo journalctl -fu $selected_service"
+    exit_status=$?
+    if [ $exit_status -eq 130 ]; then
+      dye yellow "Program interrupted by user"
+    else
+      dye red "Connection lost"
+      start_spinner "Connecting to $device"
+    fi
+  fi
+done
 

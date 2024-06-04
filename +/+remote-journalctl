@@ -35,7 +35,7 @@ fi
 start_spinner "Connecting to $device"
 
 while true; do
-  if auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=1 support@"$device" exit &> /dev/null; then
+  if auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=3 support@"$device" exit &> /dev/null; then
     stop_spinner
     dye green "Connected to $device"
     auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=1 -o ServerAliveCountMax=1 support@"$device" "sudo journalctl -fu $selected_service"
@@ -43,7 +43,7 @@ while true; do
     if [ $exit_status -eq 130 ]; then
       dye yellow "Program interrupted by user"
     else
-      dye red "Connection lost"
+      dye red "Connection lost to $device"
       start_spinner "Connecting to $device"
     fi
   fi

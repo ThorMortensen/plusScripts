@@ -19,12 +19,26 @@ deploy() {
   
   if [ -z "$3" ]; then
     build "$@"
-    ./ccupd_rootfs.sh $2
+    # ./ccupd_rootfs.sh $2
+
+    TARGET_NAME=$2
+    CCUPD_PATH="./output/cargo-target/target/rootfs-imx6ul.ccupd"
+
+    echo "Copying over rootfs to device"
+    auth-wrapper scp  "$CCUPD_PATH" "${TARGET_NAME}:/tmp/rootfs-imx6ul.ccupd"
+
+    # Installing on remote
+    echo "Starting ccupd install on the device"
+    auth-wrapper ssh "$TARGET_NAME" sudo 'sh -c "ccupd install /tmp/rootfs-imx6ul.ccupd"'
+
+    echo "Please wait for the device to come online (approx. 1-2 minutes)"
+    echo "Done"
+
   else 
     source /usr/local/oecore-x86_64/environment-setup-cortexa7t2hf-neon-oe-linux-gnueabi || exit 1
     cargo build --target armv7-unknown-linux-gnueabihf --profile fast-release  || exit 1
     # +scp-to-device port2 target/armv7-unknown-linux-gnueabihf/fast-release/$3 
-    auth-wrapper rsync -avz "target/armv7-unknown-linux-gnueabihf/fast-release/$3" "$2":/data/support/"$3" && dye bold green "Deployed $3" || dye bold red  "No file called $3. Deployment failed."
+    auth-wrapper scp "target/armv7-unknown-linux-gnueabihf/fast-release/$3" "$2":/data/support/"$3" && dye bold green "Deployed $3" || dye bold red  "No file called $3. Deployment failed."
   fi
 
 

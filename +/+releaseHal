@@ -1,15 +1,25 @@
+#!/bin/bash
+. plusScriptsPaths
+
 cd $(git rev-parse --show-toplevel)
-cd cc-hal
+cd cc-hal || exit 1
 cargo bitbake
 mv cc-hal_0.1.0.bb ../../../YOCTO/firmware_yocto/meta-cc/recipes-cc/cc-hal/
 
 # Save the branch name from the source repository
 src_branch=$(git rev-parse --abbrev-ref HEAD)
 
-cd ../../../YOCTO/firmware_yocto/meta-cc/recipes-cc/cc-hal/
+cd ../../../YOCTO/firmware_yocto/meta-cc/recipes-cc/cc-hal/ || exit 1
 
 # Check the branch name from the destination repository
 dst_branch=$(git rev-parse --abbrev-ref HEAD)
+
+
+if [[ "$src_branch" != "master" ]]; then
+  dye red "You are not in the master branch of the source repository idiot!"
+  exit 1
+fi
+
 
 if [[ "$src_branch" != "$dst_branch"* ]]; then
   echo "Source branch does not start with the same name as destination branch."
@@ -17,8 +27,14 @@ else
   echo "Updating branch $dst_branch"
 fi
 
+# If master branch, make new branch for bump-srcrev
+if [[ "$dst_branch" == "master" ]]; then
+  read -p "YOCTO is \"$dst_branch\". Make new \"$src_branch\" branch? [Y/n]: " -r
+  git checkout -b "$src_branch" || exit 1 
+fi
+
 # Prompt for confirmation with default 'yes'
-read -p "Move cc-hal_0.1.0.bb from HAL branch $src_branch to YOCTO branch $dst_branch? [Y/n]: " -r
+read -p "Move cc-hal_0.1.0.bb from HAL branch \"$src_branch\" to YOCTO branch \"$dst_branch\"? [Y/n]: " -r
 echo # Move to a new line
 
 if [[ $REPLY =~ ^[Nn]$ ]]

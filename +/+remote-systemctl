@@ -41,9 +41,6 @@ then
   fi
 fi
 
-
-
-
 loop="NO"
 partition_selected="0"
 clean_service="$selected_service"

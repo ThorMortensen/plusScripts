@@ -1,0 +1,10 @@
+'{
+  "appSha":"48e5f878c27e85915f2cc8ac97e3d8c0ca09115c",
+  "appBranch":"master",
+  "rootfsSha":"886fc76c4317b936b8860c2d4b86df18f1ba5ad7",
+  "rootfsBranch":"ccapp-longer-timeout",
+  "kernelSha":"886fc76c4317b936b8860c2d4b86df18f1ba5ad7",
+  "kernelBranch":"ccapp-longer-timeout",
+  "bootloaderSha":"886fc76c4317b936b8860c2d4b86df18f1ba5ad7",
+  "bootloaderBranch":"ccapp-longer-timeout"
+}'

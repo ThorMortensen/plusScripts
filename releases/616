@@ -1,0 +1,10 @@
+'{
+  "appSha":"759726fedec2fba2b61f25a7091a96775ce3b626",
+  "appBranch":"master",
+  "rootfsSha":"7d3f87656b6a093588d4f54611876b71decb6d50",
+  "rootfsBranch":"master",
+  "kernelSha":"7d3f87656b6a093588d4f54611876b71decb6d50",
+  "kernelBranch":"master",
+  "bootloaderSha":"7d3f87656b6a093588d4f54611876b71decb6d50",
+  "bootloaderBranch":"master"
+}'

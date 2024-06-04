@@ -9,7 +9,12 @@ build() {
 }
 
 deploy() {
-  BUILD_DIR="$(pwd)"/build/dist/ OUTPUT_DIR=generated-config node "$(pwd)"/build/dist/bin/generate-config.js src/configs/vag/vw/vw-id4-id5-e2-2003-electric-2024-2025.ts
+  if [ -z $2  ]; then
+    BUILD_DIR="$(pwd)"/build/dist/ OUTPUT_DIR=generated-config node "$(pwd)"/build/dist/bin/generate-config.js src/configs/vag/vw/vw-id4-id5-e2-2003-electric-2024-2025.ts
+  else
+    BUILD_DIR="$(pwd)"/build/dist/ OUTPUT_DIR=generated-config node "$(pwd)"/build/dist/bin/generate-config.js "$2"
+  fi
+
 }
 
 test() {

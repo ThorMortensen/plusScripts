@@ -1,39 +1,47 @@
 #!/bin/bash
 . plusScriptsPaths
 
-# Define a function to handle the SIGINT signal
+establised=false
 
+# Define a function to handle the SIGINT signal
 handle_sigint() {
     stop_spinner
+    if [ "$establised" = true ]; then
+        auth-wrapper ssh -S "$socket_path" -O exit support@"$device"
+    fi
     exit 1
 }
 trap handle_sigint SIGINT
 
 wiki_print=false
 
-if [ "$1" == "--wiki" ] 
-then
+if [ "$1" == "--wiki" ]; then
   wiki_print=true
   shift
 fi
 
 device=$1
 
-if [ -z "$device" ] 
-then
+if [ -z "$device" ]; then
   select_port 
   device="$SELECTED_DEVICE"
 fi
 
 start_spinner "Fetching device info from $device"
+socket_path="/tmp/ssh_socket_$device"
 
-fw_shas=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "sudo cc-hal updatecli versions") 
+# Establish a master SSH connection
+auth-wrapper ssh -MNf -S "$socket_path" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device"
+establised=true
+
+# Fetch device info
+fw_shas=$(auth-wrapper ssh -S "$socket_path" support@"$device" "sudo cc-hal updatecli versions")
 bootloader=$(echo "$fw_shas" | awk -F': ' '/bootloader/ {print $2}')
 app=$(echo "$fw_shas" | awk -F': ' '/app/ {print $2}')
 kernel=$(echo "$fw_shas" | awk -F': ' '/kernel/ {print $2}')
 rootfs=$(echo "$fw_shas" | awk -F': ' '/rootfs/ {print $2}')
-cpu_id=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
-using_debug_conf=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "cat /data/conf/ccapp.env 2>/dev/null | grep USE_DEBUG_CONFIG=1")
+cpu_id=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
+using_debug_conf=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/conf/ccapp.env 2>/dev/null | grep USE_DEBUG_CONFIG=1")
 
 json_output=$(plus-lookup --bootloader "$bootloader" --app "$app" --kernel "$kernel" --rootfs "$rootfs" --device-id "$cpu_id")
 fw_id=$(echo "$json_output" | jq -r '.fw_id')
@@ -47,16 +55,18 @@ config_name=$(echo "$json_output" | jq -r '.config_name')
 vehicle_id=$(echo "$json_output" | jq -r '.vehicle_id')
 sticker_id=$(echo "$json_output" | jq -r '.sticker_id')
 
-device_type=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "hostname") 
-ip_addr=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)") 
-state=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "sudo cc-pmcli gpios") 
-gps=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "sudo cc-gpscli location")
+device_type=$(auth-wrapper ssh -S "$socket_path" support@"$device" "hostname")
+ip_addr=$(auth-wrapper ssh -S "$socket_path" support@"$device" "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)")
+state=$(auth-wrapper ssh -S "$socket_path" support@"$device" "sudo cc-pmcli gpios")
+gps=$(auth-wrapper ssh -S "$socket_path" support@"$device" "sudo cc-gpscli location")
 
 if [[ $using_debug_conf == *"USE_DEBUG_CONFIG=1"* ]]; then
-    debug_path=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device" "cat /data/conf/ccapp.env | grep DEBUG_CONFIG_PATH")
+    debug_path=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/conf/ccapp.env | grep DEBUG_CONFIG_PATH")
     config_name="Debug-config at: ${debug_path#*=}"
 fi
 
+# Close the master SSH connection
+auth-wrapper ssh -S "$socket_path" -O exit support@"$device"
 stop_spinner
 
 if [[ "$2" != "--full" ]]; then
@@ -66,14 +76,12 @@ if [[ "$2" != "--full" ]]; then
   rootfs=${rootfs:0:10}
 fi
 
-
-
 print_title "Device info:"
 echo "Type: $device_type"
 echo "DevID: $cpu_id"
 echo "VclID: $vehicle_id"
 echo "StkrID: $sticker_id"
-print_title "SW versions:" 
+print_title "SW versions:"
 echo "FW ID: $fw_id"
 echo "RollGr: $rg_name"
 echo "RollID: $rg_id"
@@ -110,3 +118,131 @@ if [ "$wiki_print" = true ]; then
   echo "\`\`\`"
 fi
 
+
+
+
+
+# #!/bin/bash
+# . plusScriptsPaths
+
+# # Define a function to handle the SIGINT signal
+# handle_sigint() {
+#     stop_spinner
+#     auth-wrapper ssh -S "$socket_path" -O exit support@"$device"
+#     exit 1
+# }
+# trap handle_sigint SIGINT
+
+# wiki_print=false
+
+# if [ "$1" == "--wiki" ]; then
+#   wiki_print=true
+#   shift
+# fi
+
+# device=$1
+
+# if [ -z "$device" ]; then
+#   select_port 
+#   device="$SELECTED_DEVICE"
+# fi
+
+# start_spinner "Fetching device info from $device"
+# socket_path="/tmp/ssh_socket_$device"
+
+# # Establish a master SSH connection
+# auth-wrapper ssh -MNf -S "$socket_path" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$device"
+
+# # Fetch device info
+# info=$(auth-wrapper ssh -S "$socket_path" support@"$device" "
+#   sudo cc-hal updatecli versions;
+#   cc-info;
+#   cat /data/conf/ccapp.env 2>/dev/null | grep USE_DEBUG_CONFIG=1;
+#   hostname;
+#   sudo cc-pmcli gpios;
+#   sudo cc-gpscli location;
+#   $(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)
+# ")
+
+# fw_shas=$(echo "$info" | sed -n '1,/^$/p')
+# cpu_id=$(echo "$info" | grep 'cpu_id' | awk -F': ' '{print $2}')
+# using_debug_conf=$(echo "$info" | grep 'USE_DEBUG_CONFIG=1')
+# device_type=$(echo "$info" | grep -E -m 1 '^([[:alnum:]]|-)+$')
+# state=$(echo "$info" | grep -E -A1 '^sudo cc-pmcli gpios$' | tail -n1)
+# gps=$(echo "$info" | grep -E -A1 '^sudo cc-gpscli location$' | tail -n1)
+# ip_addr=$(echo "$info" | grep -E -A1 '^([[:alnum:]]|-)+$' | tail -n1)
+
+# bootloader=$(echo "$fw_shas" | awk -F': ' '/bootloader/ {print $2}')
+# app=$(echo "$fw_shas" | awk -F': ' '/app/ {print $2}')
+# kernel=$(echo "$fw_shas" | awk -F': ' '/kernel/ {print $2}')
+# rootfs=$(echo "$fw_shas" | awk -F': ' '/rootfs/ {print $2}')
+
+# json_output=$(plus-lookup --bootloader "$bootloader" --app "$app" --kernel "$kernel" --rootfs "$rootfs" --device-id "$cpu_id")
+# fw_id=$(echo "$json_output" | jq -r '.fw_id')
+# rg_name=$(echo "$json_output" | jq -r '.rg_name')
+# rg_id=$(echo "$json_output" | jq -r '.rg_id')
+# sim_provider=$(echo "$json_output" | jq -r '.sim_provider')
+# sim_provider_link=$(echo "$json_output" | jq -r '.sim_provider_link')
+# sim_id=$(echo "$json_output" | jq -r '.sim_id')
+# vin=$(echo "$json_output" | jq -r '.vin')
+# config_name=$(echo "$json_output" | jq -r '.config_name')
+# vehicle_id=$(echo "$json_output" | jq -r '.vehicle_id')
+# sticker_id=$(echo "$json_output" | jq -r '.sticker_id')
+
+# if [[ $using_debug_conf == *"USE_DEBUG_CONFIG=1"* ]]; then
+#     debug_path=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/conf/ccapp.env | grep DEBUG_CONFIG_PATH")
+#     config_name="Debug-config at: ${debug_path#*=}"
+# fi
+
+# # Close the master SSH connection
+# auth-wrapper ssh -S "$socket_path" -O exit support@"$device"
+# stop_spinner
+
+# if [[ "$2" != "--full" ]]; then
+#   app=${app:0:10}
+#   bootloader=${bootloader:0:10}
+#   kernel=${kernel:0:10}
+#   rootfs=${rootfs:0:10}
+# fi
+
+# print_title "Device info:"
+# echo "Type: $device_type"
+# echo "DevID: $cpu_id"
+# echo "VclID: $vehicle_id"
+# echo "StkrID: $sticker_id"
+# print_title "SW versions:"
+# echo "FW ID: $fw_id"
+# echo "RollGr: $rg_name"
+# echo "RollID: $rg_id"
+# echo "App: ${app}"
+# echo "Rfs: ${rootfs}"
+# echo "Knl: ${kernel}"
+# echo "Bld: ${bootloader}"
+# print_title "IP addr:"
+# echo "$ip_addr"
+# echo "SimID: $sim_id"
+# print_title "State:"
+# echo "PWR: $state"
+# echo "GPS: $gps"
+# echo "VIN: $vin"
+# echo "Config: $config_name"
+# print_title "Links:"
+# if [ "$vehicle_id" != "null" ]; then
+#   echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/vehicles/$vehicle_id")
+# else
+#   echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/units/$cpu_id")
+# fi
+
+# if [ "$sim_provider" != "null" ]; then
+#   echo "$sim_provider: $(print_link "$sim_provider_link")"
+# fi
+
+# if [ "$wiki_print" = true ]; then
+#   echo ""
+#   echo "\`\`\`"
+#   echo "$sticker_id"
+#   echo "$cpu_id"
+#   echo "$sim_id"
+#   echo "$ip_addr"
+#   echo "\`\`\`"
+# fi

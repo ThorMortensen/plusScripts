@@ -3,4 +3,4 @@
 . plusScriptsPaths
 . $PS_DIR_WORKERS/bashColor.sh
 
- auth-wrapper ssh nuc "tio /dev/logi01"
+auth-wrapper ssh -t nuc "tio /dev/logi01"

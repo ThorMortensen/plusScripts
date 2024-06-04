@@ -16,36 +16,46 @@ then
   device="$SELECTED_DEVICE"
 fi
 
-if [ -z "$selected_service" ] 
-then
-  if [ -f "$REMOTE_SERVICE_CASH" ]; then
-    selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow") 
-  else
-    echo "No cashed services found"
-    source "$PS_DIR"/+/+remote-services "$device" 
-    selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow") 
-  fi
-fi
-
-if [ "$selected_service" == "ccapp" ] 
-then
-  selected_service="$selected_service*"
-fi
-
-start_spinner "Connecting to $device"
 
 while true; do
-  if auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=3 support@"$device" exit &> /dev/null; then
-    stop_spinner
-    dye green "Connected to $device"
-    auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=1 -o ServerAliveCountMax=1 support@"$device" "sudo journalctl -fu $selected_service"
-    exit_status=$?
-    if [ $exit_status -eq 130 ]; then
-      dye yellow "Program interrupted by user"
+  use_braek_signal=false
+  if [ -z "$selected_service" ] 
+  then
+    if [ -f "$REMOTE_SERVICE_CASH" ]; then
+      selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow") 
     else
-      dye red "Connection lost to $device"
-      start_spinner "Connecting to $device"
+      echo "No cashed services found"
+      source "$PS_DIR"/+/+remote-services "$device" 
+      selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow") 
     fi
   fi
-done
 
+  if [ "$selected_service" == "ccapp" ] 
+  then
+    selected_service="$selected_service*"
+  fi
+
+  start_spinner "Connecting to $device"
+
+  while true; do
+    if auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=3 support@"$device" exit &> /dev/null; then
+      stop_spinner
+      dye green "Connected to $device"
+      use_braek_signal=true
+      auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=1 -o ServerAliveCountMax=1 support@"$device" "sudo journalctl -fu $selected_service"
+      exit_status=$?
+      if [ $exit_status -eq 130 ]; then
+        dye yellow "Program interrupted by user"
+      else
+        dye red "Connection lost to $device"
+        start_spinner "Connecting to $device"
+      fi
+    fi
+    if [ "$break_flag" = true ]; then
+      break_flag=false
+      break
+    fi
+  done
+  stop_spinner
+  selected_service=""
+done 

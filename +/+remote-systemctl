@@ -36,9 +36,11 @@ while true ; do
   fi
 
   partition_selected="0"
-
+  selected_service_raw="$selected_service"
+  
   while true ; do 
     use_braek_signal=true
+    selected_service="$selected_service_raw"
 
     if [ -z "$cmd" ] 
     then
@@ -83,7 +85,7 @@ while true ; do
       break
     fi
 
-    start_spinner "service $selected_service $cmd"
+    start_spinner "service $selected_service_raw $cmd"
     if [ "$cmd" == "status" ] 
     then
     
@@ -102,7 +104,6 @@ while true ; do
       # echo "service $selected_service $cmd"
     fi
     stop_spinner
-
     cmd="" # reset cmd to allow for another command
   done 
 done 

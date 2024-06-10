@@ -62,7 +62,6 @@ add_common_stuff(){
   write_if_missing "#             Put all your rc stuff here" ~/.common_rc
   write_if_missing "#####################################################" ~/.common_rc
   write_if_missing "PATH=\$PATH:$PS_DIR_PLUS" ~/.common_rc
-  write_if_missing "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" ~/.common_rc
 
   write_if_missing "alias rr='ranger'" ~/.common_rc
   write_if_missing "alias ø='echo \"sourcing common_rc done!\" && source ~/.common_rc'" ~/.common_rc
@@ -74,17 +73,10 @@ disable_sudo(){
 }
 
 
-bundler_selection() {
-  if (whiptail --title "Bundler" --yesno "Do you want to run Bundler to install ruby gem dependences?" 8 78); then
-      install_bundler_gems
-  fi
-}
-
 dependences_selection(){
   if (whiptail --title "Dependences" --yesno "Do you want to install dependences?" 8 78); then
       install_dependancys
   fi
-  bundler_selection
 }
 
 changec_numpad_to_dot(){

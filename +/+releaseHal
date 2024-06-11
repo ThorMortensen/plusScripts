@@ -16,8 +16,7 @@ dst_branch=$(git rev-parse --abbrev-ref HEAD)
 
 
 if [[ "$src_branch" != "master" ]]; then
-  dye red "You are not in the master branch of the source repository idiot!"
-  exit 1
+  dye red "You are not in the master branch of the source repository"
 fi
 
 
@@ -42,6 +41,12 @@ then
     echo "Operation cancelled."
     exit 1
 else
+    read -p "Do you want to commit and push yocto branch \"$dst_branch\"? [Y/n]: " -r
+    if [[ $REPLY =~ ^[Nn]$ ]]
+    then
+      echo "Aborted by user."
+      exit 1
+    fi
     git commit -m "meta-cc: cc-hal: bump srcrev" cc-hal_0.1.0.bb
     git push
     echo "Release created!"

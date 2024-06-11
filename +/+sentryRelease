@@ -1,0 +1,82 @@
+#!/bin/bash
+. plusScriptsPaths
+
+RELEASE_ID=$1
+RELEASE_NAME=$2
+
+
+app_sha=""
+app_branch=""
+bootloader_sha=""
+bootloader_branch=""
+rootfs_sha=""
+rootfs_branch=""
+kernel_sha=""
+kernel_branch=""
+
+lookup_release() {
+  start_spinner "Fetching shas for release $RELEASE_ID"
+  json_output=$(plus-lookup --release-id $RELEASE_ID)
+
+  app_sha=$(echo "$json_output" | jq -r '.app_sha')
+  app_branch=$(echo "$json_output" | jq -r '.app_branch')
+  bootloader_sha=$(echo "$json_output" | jq -r '.bootloader_sha')
+  bootloader_branch=$(echo "$json_output" | jq -r '.bootloader_branch')
+  rootfs_sha=$(echo "$json_output" | jq -r '.rootfs_sha')
+  rootfs_branch=$(echo "$json_output" | jq -r '.rootfs_branch')
+  kernel_sha=$(echo "$json_output" | jq -r '.kernel_sha')
+  kernel_branch=$(echo "$json_output" | jq -r '.kernel_branch')
+
+  # if any is "null" exit
+  if [[ "$app_sha" == "null" || "$app_branch" == "null" || "$bootloader_sha" == "null" || "$bootloader_branch" == "null" || "$rootfs_sha" == "null" || "$rootfs_branch" == "null" || "$kernel_sha" == "null" || "$kernel_branch" == "null" ]]; then
+    stop_spinner
+    echo "Release \"$RELEASE_ID\" not found"
+    exit 1
+  fi
+
+  stop_spinner
+}
+
+
+prompt_release_name() {
+  releasen_names=$(ls -A1 $PS_DIR_RELEASES | grep -v '~$' | tr '\n' ' ' | sed 's/ *$//')
+  selected_release=$(plus-menu --items "$releasen_names" --persist-path "$GLOBAL_RELEASE_SELECTED" --prompt-msg "$1") 
+  echo "$selected_release"
+  return "$selected_release"
+}
+
+
+# If reelase name is empty use release id as name
+if [[ -z "$RELEASE_NAME" ]]; then
+  RELEASE_NAME=$RELEASE_ID
+fi
+
+# if no arguments serve release folder names
+if [[ -z "$RELEASE_ID" ]]; then
+  RELEASE_NAME=$(prompt_release_name "Select release to download")
+  json_output=$(cat "$PS_DIR_RELEASES/$RELEASE_NAME" | sed "s/'//g")
+  RELEASE_ID=$RELEASE_NAME
+
+  app_sha=$(echo "$json_output" | jq -r '.appSha')
+  app_branch=$(echo "$json_output" | jq -r '.appBranch')
+  bootloader_sha=$(echo "$json_output" | jq -r '.bootloaderSha')
+  bootloader_branch=$(echo "$json_output" | jq -r '.bootloaderBranch')
+  rootfs_sha=$(echo "$json_output" | jq -r '.rootfsSha')
+  rootfs_branch=$(echo "$json_output" | jq -r '.rootfsBranch')
+  kernel_sha=$(echo "$json_output" | jq -r '.kernelSha')
+  kernel_branch=$(echo "$json_output" | jq -r '.kernelBranch')
+else
+  lookup_release
+fi
+export SENTRY_BRANCH=$rootfs_branch
+export SENTRY_SHA=$rootfs_sha
+export SENTRY_RELEASE_ID=$RELEASE_ID
+
+echo "SENTRY_BRANCH: $SENTRY_BRANCH"
+echo "SENTRY_SHA: $SENTRY_SHA"
+echo "SENTRY_RELEASE_ID: $SENTRY_RELEASE_ID"
+read -p "Upload to sentry?" -r
+
+wget https://storage.googleapis.com/connectedcars-staging-cloudbuilder/yocto/"$SENTRY_BRANCH"/"$SENTRY_SHA"/imx6ul/cc-hal.dbg -O /tmp/cc-hal-"$SENTRY_RELEASE_ID".dbg && \
+sentry-cli upload-dif --wait -o connectedcars -p firmware /tmp/cc-hal-"$SENTRY_RELEASE_ID".dbg
+

@@ -1,10 +1,10 @@
 '{
   "appSha":"48e5f878c27e85915f2cc8ac97e3d8c0ca09115c",
   "appBranch":"master",
-  "rootfsSha":"886fc76c4317b936b8860c2d4b86df18f1ba5ad7",
-  "rootfsBranch":"ccapp-longer-timeout",
-  "kernelSha":"886fc76c4317b936b8860c2d4b86df18f1ba5ad7",
-  "kernelBranch":"ccapp-longer-timeout",
-  "bootloaderSha":"886fc76c4317b936b8860c2d4b86df18f1ba5ad7",
-  "bootloaderBranch":"ccapp-longer-timeout"
+  "rootfsSha":"612d6a0f4c9e16dd2f5a6d4643809b66c7252ac8",
+  "rootfsBranch":"tm/remote-debug-log-upload",
+  "kernelSha":"612d6a0f4c9e16dd2f5a6d4643809b66c7252ac8",
+  "kernelBranch":"tm/remote-debug-log-upload",
+  "bootloaderSha":"612d6a0f4c9e16dd2f5a6d4643809b66c7252ac8",
+  "bootloaderBranch":"tm/remote-debug-log-upload"
 }'

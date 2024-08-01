@@ -1,0 +1,21 @@
+#!/bin/bash
+. plusScriptsPaths
+RELEASE_ID=$2
+TARGET=$1
+
+# Check if there's only one argument
+if [ -z "$RELEASE_ID" ]; then
+  select_port
+  TARGET=$SELECTED_DEVICE
+  RELEASE_ID=""
+fi
+
+[[ "$TARGET" == port* ]] || { echo "Not a valid port"; exit 255; }
+
+logi_name=${ids_to_names["$TARGET"]}
+device_type=$3
+
+if [[ -z "$device_type" ]]; then
+  # start_spinner "Fetching device type from $TARGET"
+  auth-wrapper ssh -t nuc "cd ~/device-station && export DEVICE_PATH=\"$logi_name\" && npm run ci-release"
+fi

@@ -15,15 +15,6 @@ fi
 logi_name=${ids_to_names["$TARGET"]}
 device_type=$3
 
-
-# Define a function to handle the SIGINT signal
-handle_sigint() {
-    stop_spinner
-    exit 1
-}
-trap handle_sigint SIGINT
-
-
 # if no arguments prompt release folder names
 if [[ -z "$RELEASE_ID" ]]; then
   releasen_names=$(ls -A1 $PS_DIR_RELEASES | grep -v '~$' | tr '\n' ' ' | sed 's/ *$//')

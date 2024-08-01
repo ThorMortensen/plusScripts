@@ -14,8 +14,9 @@ PS_DIR_PERSIST="$HOME/.plus-script-persist"
 # GITROOT="$(git rev-parse --show-toplevel)"
 
 print_title() {
-    echo -e "\033[1;4;36m$1\033[0m"
+  dye bold cyan "$1"
 }
+
 
 print_link() {
     echo -e "\033[1;4;34m$1\033[0m"
@@ -140,3 +141,26 @@ dye() {
   echo -e "\e[${format:-0};${color:-0}m${text}\e[0m"
 }
 
+
+
+prompt_default_yes() {
+    read -p "$1 [Y/n]: " -r
+    if [[ $REPLY =~ ^[Nn]$ ]]
+    then
+      echo "Aborted by user."
+      exit 1
+    fi
+}
+
+prompt_default_no() {
+    read -p "$1 [y/N]: " -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]
+    then
+      echo "Aborted by user."
+      exit 1
+    fi
+}
+
+prompt() {
+    read -p "$1" -r
+}

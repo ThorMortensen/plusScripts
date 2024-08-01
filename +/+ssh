@@ -1,5 +1,22 @@
 #!/bin/bash
 
 # . +parseDeviceId
+. plusScriptsPaths
 
-auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$DEVICE_IP "${@:2}"
+
+if [ "$1" == "-w" ]; then
+    echo "Waiting for device '$2' to come online..."
+
+    while ! auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ConnectTimeout=3 support@$2 exit &> /dev/null; do
+        sleep 10
+    done
+    echo "Device is online"
+    notify-send -u "critical"  "Notification" "Device '$2' is online. Exending the online time to 1200 seconds."
+    echo "Extending the online time to 1200 seconds"
+    auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$2 "sudo cc-modemcli online 1200"
+    +getDeviceInfo $2
+    auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$2 "${@:3}"
+    exit 0
+fi 
+
+auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@$1 "${@:2}"

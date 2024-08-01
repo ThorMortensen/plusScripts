@@ -37,8 +37,8 @@ deploy() {
   else 
     source /usr/local/oecore-x86_64/environment-setup-cortexa7t2hf-neon-oe-linux-gnueabi || exit 1
     cargo build --target armv7-unknown-linux-gnueabihf --profile fast-release  || echo "No fast release... This must be old"; cargo build --target armv7-unknown-linux-gnueabihf || exit 1
-    # +scp-to-device port2 target/armv7-unknown-linux-gnueabihf/fast-release/$3 
-    auth-wrapper scp "target/armv7-unknown-linux-gnueabihf/fast-release/$3" "$2":/data/support/"$3" && dye bold green "Deployed $3" || dye bold red  "No file called $3. Deployment failed."
+    +scp-to-device $2 target/armv7-unknown-linux-gnueabihf/fast-release/$3 
+    # auth-wrapper scp "target/armv7-unknown-linux-gnueabihf/fast-release/$3" "$2":/data/support/"$3" && dye bold green "Deployed $3" || dye bold red  "No file called $3. Deployment failed."
   fi
 
 

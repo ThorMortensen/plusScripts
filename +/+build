@@ -11,15 +11,17 @@ fi
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
 project_name=$(git remote get-url origin | awk -F '/' '{print $NF}' | sed 's/\.git$//')
-
 recepie_file="$PS_DIR_BUILD_RES/$project_name"
 
-echo "recepie_file: $recepie_file"
 
-if [ -f "$PS_DIR_BUILD_RES/$project_name" ]; then
-  echo "Build type: $project_name"
-  source "$PS_DIR_BUILD_RES/$project_name" "$@"
+if [ -f "$recepie_file" ]; then
+  echo "Project: $project_name"
+  source "$recepie_file" "$@"
 else
-  echo "No build script for $project_name"
+  dye bold yellow "No build script for \"$project_name\"."
+  prompt_default_no "Do you want to create one?"
+  new_project_script="$PS_DIR_BUILD_RES/facit"
+  cp $new_project_script $recepie_file
+  code $recepie_file
   exit 1
 fi

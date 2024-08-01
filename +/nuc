@@ -1,8 +1,40 @@
 #!/bin/bash
+. plusScriptsPaths
 
 # max-power "$1" --pingPatience 0 --ip "${@:2}"
 
-TARGET="nuc"
-[[ "$1" == port* ]] && TARGET="" 
-echo "auth-wrapper ssh "$TARGET""$@""
-auth-wrapper ssh $TARGET $@
+TARGET="$1" 
+# [[ "$1" == port* ]] && TARGET="" 
+# echo "auth-wrapper ssh "$TARGET""$@""
+# auth-wrapper ssh $TARGET "$(cat $PS_DIR_WORKERS/device.rc)" $@
+# cat $PS_DIR_WORKERS/device.rc
+
+if [ -z "$1" ]; then
+  auth-wrapper ssh nuc "$@"
+elif [[ "$1" == port* ]]; then
+  # auth-wrapper ssh "$1" "sh -c '$(cat $PS_DIR_WORKERS/device.rc); exec sh'" "${@:2}"
+  # auth-wrapper ssh "$1" "sh -c '$(cat $PS_DIR_WORKERS/device.rc); exec sh'" 
+
+  # auth-wrapper ssh -t "$1" "sh -c '$(cat $PS_DIR_WORKERS/device.rc); exec sh'"
+  # auth-wrapper ssh -t "$1" -ic "$(cat $PS_DIR_WORKERS/device.rc)"
+  # auth-wrapper ssh -t "$1" "sh --rcfile . /data/support/device.rc; exec sh"
+
+  # mybash="$(cat $PS_DIR_WORKERS/device.rc)"
+  # auth-wrapper ssh -t "$1" "echo $mybash > /tmp/mybash; sh --rcfile /tmp/mybash; exec sh"
+  # auth-wrapper ssh -t "$TARGET" "echo '$mybash' > /tmp/mybash; sh -i --rcfile /tmp/mybash"
+
+
+# auth-wrapper ssh $TARGET << 'EOF'
+# $(cat $PS_DIR_WORKERS/device.rc)
+# exec sh
+# EOF
+
+  auth-wrapper ssh -t "$TARGET" "${@:2}"
+
+fi
+
+
+
+# auth-wrapper ssh 
+
+# auth-wrapper ssh $TARGET 

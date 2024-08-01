@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# # Execute the curl command and capture the output silently
+# response=$(curl -s -i -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+#     "https://storage.googleapis.com/upload/storage/v1/b/device-debugging-logs/o?uploadType=resumable&name=journald-$1")
+
+# # Extract the location field from the response
+# locationJurnal=$(echo "$response" | grep -i "location:" | awk '{print $2}' | tr -d '\r')
+
+# Execute the curl command and capture the output silently
+# response=$(curl -s -i -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+#     "https://storage.googleapis.com/upload/storage/v1/b/device-debugging-logs/o?uploadType=resumable&name=accel-$1")
+
+# # Extract the location field from the response
+# locationAccel=$(echo "$response" | grep -i "location:" | awk '{print $2}' | tr -d '\r')
+
+# if [ $2 == "--dbg" ]; then
+#     out="RUST_LOG=debug ./remote-debug \"$locationAccel\""
+# else 
+#     out="\"$locationJurnal\""
+# fi
+
+
+# # Print the location
+# echo "$out"
+# # Copy the location to the clipboard
+# echo "$out" | xclip -selection clipboard
+
+
+# -------------------------------- Both file --------------------------------
+
+
+# # Execute the curl command and capture the output silently
+# response=$(curl -s -i -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+#     "https://storage.googleapis.com/upload/storage/v1/b/device-debugging-logs/o?uploadType=resumable&name=journald-$1")
+
+# # Extract the location field from the response
+# locationJurnal=$(echo "$response" | grep -i "location:" | awk '{print $2}' | tr -d '\r')
+
+# # Execute the curl command and capture the output silently
+# response=$(curl -s -i -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+#     "https://storage.googleapis.com/upload/storage/v1/b/device-debugging-logs/o?uploadType=resumable&name=accel-$1")
+
+# # Extract the location field from the response
+# locationAccel=$(echo "$response" | grep -i "location:" | awk '{print $2}' | tr -d '\r')
+
+# if [ $2 == "--dbg" ]; then
+#     out="RUST_LOG=debug ./remote-debug \"$locationJurnal\" \"$locationAccel\""
+# else 
+#     out="\"$locationJurnal\""
+# fi
+
+
+# # Print the location
+# echo "$out"
+# # Copy the location to the clipboard
+# echo "$out" | xclip -selection clipboard
+
+
+
+# -------------------------------- journald file --------------------------------
+
+
+# Execute the curl command and capture the output silently
+response=$(curl -s -i -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    "https://storage.googleapis.com/upload/storage/v1/b/device-debugging-logs/o?uploadType=resumable&name=$1")
+
+# Extract the location field from the response
+location=$(echo "$response" | grep -i "location:" | awk '{print $2}' | tr -d '\r')
+
+# if [ "$2" == "--dbg" ]; then
+#     out="RUST_LOG=debug ./remote-debug \"$location\""
+# else 
+    out="\"$location\""
+# fi
+
+
+# Print the location
+echo "$out"
+# Copy the location to the clipboard
+echo "$out" | xclip -selection clipboard

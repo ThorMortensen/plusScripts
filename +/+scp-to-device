@@ -21,4 +21,4 @@ fi
 
 
 echo "auth-wrapper rsync -avz $file_trans $device:/data/support/$3" 
-auth-wrapper rsync -avz "$file_trans" "$device":/data/support/"$3"
+auth-wrapper rsync -avzP "$file_trans" "$device":/data/support/"$3"

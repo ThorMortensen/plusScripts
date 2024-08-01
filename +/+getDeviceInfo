@@ -13,10 +13,10 @@ handle_sigint() {
 }
 trap handle_sigint SIGINT
 
-wiki_print=false
+to_markdown=false
 
-if [ "$1" == "--wiki" ]; then
-  wiki_print=true
+if [ "$1" == "--md" ]; then
+  to_markdown=true
   shift
 fi
 
@@ -42,6 +42,25 @@ kernel=$(echo "$fw_shas" | awk -F': ' '/kernel/ {print $2}')
 rootfs=$(echo "$fw_shas" | awk -F': ' '/rootfs/ {print $2}')
 cpu_id=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
 using_debug_conf=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/conf/ccapp.env 2>/dev/null | grep USE_DEBUG_CONFIG=1")
+internal_state=$(auth-wrapper ssh -S "$socket_path" support@"$device" "zcat /data/internal_state.json.gz")
+
+tester_present=$(echo "$internal_state" | jq -r '
+  .testerDetection | 
+  to_entries | 
+  map(select(.value.isBlocked == true) | .key) |
+  if length == 0 then "None" else "PRESSENT " + join(",") end
+')
+
+if [ "$tester_present" = "None" ]; then
+  tester_detect_state=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/HAL_CAN_TESTER_DETECTOR_STATE.json")
+
+  tester_present=$(echo "$tester_detect_state" | jq -r '
+    if .blocked == true then "PRESSENT HAL" 
+    elif .garage_mode == true then "GARAGE-MODE"
+    else "None" 
+    end
+  ')
+fi
 
 json_output=$(plus-lookup --bootloader "$bootloader" --app "$app" --kernel "$kernel" --rootfs "$rootfs" --device-id "$cpu_id")
 fw_id=$(echo "$json_output" | jq -r '.fw_id')
@@ -76,47 +95,53 @@ if [[ "$2" != "--full" ]]; then
   rootfs=${rootfs:0:10}
 fi
 
-print_title "Device info:"
-echo "Type: $device_type"
-echo "DevID: $cpu_id"
-echo "VclID: $vehicle_id"
-echo "StkrID: $sticker_id"
-print_title "SW versions:"
-echo "FW ID: $fw_id"
-echo "RollGr: $rg_name"
-echo "RollID: $rg_id"
-echo "App: ${app}"
-echo "Rfs: ${rootfs}"
-echo "Knl: ${kernel}"
-echo "Bld: ${bootloader}"
-print_title "IP addr:"
-echo "$ip_addr"
-echo "SimID: $sim_id"
-print_title "State:"
-echo "PWR: $state"
-echo "GPS: $gps"
-echo "VIN: $vin"
-echo "Config: $config_name"
-print_title "Links:"
+
+print_title "~~Device info~~"
+echo " Type:   $device_type"
+echo " DevID:  $cpu_id"
+echo " VclID:  $vehicle_id"
+echo " StkrID: $sticker_id"
+print_title "~~SW versions~~"
+echo " FW ID:  $fw_id"
+echo " RollGr: $rg_name"
+echo " RollID: $rg_id"
+echo " App:    ${app}"
+echo " Rfs:    ${rootfs}"
+echo " Knl:    ${kernel}"
+echo " Bld:    ${bootloader}"
+print_title "~~IP~~"
+echo " Add:    $ip_addr"
+echo " SimID:  $sim_id"
+print_title "~~State~~"
+echo " PWR:    $state"
+echo " GPS:    $gps"
+echo " VIN:    $vin"
+echo " Config: $config_name"
+echo " Tester: $tester_present"
+print_title "~~Links~~"
 if [ "$vehicle_id" != "null" ]; then
-  echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/vehicles/$vehicle_id")
+  echo " Workshop: $(print_link "https://workshop.connectedcars.io/debug/vehicles/$vehicle_id")"
 else
-  echo Workshop: $(print_link "https://workshop.connectedcars.io/debug/units/$cpu_id")
+  echo " Workshop: $(print_link "https://workshop.connectedcars.io/debug/units/$cpu_id")"
 fi
 
 if [ "$sim_provider" != "null" ]; then
-  echo "$sim_provider: $(print_link "$sim_provider_link")"
+  echo " $sim_provider: $(print_link "$sim_provider_link")"
 fi
 
-if [ "$wiki_print" = true ]; then
-  echo ""
-  echo "\`\`\`"
-  echo "$sticker_id"
-  echo "$cpu_id"
-  echo "$sim_id"
-  echo "$ip_addr"
+if [ "$to_markdown" = true ]; then
   echo "\`\`\`"
 fi
+
+# if [ "$to_markdown" = true ]; then
+#   echo ""
+#   echo "\`\`\`"
+#   echo "$sticker_id"
+#   echo "$cpu_id"
+#   echo "$sim_id"
+#   echo "$ip_addr"
+#   echo "\`\`\`"
+# fi
 
 
 
@@ -133,10 +158,10 @@ fi
 # }
 # trap handle_sigint SIGINT
 
-# wiki_print=false
+# to_markdown=false
 
 # if [ "$1" == "--wiki" ]; then
-#   wiki_print=true
+#   to_markdown=true
 #   shift
 # fi
 
@@ -237,7 +262,7 @@ fi
 #   echo "$sim_provider: $(print_link "$sim_provider_link")"
 # fi
 
-# if [ "$wiki_print" = true ]; then
+# if [ "$to_markdown" = true ]; then
 #   echo ""
 #   echo "\`\`\`"
 #   echo "$sticker_id"

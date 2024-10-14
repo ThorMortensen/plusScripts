@@ -4,12 +4,6 @@
 device=$1
 selected_service=$2
 
-if [ $# -eq 1 ]
-then
-  device=""
-  selected_service=$1
-fi
-
 if [ -z "$device" ] 
 then
   select_port 
@@ -38,7 +32,7 @@ while true; do
   start_spinner "Connecting to $device"
 
   while true; do
-    if auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=3 support@"$device" exit &> /dev/null; then
+    if auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=10 support@"$device" exit &> /dev/null; then
       stop_spinner
       dye green "Connected to $device"
       use_braek_signal=true

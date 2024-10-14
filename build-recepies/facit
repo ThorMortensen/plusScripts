@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# The links in this folder is becouse the repos has been renamed 
+
 install() {
   echo "Command not supported: $1"
 }

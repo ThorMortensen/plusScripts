@@ -44,6 +44,7 @@ cpu_id=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cc-info" | grep '
 using_debug_conf=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/conf/ccapp.env 2>/dev/null | grep USE_DEBUG_CONFIG=1")
 internal_state=$(auth-wrapper ssh -S "$socket_path" support@"$device" "zcat /data/internal_state.json.gz")
 
+
 tester_present=$(echo "$internal_state" | jq -r '
   .testerDetection | 
   to_entries | 
@@ -78,6 +79,12 @@ device_type=$(auth-wrapper ssh -S "$socket_path" support@"$device" "hostname")
 ip_addr=$(auth-wrapper ssh -S "$socket_path" support@"$device" "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)")
 state=$(auth-wrapper ssh -S "$socket_path" support@"$device" "sudo cc-pmcli gpios")
 gps=$(auth-wrapper ssh -S "$socket_path" support@"$device" "sudo cc-gpscli location")
+if auth-wrapper ssh -S "$socket_path" support@"$device" "test -f /data/accel2-calibration.json"; then
+    calibrated="Yes"
+else
+    calibrated="No"
+fi
+
 
 if [[ $using_debug_conf == *"USE_DEBUG_CONFIG=1"* ]]; then
     debug_path=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/conf/ccapp.env | grep DEBUG_CONFIG_PATH")
@@ -118,6 +125,7 @@ echo " GPS:    $gps"
 echo " VIN:    $vin"
 echo " Config: $config_name"
 echo " Tester: $tester_present"
+echo " Calib:  $calibrated"
 print_title "~~Links~~"
 if [ "$vehicle_id" != "null" ]; then
   echo " Workshop: $(print_link "https://workshop.connectedcars.io/debug/vehicles/$vehicle_id")"

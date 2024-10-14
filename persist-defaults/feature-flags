@@ -1,0 +1,10 @@
+suspend_disabled
+reboot_timer_disabled
+stop_mode_enabled
+charger_permanently_disabled
+external_power_loss_timer_disable
+modem_keep_online
+update_disabled
+disable_hal_sentry
+hal_modprobe
+charger_disabled

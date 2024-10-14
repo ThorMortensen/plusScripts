@@ -11,6 +11,7 @@ PS_DIR_WORKERS=$PS_DIR/workers
 PS_DIR_RELEASES=$PS_DIR/releases
 PS_DIR_BUILD_RES=$PS_DIR/build-recepies
 PS_DIR_PERSIST="$HOME/.plus-script-persist"
+PS_DIR_PERSIST_DEFAULT="$PS_DIR/persist-defaults"
 # GITROOT="$(git rev-parse --show-toplevel)"
 
 print_title() {
@@ -84,7 +85,9 @@ ids_to_names=(
 GLOBAL_RELEASE_SELECTED="global-release-selected"
 GLOBAL_PORT_SELECTED="global-port-selected"
 GLOBAL_SERVICE_SELECTED="global-service-selected"
-REMOTE_SERVICE_CASH="$PS_DIR_PERSIST/remote-service-cash"
+REMOTE_SERVICE_CASH="$PS_DIR_PERSIST_DEFAULT/remote-service-list"
+GLOBAL_FEATURE_FLAG_SELECTED="global-feature-flag-selected"
+FEATURE_FLAGS="$PS_DIR_PERSIST_DEFAULT/feature-flags"
 
 persist_name=$(basename "$0")
 
@@ -163,4 +166,17 @@ prompt_default_no() {
 
 prompt() {
     read -p "$1" -r
+}
+
+get_as_items() {
+    local item_path=$1
+    local items
+
+    # Read the content of the file and replace newlines with spaces
+    items=$(tr '\n' ' ' < "$item_path")
+
+    # Remove any leading or trailing whitespace
+    items=$(echo "$items" | xargs)
+
+    echo "$items"
 }

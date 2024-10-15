@@ -4,15 +4,12 @@
 install() {
   echo "Command not supported: $1"
   echo "Move to the root of the part you want to install and run:"
-  echo "cargo install --path ."
+  echo "cargo +stable install --path ."
 }
 
 build() {
   CARGO_PROFILE=fast-release ./build-all.sh
 }
-
-
-
 
 deploy() {
   echo "Deploying to $2"
@@ -44,6 +41,16 @@ deploy() {
 
 }
 
+clean() {
+  echo "Running \"cargo clean-recursive\""
+  cargo clean-recursive
+  if [ -d "output" ]; then
+    echo "Removing output folder"
+    sudo rm -rf output
+  fi
+}
+
+
 test() {
   cargo test
 }
@@ -67,6 +74,9 @@ case "$1" in
     ;;
   deploy)
     deploy "$@"
+    ;;
+  clean)
+    clean "$@"
     ;;
   test)
     test "$@"

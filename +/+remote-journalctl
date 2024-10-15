@@ -36,7 +36,7 @@ while true; do
       stop_spinner
       dye green "Connected to $device"
       use_braek_signal=true
-      auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=1 -o ServerAliveCountMax=1 support@"$device" "sudo journalctl -fu $selected_service"
+      auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=5 -o ServerAliveCountMax=2 support@"$device" "sudo journalctl -fu $selected_service"
       # auth-wrapper ssh -o TCPKeepAlive=no -o ServerAliveInterval=1 -o ServerAliveCountMax=1 support@"$device" "sudo journalctl -fu $selected_service" | lnav - 
       # auth-wrapper ssh -o TCPKeepAlive=no -o ServerAliveInterval=1 -o ServerAliveCountMax=1 support@"$device" "sudo journalctl -fu $selected_service" | tee /tmp/remote_logs | lnav -
       # auth-wrapper ssh -C -o TCPKeepAlive=no -o ServerAliveInterval=1 -o ServerAliveCountMax=1 support@"$device" "sudo journalctl -fu $selected_service" | tee /tmp/remote_logs | lnav - && break

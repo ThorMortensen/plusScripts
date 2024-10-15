@@ -1,0 +1,37 @@
+#!/bin/bash
+. plusScriptsPaths
+
+
+
+device=$1
+
+if [ -z "$device" ]; then
+  select_port 
+  device="$SELECTED_DEVICE"
+fi
+
+
+python "$PS_DIR_WORKERS/device_ssh_init.py" "$PS_DIR_WORKERS/device.rc" "$device"
+
+exit_code=$?
+echo "$exit_code"
+
+
+# RC_CONTENT='PS1="\[\e[0;32m\]\u@\h \[\e[0;34m\]\W \$ \[\e[0m\]"'
+
+# auth-wrapper ssh support@"$device" "sh -c '. /dev/stdin; exec sh' <<EOF
+# $RC_CONTENT
+# EOF"
+
+  # start_spinner "Connecting to $device"
+
+# while true; do
+#   if auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=10 support@"$device" exit &> /dev/null; then
+#     stop_spinner
+#     dye green "Connected to $device"
+#     auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=5 support@"$device"
+#   fi
+# done
+
+
+# stop_spinner

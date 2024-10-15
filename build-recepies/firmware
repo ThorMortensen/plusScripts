@@ -25,6 +25,17 @@ pre_push() {
   npm run pre-push
 }
 
+clean() {
+  echo "Remove the build folder"
+  rm -rf build
+  echo "Remove the node_modules folder"
+  rm -rf node_modules
+  if [ -f "app-imx6ul.ccupd" ]; then
+    echo "Remove the app-imx6ul.ccupd file"
+    rm app-imx6ul.ccupd
+  fi
+  dye yellow bold "Please run \"+build install\" and \"+build build\" commands"
+}
 
 
 case "$1" in
@@ -33,6 +44,9 @@ case "$1" in
     ;;
   build)
     build "$@"
+    ;;
+  clean)
+    clean "$@"
     ;;
   deploy)
     deploy "$@"

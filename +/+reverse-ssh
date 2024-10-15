@@ -1,0 +1,22 @@
+#!/bin/bash
+. plusScriptsPaths
+
+device=$1
+
+if [ -z "$device" ]; then
+  select_port 
+  device="$SELECTED_DEVICE"
+  start_spinner "Fetching device ID from $device"
+  cpu_id=$(auth-wrapper ssh support@"$device" "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
+  stop_spinner
+else 
+  cpu_id=$1
+fi
+
+project_path="/home/thor/workspace/device-debug"
+
+echo "Starting reverse SSH for for device ID: $cpu_id"
+
+cd $project_path
+
+auth-wrapper ./scripts/device-ssh.sh $cpu_id

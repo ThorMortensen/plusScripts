@@ -1,0 +1,10 @@
+'{
+  "appSha":"7e3ceb448ac29d4451621b6f45b13c991826f06f",
+  "appBranch":"release-2024q3",
+  "rootfsSha":"f7072560f1ab608c0cf84cbb0991d1db91761d18",
+  "rootfsBranch":"release-2024q3",
+  "kernelSha":"f7072560f1ab608c0cf84cbb0991d1db91761d18",
+  "kernelBranch":"release-2024q3",
+  "bootloaderSha":"f7072560f1ab608c0cf84cbb0991d1db91761d18",
+  "bootloaderBranch":"release-2024q3"
+}'

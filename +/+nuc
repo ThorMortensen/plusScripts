@@ -1,7 +1,17 @@
 #!/bin/bash
 . plusScriptsPaths
 
+# Check if any of the arguments are "-p"
+persist="false"
 
+if [ "$1" == "-p" ]; then
+  persist="true"
+  shift
+fi
+
+if [ "$2" == "-p" ]; then
+  persist="true"
+fi
 
 device=$1
 
@@ -10,28 +20,10 @@ if [ -z "$device" ]; then
   device="$SELECTED_DEVICE"
 fi
 
-
-python "$PS_DIR_WORKERS/device_ssh_init.py" "$PS_DIR_WORKERS/device.rc" "$device"
-
-exit_code=$?
-echo "$exit_code"
-
-
-# RC_CONTENT='PS1="\[\e[0;32m\]\u@\h \[\e[0;34m\]\W \$ \[\e[0m\]"'
-
-# auth-wrapper ssh support@"$device" "sh -c '. /dev/stdin; exec sh' <<EOF
-# $RC_CONTENT
-# EOF"
-
-  # start_spinner "Connecting to $device"
-
-# while true; do
-#   if auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=10 support@"$device" exit &> /dev/null; then
-#     stop_spinner
-#     dye green "Connected to $device"
-#     auth-wrapper ssh -o BatchMode=yes -o ConnectTimeout=5 support@"$device"
-#   fi
-# done
-
-
-# stop_spinner
+if [ "$persist" == "true" ]; then
+  while true; do 
+    python "$PS_DIR_WORKERS/device_ssh_init.py" "$PS_DIR_WORKERS/device.rc" "$device"
+  done
+else 
+  python "$PS_DIR_WORKERS/device_ssh_init.py" "$PS_DIR_WORKERS/device.rc" "$device"
+fi

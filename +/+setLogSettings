@@ -1,0 +1,105 @@
+#!/bin/bash
+. plusScriptsPaths
+
+device=$1
+selected_service=$2
+cmd=$3
+
+if [ $# -eq 1 ]
+then
+  device=""
+  selected_service=$1
+fi
+
+if [ $# -eq 2 ]
+then
+  device=$1
+  selected_service=$2
+fi
+
+if [ -z "$device" ] 
+then
+  select_port 
+  device="$SELECTED_DEVICE"
+fi
+
+while true ; do 
+  if [ -z "$selected_service" ] 
+  then
+    if [ -f "$REMOTE_SERVICE_CASH" ]; then
+      selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to set log settings for") 
+    else
+      echo "No cashed services found"
+      source "$PS_DIR"/+/+remote-services "$device" 
+      selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to set log settings for") 
+    fi
+  fi
+
+  partition_selected="0"
+  selected_service_raw="$selected_service"
+  
+  while true ; do 
+    use_braek_signal=true
+    selected_service="$selected_service_raw"
+
+    if [ -z "$cmd" ] 
+    then
+      cmd=$(plus-menu --items "\"DEBUG\" \"INFO\" \"WARN\" \"ERROR\" clear" --persist-path "log-settings" --prompt-msg "Select log level for \"$selected_service\"")
+    fi
+
+    if [ "$selected_service" == "ccapp"  ] 
+    then
+      echo "Log settings for \"ccapp\" is not currently supported"
+      continue
+
+
+      if [ "$cmd" == "start" ] 
+      then
+        partition=$(plus-menu --items "a b" --default "$partition_selected" --prompt-msg "Start \"ccapp\" on partition a or b?")
+        selected_service="ccapp@$partition"
+      else 
+        selected_service="$selected_service*"
+      fi
+
+      if [ "$cmd" == "stop" ] 
+      then
+        current_part=$(auth-wrapper ssh support@"$device" "ls /app/a")
+        if [ -z "$current_part" ] 
+        then
+            echo -e "Stopping \e[32mccapp\e[0m at partition \e[1mb\e[0m"
+          partition_selected="1"
+        else
+            echo -e "Stopping \e[32mccapp\e[0m at partition \e[1ma\e[0m"
+          partition_selected="0"
+        fi
+        selected_service="$selected_service*"
+      fi
+    else 
+      if [ "$cmd" == "stop" ] 
+      then
+        selected_service="$selected_service*"
+      fi
+    fi
+    use_braek_signal=false
+
+    if [ "$break_flag" == true ] 
+    then
+      break_flag=false
+      selected_service=""
+      break
+    fi
+
+    if [ "$cmd" == "clear" ] 
+    then
+      start_spinner "Clearing log level for $selected_service_raw"
+      auth-wrapper ssh support@"$device" "sudo rm /data/conf/$selected_service.conf"
+    else 
+      start_spinner "Setting log level $cmd for $selected_service_raw"
+      auth-wrapper ssh support@"$device" "echo \"RUST_LOG=$cmd\" | sudo tee /data/conf/$selected_service.conf > /dev/null"
+    fi
+      # echo "service $selected_service $cmd"
+    stop_spinner
+    cmd="" # reset cmd to allow for another command
+  done 
+done 
+

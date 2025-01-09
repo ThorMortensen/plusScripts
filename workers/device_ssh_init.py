@@ -67,7 +67,7 @@ def handle_session(device, rc_content):
         print(f"{GREEN}Terminal ready!{RESET}")
 
         # Hand over control to the user (open interactive session)
-        ssh_session.interact()  # Hand control to the user
+        ssh_session.interact() # Hand control to the user
 
         # Check if the session was closed by user (EOF means user closed the session)
         ssh_session.expect(pexpect.EOF)

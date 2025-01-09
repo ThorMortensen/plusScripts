@@ -10,6 +10,13 @@
 #
 # query deviceInfo {}
 
+mutation addDebugCommands {
+  addUnitDebugCommand(input: {
+    data: "{}"
+    unitId: "da2f9fb33303b9d4"
+    validUntil: "2025-01-01T00:00:00.000Z"
+  })
+}
 
 
 query listFirmwareGroups {

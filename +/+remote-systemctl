@@ -44,7 +44,7 @@ while true ; do
 
     if [ -z "$cmd" ] 
     then
-      cmd=$(plus-menu --items "start stop restart status" --persist-path "remote-systemctl-cmd" --prompt-msg "Select command for \"$selected_service\"")
+      cmd=$(plus-menu --items "start stop restart status" --persist-path "remote-systemctl-cmd" --prompt-msg "Select command for \"$selected_service\" on $device")
     fi
 
     if [ "$selected_service" == "ccapp"  ] 

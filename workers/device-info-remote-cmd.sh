@@ -22,7 +22,7 @@ get_ip_address() {
 
     # Check if we were successful
     if [ -z "$ip_address" ]; then
-        echo "No IP address found, is modem online?"
+         echo -e "\033[31mNo IP address found, is modem online?\033[0m" 
         return 1  # Return a non-zero exit code for failure
     else
         echo "$ip_address"

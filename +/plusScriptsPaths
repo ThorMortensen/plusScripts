@@ -94,12 +94,16 @@ persist_name=$(basename "$0")
 SELECTED_DEVICE=""
 
 select_port() {
-  device=$(plus-menu --items "port2 port4" --persist-path "$GLOBAL_PORT_SELECTED" --prompt-msg "Select device") 
+  device=$(plus-menu --items "port2 port4 192.168.7.1" --persist-path "$GLOBAL_PORT_SELECTED" --prompt-msg "Select device") 
   echo "$device"
   SELECTED_DEVICE=$device
 }
 
 SELECTED_DEVICE_VARIANT=""
+
+notify() {
+    notify-send -u "critical"  "Notification" "$1"
+}
 
 select_device_variant() {
   local device_variants="iwg26-v1 iwg26-v1-can-resistor iwg26-v2 iwg26-v2-vag iwg26-v3 iwg26-v3-ag iwg26-v3-ag-vag iwg26-v3-ag-vag-nostop iwg26-v3-ag-dual-bt iwg26-v3-ag-dual iwg26-v3-ag-triple iwg26-v3-ag-full"

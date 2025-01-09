@@ -22,8 +22,11 @@ fi
 
 if [ "$persist" == "true" ]; then
   while true; do 
-    python "$PS_DIR_WORKERS/device_ssh_init.py" "$PS_DIR_WORKERS/device.rc" "$device"
+    expect "$PS_DIR_WORKERS/device_ssh_init.exp" "$device"  "$PS_DIR_WORKERS/device.rc" 
   done
 else 
-  python "$PS_DIR_WORKERS/device_ssh_init.py" "$PS_DIR_WORKERS/device.rc" "$device"
+  expect "$PS_DIR_WORKERS/device_ssh_init.exp" "$device"  "$PS_DIR_WORKERS/device.rc" "export PS1=\"\\\[\\e[33m\\]$device\\\[\\e[32m\\]@\\h:\\[\\e[34m\\]\\w\\[\\e[0m\\]\\# \""
+
+
 fi
+

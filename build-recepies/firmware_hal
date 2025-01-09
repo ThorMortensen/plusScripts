@@ -56,14 +56,10 @@ test() {
 }
 
 pre_push() {
+  cargo fmt --all
   cargo clippy --release --all-targets --all-features --locked
   checks cargo-all
 }
-
-echo "1: $1"
-echo "2: $2"
-echo "3: $3"
-echo "4: $4"
 
 case "$1" in
   install)

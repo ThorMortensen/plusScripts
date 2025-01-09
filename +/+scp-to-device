@@ -1,14 +1,17 @@
 #!/bin/bash
+. plusScriptsPaths
 
 persist_name=$(basename "$0")
 
 file_trans=$2
 device=$1
 
-if [ -z "$device" ]
+echo "device" $device
+
+if [ -z "$device" ] 
 then
-  device=$(plus-menu --items "port2 port4" --persist-path "$persist_name-device" --prompt-msg "Select device") 
-  echo "$device"
+  select_port 
+  device="$SELECTED_DEVICE"
 fi
 
 if [ -z "$file_trans" ]

@@ -103,6 +103,10 @@ if [[ "$2" != "--full" ]]; then
 fi
 
 
+if [ "$to_markdown" = true ]; then
+  echo "\`\`\`"
+fi
+
 print_title "~~Device info~~"
 echo " Type:   $device_type"
 echo " DevID:  $cpu_id"

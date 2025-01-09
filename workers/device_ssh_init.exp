@@ -1,0 +1,45 @@
+#!/usr/bin/expect
+
+# Set variables
+set timeout 20
+set device [lindex $argv 0]   
+set rc_file [lindex $argv 1]  
+set ps1 [lindex $argv 2]  
+set user "support"
+
+# Suppress output
+log_user 0
+
+
+# SSH login using auth-wrapper
+spawn auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=10 -o ServerAliveCountMax=3 $user@$device
+
+# Wait for shell prompt
+expect "$ "
+
+# Run sudo su
+send "sudo su\r"
+
+# Wait for root prompt
+expect "# "
+
+send "$ps1\r"
+expect "# "  ;# Wait for prompt after each command
+
+# Read local .rc file (second argument) and send the commands
+set file_handle [open $rc_file r]
+set file_content [read $file_handle]
+close $file_handle
+
+# Split content by line and send each line
+foreach cmd [split $file_content "\n"] {
+    send "$cmd\r"
+    expect "# "  ;# Wait for prompt after each command
+}
+
+# Re-enable output to user
+log_user 1
+
+# Hand over control to the user
+interact
+

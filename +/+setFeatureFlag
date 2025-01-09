@@ -10,6 +10,8 @@ then
   device="$SELECTED_DEVICE"
 fi
 
+flag_folder="/data/conf"
+
 
 while true ; do 
   
@@ -18,7 +20,7 @@ while true ; do
     if [ "$read_modify" == "read" ] 
     then
       start_spinner "Reading feature flags on \"$device\""
-      conf_content=$(auth-wrapper ssh support@"$device" "ls /data/conf")
+      conf_content=$(auth-wrapper ssh support@"$device" "ls $flag_folder")
       valid_flags=$(cat "$FEATURE_FLAGS")
       stop_spinner
       for flag in $conf_content
@@ -36,15 +38,15 @@ while true ; do
   while true ; do 
     selected_flag=$(plus-menu --items "$(get_as_items "$FEATURE_FLAGS")" --persist-path "$GLOBAL_FEATURE_FLAG_SELECTED" --prompt-msg "Select a CC feature-flag to edit") 
     set_clear=$(plus-menu --items "set clear" --prompt-msg "Set or clear the flag?")
-    command="sudo touch /data/conf/$selected_flag"
+    command="sudo touch $flag_folder/$selected_flag"
     info_msg="Setting feature flag \"$selected_flag\" on \"$device\""
     if [ "$set_clear" == "clear" ] 
     then
       info_msg="Clearing feature flag \"$selected_flag\" on \"$device\""
-      command="sudo rm /data/conf/$selected_flag"
+      command="sudo rm $flag_folder/$selected_flag"
     fi
     start_spinner "$info_msg"
-    auth-wrapper ssh support@"$device" "sudo mkdir -p /data/conf && $command > /dev/null 2>&1"
+    auth-wrapper ssh support@"$device" "sudo mkdir -p $flag_folder && $command > /dev/null 2>&1"
     stop_spinner
   done 
 done

@@ -41,8 +41,15 @@ app=$(echo "$fw_shas" | awk -F': ' '/app/ {print $2}')
 kernel=$(echo "$fw_shas" | awk -F': ' '/kernel/ {print $2}')
 rootfs=$(echo "$fw_shas" | awk -F': ' '/rootfs/ {print $2}')
 cpu_id=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
-using_debug_conf=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/conf/ccapp.env 2>/dev/null | grep USE_DEBUG_CONFIG=1")
+# using_debug_conf=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/conf/ccapp.env 2>/dev/null | grep USE_DEBUG_CONFIG=1")
 internal_state=$(auth-wrapper ssh -S "$socket_path" support@"$device" "zcat /data/internal_state.json.gz")
+
+# Check for debug config in both file paths
+using_debug_conf=$(auth-wrapper ssh -S "$socket_path" support@"$device" "
+    if grep -q 'USE_DEBUG_CONFIG=1' /data/conf/ccapp.env 2>/dev/null || grep -q 'USE_DEBUG_CONFIG=1' /data/env/ccapp.env 2>/dev/null; then
+        echo 'USE_DEBUG_CONFIG=1'
+    fi
+")
 
 
 tester_present=$(echo "$internal_state" | jq -r '
@@ -85,9 +92,11 @@ else
     calibrated="No"
 fi
 
-
 if [[ $using_debug_conf == *"USE_DEBUG_CONFIG=1"* ]]; then
-    debug_path=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/conf/ccapp.env | grep DEBUG_CONFIG_PATH")
+    debug_path=$(auth-wrapper ssh -S "$socket_path" support@"$device" "
+        grep DEBUG_CONFIG_PATH /data/conf/ccapp.env 2>/dev/null ||
+        grep DEBUG_CONFIG_PATH /data/env/ccapp.env 2>/dev/null
+    ")
     config_name="Debug-config at: ${debug_path#*=}"
 fi
 

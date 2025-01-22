@@ -35,6 +35,22 @@ pre_push() {
   echo "Command not supported: $1"
 }
 
+
+clean() {
+  # Remove the output directory
+  rm -rf ./output
+  
+  # Identify and delete the 'conf' folder in the Docker volume
+  docker run --rm -v yocto_volume:/workspace busybox sh -c "rm -rf /workspace/conf"
+
+  # Reset Git repository
+  git reset --hard
+
+  # Pull the latest changes
+  git pull
+}
+
+
 case "$1" in
   install)
     install "$@"

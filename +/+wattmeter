@@ -1,0 +1,7 @@
+#!/bin/bash
+. plusScriptsPaths
+
+cd "/home/thor/workspace/Wattmeter" || exit 1
+source .venv/bin/activate
+python wattmeter.py \"$@\"
+

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+. plusScriptsPaths
+
+
+# # Execute the curl command and capture the output silently
+# response=$(curl -s -i -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+#     "https://storage.googleapis.com/upload/storage/v1/b/device-debugging-logs/o?uploadType=resumable&name=$1")
+
+# # Extract the location field from the response
+# location=$(echo "$response" | grep -i "location:" | awk '{print $2}' | tr -d '\r')
+
+# # Add scaffolding for location if needed
+# out="\"$location\"" 
+
+# # Print the location
+# echo "$out"
+
+# ## Uncomment to copy the location to the clipboard (install xclip if needed)
+# echo "$out" | xclip -selection clipboard
+
+
+
+device=$1
+
+if [ -z "$device" ]; then
+  select_port 
+  start_spinner "Fetching device ID from $SELECTED_DEVICE"
+  device=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$SELECTED_DEVICE" "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
+  stop_spinner
+fi
+echo "Device ID: $device"
+
+$PS_DIR_WORKERS/upload-logs.sh $device

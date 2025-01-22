@@ -78,5 +78,5 @@ echo "SENTRY_RELEASE_ID: $SENTRY_RELEASE_ID"
 read -p "Upload to sentry?" -r
 
 wget https://storage.googleapis.com/connectedcars-staging-cloudbuilder/yocto/"$SENTRY_BRANCH"/"$SENTRY_SHA"/imx6ul/cc-hal.dbg -O /tmp/cc-hal-"$SENTRY_RELEASE_ID".dbg && \
-sentry-cli upload-dif --wait -o connectedcars -p firmware /tmp/cc-hal-"$SENTRY_RELEASE_ID".dbg
+sentry-cli upload-dif --wait -o connected-cars -p firmware /tmp/cc-hal-"$SENTRY_RELEASE_ID".dbg
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z "$1" ]; then
-  echo "Please provide device ID (not )"
+  echo "Please provide device ID"
   exit 1
 fi
 
@@ -11,7 +11,7 @@ echo "(It may take up to 15 min for the log upload to start on the device and th
 token=$(gcloud auth print-identity-token)
 user_name=$(gcloud config get-value account)
 base_name=$(echo "$user_name" | cut -d'@' -f1)
-bucket_folder="$base_name/release-test-$(date +'%Y-%m-%d')"
+bucket_folder="$base_name/release-test-$(date +'%Y-%m-%d')-$1"
 accel_dist="$bucket_folder/accel"
 can_dist="$bucket_folder/can"
 journald_dist="$bucket_folder/journald"
@@ -111,14 +111,11 @@ response=$(curl -s -X POST \
 
 # Check if the response contains success
 if echo "$response" | grep -q '"addUnitDebugCommand":true'; then
-  echo -e "\033[1;32mLog-upload command sent successfully.\033[0m"
+  echo -e "\033[1;32mLog-upload command sent successfully. Find them here:\033[0m"
+  dist_link="https://console.cloud.google.com/storage/browser/device-debugging-logs/$bucket_folder?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))&authuser=2&inv=1&invt=AbmZ4Q&project=connectedcars-147810"
+  echo -e "\033[4;34m$dist_link\033[0m"
 else
   echo -e "\033[1;31mFailed to send log-upload command.\033[0m"
   echo "Response: $response"
   exit 1
 fi
-
-dist_link="https://console.cloud.google.com/storage/browser/device-debugging-logs/$bucket_folder?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))&authuser=2&inv=1&invt=AbmZ4Q&project=connectedcars-147810"
-echo
-echo -e "\033[1;32mLogs are being uploaded to:\033[0m"
-echo -e "\033[4;34m$dist_link\033[0m"

@@ -28,12 +28,12 @@ fi
 
 # If master branch, make new branch for bump-srcrev
 if [[ "$dst_branch" == "master" ]]; then
-  read -p "YOCTO is \"$dst_branch\". Make new \"$src_branch\" branch? [Y/n]: " -r
-  git checkout -b "$src_branch" || exit 1 
+  read -p "YOCTO is \"$dst_branch\". Make new \"bump-cc-hal-srcrev\" branch? [Y/n]: " -r
+  git checkout -b "bump-cc-hal-srcrev" || exit 1 
 fi
 
 # Prompt for confirmation with default 'yes'
-read -p "Move cc-hal_0.1.0.bb from HAL branch \"$src_branch\" to YOCTO branch \"$dst_branch\"? [Y/n]: " -r
+read -p "Move cc-hal_0.1.0.bb from HAL branch \"$src_branch\" to YOCTO branch \"bump-cc-hal-srcrev\"? [Y/n]: " -r
 echo # Move to a new line
 
 if [[ $REPLY =~ ^[Nn]$ ]]

@@ -8,7 +8,7 @@ install() {
 }
 
 build() {
-  CARGO_PROFILE=fast-release ./build-all.sh
+  CARGO_PROFILE=fast-release ./build-all.sh || exit 1
 }
 
 deploy() {
@@ -27,6 +27,7 @@ deploy() {
     # Installing on remote
     echo "Starting ccupd install on the device"
     auth-wrapper ssh "$TARGET_NAME" sudo 'sh -c "ccupd install /tmp/rootfs-imx6ul.ccupd"'
+    # auth-wrapper ssh "$TARGET_NAME" sudo 'sh -c "ccupd install --config-install=/etc/ccupd/iwg26-v3-ag/install.ini /tmp/rootfs-imx6ul.ccupd"'
 
     echo "Please wait for the device to come online (approx. 1-2 minutes)"
     echo "Done"

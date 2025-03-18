@@ -1,0 +1,12 @@
+'{
+  "appSha":"550e1df46758c8d7285df47e7b8ea5336096c6c5",
+  "appBranch":"release-2025-1",
+  "rootfsSha":"18e9bb73c5cb0ef2172a3fbbdcdf2901ebff9bb4",
+  "rootfsBranch":"yocto-upgrade",
+  "kernelSha":"18e9bb73c5cb0ef2172a3fbbdcdf2901ebff9bb4",
+  "kernelBranch":"yocto-upgrade",
+  "bootloaderSha":"18e9bb73c5cb0ef2172a3fbbdcdf2901ebff9bb4",
+  "bootloaderBranch":"yocto-upgrade"
+}'
+
+

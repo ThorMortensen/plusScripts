@@ -60,7 +60,7 @@ tester_present=$(echo "$internal_state" | jq -r '
 ')
 
 if [ "$tester_present" = "None" ]; then
-  tester_detect_state=$(auth-wrapper ssh -S "$socket_path" support@"$device" "cat /data/HAL_CAN_TESTER_DETECTOR_STATE.json")
+  tester_detect_state=$(auth-wrapper ssh -S "$socket_path" support@"$device" "sudo cat /data/HAL_CAN_TESTER_DETECTOR_STATE.json")
 
   tester_present=$(echo "$tester_detect_state" | jq -r '
     if .blocked == true then "PRESSENT HAL" 
@@ -84,8 +84,10 @@ sticker_id=$(echo "$json_output" | jq -r '.sticker_id')
 
 device_type=$(auth-wrapper ssh -S "$socket_path" support@"$device" "hostname")
 ip_addr=$(auth-wrapper ssh -S "$socket_path" support@"$device" "$(cat $PS_DIR_WORKERS/device-info-remote-cmd.sh)")
-state=$(auth-wrapper ssh -S "$socket_path" support@"$device" "sudo cc-pmcli gpios")
+state=$(auth-wrapper ssh -S "$socket_path" support@"$device" "sudo cc-pm2cli get_gpios")
 gps=$(auth-wrapper ssh -S "$socket_path" support@"$device" "sudo cc-gpscli location")
+region=$(auth-wrapper ssh -S "$socket_path" support@"$device" "if [ -f /data/conf/region ]; then cat /data/conf/region; else echo None; fi")
+
 if auth-wrapper ssh -S "$socket_path" support@"$device" "test -f /data/accel2-calibration.json"; then
     calibrated="Yes"
 else
@@ -139,6 +141,7 @@ echo " VIN:    $vin"
 echo " Config: $config_name"
 echo " Tester: $tester_present"
 echo " Calib:  $calibrated"
+echo " Region: $region"
 print_title "~~Links~~"
 if [ "$vehicle_id" != "null" ]; then
   echo " Workshop: $(print_link "https://workshop.connectedcars.io/debug/vehicles/$vehicle_id")"

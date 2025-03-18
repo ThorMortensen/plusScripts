@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Directory where all your projects are stored
+PROJECTS_DIR="/path/to/your/projects"
+
+# Loop through each project directory
+for project in "$PROJECTS_DIR"/*; do
+    if [ -d "$project" ]; then
+        echo "Processing project: $project"
+
+        # Navigate to the project directory
+        cd "$project" || continue
+
+        # Replace "C:/Users/RenéBødtker/git/" with "${CC_KICAD_LIBRARY}/"
+        find . -type f \( -name "*.kicad_pcb" -o -name "*.sch" -o -name "*.lib" -o -name "*.dcm" -o -name "*.kicad_mod" \) \
+            -exec sed -i 's|C:/Users/RenéBødtker/git/|${CC_KICAD_LIBRARY}/|g' {} +
+
+        # Remove redundant "CC_Kicad_Library/" in the paths
+        find . -type f \( -name "*.kicad_pcb" -o -name "*.sch" -o -name "*.lib" -o -name "*.dcm" -o -name "*.kicad_mod" \) \
+            -exec sed -i 's|${CC_KICAD_LIBRARY}/CC_Kicad_Library/|${CC_KICAD_LIBRARY}/|g' {} +
+
+        # Replace "C:/Users/RenéBødtker/Downloads/" with "${CC_KICAD_LIBRARY}/Footprints/Stepfiles/"
+        find . -type f \( -name "*.kicad_pcb" -o -name "*.sch" -o -name "*.lib" -o -name "*.dcm" -o -name "*.kicad_mod" \) \
+            -exec sed -i 's|C:/Users/RenéBødtker/Downloads/|${CC_KICAD_LIBRARY}/Footprints/Stepfiles/|g' {} +
+
+        # Specifically handle cases where paths like "AW-22-03-G-D-122-075.stp" were missed
+        find . -type f \( -name "*.kicad_pcb" -o -name "*.sch" -o -name "*.lib" -o -name "*.dcm" -o -name "*.kicad_mod" \) \
+            -exec sed -i 's|C:/Users/RenéBødtker/Downloads/AW-22-03-G-D-122-075.stp|${CC_KICAD_LIBRARY}/Footprints/Stepfiles/AW-22-03-G-D-122-075.stp|g' {} +
+    fi
+done
+
+echo "All projects processed successfully!"

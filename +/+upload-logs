@@ -28,7 +28,9 @@ if [ -z "$device" ]; then
   start_spinner "Fetching device ID from $SELECTED_DEVICE"
   device=$(auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null support@"$SELECTED_DEVICE" "cc-info" | grep 'cpu_id' | awk -F': ' '{print $2}')
   stop_spinner
+else 
+  shift
 fi
 echo "Device ID: $device"
 
-$PS_DIR_WORKERS/upload-logs.sh $device
+$PS_DIR_WORKERS/upload-logs.sh -d "$device" "$@"

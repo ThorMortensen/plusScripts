@@ -21,13 +21,13 @@ then
   device="$SELECTED_DEVICE"
 fi
 
-file_path="/data/conf/ccapp.env"
+file_path="/data/env/ccapp.env"
 
 ccapp_env=$(auth-wrapper ssh support@"$device" "[ -f $file_path ] && cat $file_path")
 
 if [ -z "$ccapp_env" ]; then
   echo "ccapp.env not found. Making a new one."
-  ccapp_env=$(auth-wrapper ssh support@"$device" "sudo touch $file_path")
+  ccapp_env=$(auth-wrapper ssh support@"$device" "sudo mkdir -p /data/env && sudo touch $file_path")
 
 else 
   echo "Current ccapp.env:"

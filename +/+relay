@@ -1,11 +1,7 @@
 #!/bin/bash
 
-
-
+# Source external paths
 . plusScriptsPaths
-
-name=${ids_to_names["$1"]}
-
 
 # Define a function to handle the SIGINT signal
 handle_sigint() {
@@ -14,7 +10,118 @@ handle_sigint() {
 }
 trap handle_sigint SIGINT
 
-start_spinner "Power off $name"
-auth-wrapper ssh nuc "cd ~/device-station && npm run relay \"$name\" "${@:2}" > /dev/null 2>&1"
-stop_spinner
-echo "$name is set to "${@:2}""
+# Port list (modify this if more ports are added)
+ports=("port2" "port4")
+
+# Display usage if no arguments are provided
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $0 [port_name|all] [r|p|i]..."
+    exit 1
+fi
+
+# Determine the ports to operate on
+if [[ "$1" == "all" ]]; then
+    selected_ports=("${ports[@]}")
+elif  [[ -n "$1" ]];  then
+    selected_ports=("$1")
+else
+    echo "Error: Invalid port name '$1'. Use a valid port name or 'all'."
+    echo "Usage: $0 [port_name|all] [r|p|i]..."
+    exit 1
+fi
+
+
+# Initialize relay states
+relay_r="off"
+relay_p="off"
+relay_i="off"
+
+# Parse arguments to determine relays to enable (default to "all off" if no arguments are given)
+if [ "$#" -eq 1 ]; then
+    # No relay arguments provided, keep all relays off
+    echo "No relays specified. Turning all relays off for selected ports."
+else
+    for arg in "${@:2}"; do
+        case "$arg" in
+            r) relay_r="on" ;;
+            p) relay_p="on" ;;
+            i) relay_i="on" ;;
+            *) echo "Warning: Unknown argument '$arg' ignored." ;;
+        esac
+    done
+fi
+
+
+# Construct commands for turning relays off and on
+for port in "${selected_ports[@]}"; do
+    name=${ids_to_names["$port"]} # Correctly map the port name
+    disable_command="relay \"$name\" off"
+    enable_command="relay \"$name\" on"
+    
+    base_disable_command=$disable_command
+    base_enable_command=$enable_command
+
+
+    if [ "$relay_r" = "off" ]; then
+        disable_command+=" r"
+    fi
+    if [ "$relay_p" = "off" ]; then
+        disable_command+=" p"
+    fi
+    if [ "$relay_i" = "off" ]; then
+        disable_command+=" i"
+    fi
+    if [ "$relay_r" = "on" ]; then
+        enable_command+=" r"
+    fi
+    if [ "$relay_p" = "on" ]; then
+        enable_command+=" p"
+    fi
+    if [ "$relay_i" = "on" ]; then
+        enable_command+=" i"
+    fi
+
+    echo "Port $port: $disable_command -> $enable_command"
+
+    # Execute commands for each port
+    start_spinner "Setting relays for $name"
+
+    # Ensure the disable command is always executed
+    if [[ "$disable_command" != "$base_disable_command" ]]; then
+        auth-wrapper ssh nuc "cd ~/device-station && npm run $disable_command > /dev/null 2>&1"
+    fi 
+
+    # Execute the enable command only if there are relays to turn on
+    if [[ "$enable_command" != "$base_enable_command" ]]; then
+        auth-wrapper ssh nuc "cd ~/device-station && npm run $enable_command > /dev/null 2>&1"
+    fi
+
+    stop_spinner
+
+    # Print overview-style output for each port
+    echo "Relays for $name set: r=$relay_r, p=$relay_p, i=$relay_i"
+done
+
+
+
+# #!/bin/bash
+
+
+
+# . plusScriptsPaths
+
+# name=${ids_to_names["$1"]}
+
+
+# # Define a function to handle the SIGINT signal
+# handle_sigint() {
+#     stop_spinner
+#     exit 1
+# }
+# trap handle_sigint SIGINT
+
+# start_spinner "Power off $name"
+# auth-wrapper ssh nuc "cd ~/device-station && npm run relay \"$name\" "${@:2}" > /dev/null 2>&1"
+
+# stop_spinner
+# echo "$name is set to "${@:2}""

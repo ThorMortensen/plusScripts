@@ -51,3 +51,6 @@ else
     git push
     echo "Release created!"
 fi
+
+gco master
+git branch -D bump-cc-hal-srcrev

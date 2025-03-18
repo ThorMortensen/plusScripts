@@ -22,7 +22,7 @@ fi
 
 if [ "$persist" == "true" ]; then
   while true; do 
-    expect "$PS_DIR_WORKERS/device_ssh_init.exp" "$device"  "$PS_DIR_WORKERS/device.rc" 
+    expect "$PS_DIR_WORKERS/device_ssh_init.exp" "$device"  "$PS_DIR_WORKERS/device.rc" "export PS1=\"\\\[\\e[33m\\]$device\\\[\\e[32m\\]@\\h:\\[\\e[34m\\]\\w\\[\\e[0m\\]\\# \""
   done
 else 
   expect "$PS_DIR_WORKERS/device_ssh_init.exp" "$device"  "$PS_DIR_WORKERS/device.rc" "export PS1=\"\\\[\\e[33m\\]$device\\\[\\e[32m\\]@\\h:\\[\\e[34m\\]\\w\\[\\e[0m\\]\\# \""

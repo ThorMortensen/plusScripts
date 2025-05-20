@@ -81,8 +81,6 @@ for port in "${selected_ports[@]}"; do
         enable_command+=" i"
     fi
 
-    echo "Port $port: $disable_command -> $enable_command"
-
     # Execute commands for each port
     start_spinner "Setting relays for $name"
 

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+TARGET=$1
+
+INTERNAL_STATE_FILE_NAME="/data/accel2-calibration.json"
+
+# this pulls the internal state
+rsync -chavzP \
+  -e "auth-wrapper ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+  support@"$TARGET":"$INTERNAL_STATE_FILE_NAME" .
+
+  
+# pretty-print with jq
+jq . "accel2-calibration.json"å

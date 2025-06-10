@@ -74,9 +74,9 @@ impl Args {
             app: Some("a7903582a2b09f269935668c08c582379a9c9461".into()),
             rootfs: Some("dbb049c90b2b307df14423a25816be2a8a990ddf".into()),
             kernel: Some("dbb049c90b2b307df14423a25816be2a8a990ddf".into()),
-            // device_id: Some("d5b0941d302d61d4".into()),
+            device_id: Some("d5b0941d302d61d4".into()),
             // release_id: Some("888".into()),
-            device_id: None,
+            // device_id: None,
             release_id: None,
             jwt: false,
             jwt_save: Some(PathBuf::from_str("/tmp/test-jwt.token").unwrap()),
@@ -246,6 +246,8 @@ async fn get_device_info(jwt_token: &str, di: &str) -> Result<DeviceData, Lookup
 
     let device_info: device_info::ResponseData = device_info_response_body.await?.data.unwrap();
 
+    println!("{:#?}", device_info);
+
     if let Some(unit) = device_info.unit {
         if let Some(fw) = unit.firmware_rollout_group {
             device_data.rg_id = Some(fw.id.clone());
@@ -357,8 +359,8 @@ pub async fn get_jwt(save_path: Option<PathBuf>) -> Result<String, Box<dyn Error
 
 #[main]
 async fn main() {
-    // let args = Args::_make_debug_variant();
-    let args = Args::parse();
+    let args = Args::_make_debug_variant();
+    // let args = Args::parse();
 
     let mut fw_id = None;
     let mut device_data = DeviceData::default();

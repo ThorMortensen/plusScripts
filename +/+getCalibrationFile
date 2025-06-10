@@ -11,4 +11,4 @@ rsync -chavzP \
 
   
 # pretty-print with jq
-jq . "accel2-calibration.json"å
+jq . "accel2-calibration.json"

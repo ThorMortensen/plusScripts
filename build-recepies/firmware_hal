@@ -1,11 +1,11 @@
 #!/bin/bash
 
 
-install() {
-  echo "Command not supported: $1"
-  echo "Move to the root of the part you want to install and run:"
-  echo "cargo +stable install --path ."
-}
+# install() {
+#   echo "Command not supported: $1"
+#   echo "Move to the root of the part you want to install and run:"
+#   echo "cargo +stable install --path ."
+# }
 
 build() {
   CARGO_PROFILE=fast-release ./build-all.sh || exit 1
@@ -51,6 +51,12 @@ clean() {
   fi
 }
 
+
+
+install() {
+  echo "Installing firmware-hal from $2"
+  cargo +stable install --path $2
+}
 
 test() {
   cargo test

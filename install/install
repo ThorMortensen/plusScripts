@@ -6,7 +6,7 @@ source ../workers/globals
 
 install_dependancys() {
   $PS_DIR_PLUS/+update
-  yay -S xclip git ruby sshfs ruby-dev nmap curl libudev-dev pkg-config ranger xautomation xbindkeys tig lnav expect
+  yay -S xclip git sshfs nmap curl libudev-dev pkg-config ranger xautomation xbindkeys tig lnav expect
 }
 
 install_bundler_gems() {

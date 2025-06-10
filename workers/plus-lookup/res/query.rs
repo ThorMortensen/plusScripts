@@ -130,6 +130,8 @@ pub mod device_info {
         onomondo,
         telenor,
         tele2,
+        tyrkcel,
+        tyrktelecom,
         Other(String),
     }
     impl ::serde::Serialize for SimProvider {
@@ -138,6 +140,8 @@ pub mod device_info {
                 SimProvider::onomondo => "onomondo",
                 SimProvider::telenor => "telenor",
                 SimProvider::tele2 => "tele2",
+                SimProvider::tyrkcel => "tyrkcel",
+                SimProvider::tyrktelecom => "tyrktelecom",
                 SimProvider::Other(ref s) => &s,
             })
         }
@@ -149,6 +153,8 @@ pub mod device_info {
                 "onomondo" => Ok(SimProvider::onomondo),
                 "telenor" => Ok(SimProvider::telenor),
                 "tele2" => Ok(SimProvider::tele2),
+                "tyrkcel" => Ok(SimProvider::tyrkcel),
+                "tyrktelecom" => Ok(SimProvider::tyrktelecom),
                 _ => Ok(SimProvider::Other(s)),
             }
         }

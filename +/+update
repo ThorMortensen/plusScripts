@@ -1,4 +1,12 @@
 #!/bin/bash
 
-sudo apt-get update -y
-sudo apt-get upgrade -y
+# Detect distro
+if grep -qi 'ubuntu' /etc/os-release; then
+    sudo apt-get update -y
+    sudo apt-get upgrade -y
+elif grep -qi 'endeavouros' /etc/os-release; then
+    yes | yay
+else
+    echo "Unsupported distribution."
+    exit 1
+fi

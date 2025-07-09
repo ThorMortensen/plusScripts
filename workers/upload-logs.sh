@@ -5,6 +5,7 @@ USE_PROXY=false
 ENABLE_SSH=false
 DURATION=6
 DEVICE_ID=""
+ONLY_ACCEL=false
 
 usage() {
   echo "Usage: $0 [options]"
@@ -14,6 +15,7 @@ usage() {
   echo "  -p, --proxy              Use proxy for upload (default: false)"
   echo "  -s, --ssh                Enable SSH (default: false)"
   echo "  -t, --timealive HOURS    Set duration in hours (default: 6)"
+  echo "  -a, --accel              Only upload accel"
   echo "  -h, --help               Display this help message"
 }
 
@@ -38,6 +40,11 @@ while [[ "$#" -gt 0 ]]; do
     -s|--ssh)
       echo "Enabling SSH"
       ENABLE_SSH=true
+      shift
+      ;;
+    -a|--accel)
+      echo "Only uploading accel logs"
+      ONLY_ACCEL=true
       shift
       ;;
     -t|--timealive)
@@ -134,6 +141,20 @@ echo "Assembling GraphQL command..."
 # Convert the ENABLE_SSH flag to JSON boolean
 ssh_enabled_value=$( [ "$ENABLE_SSH" = true ] && echo true || echo false )
 
+if [ "$ONLY_ACCEL" = true ]; then
+log_cmd=$(cat <<EOF
+  "{\"logs\": [
+    {
+      \"upload_url\": \"$accel_url\",
+      \"compress\": false,
+      \"log_type\": \"Accel\"
+    }
+  ],
+    \"ssh\": $ssh_enabled_value
+  }"
+EOF
+)
+else
 log_cmd=$(cat <<EOF
   "{\"logs\": [
     {
@@ -161,6 +182,8 @@ log_cmd=$(cat <<EOF
   }"
 EOF
 )
+fi
+
 
 log_cmd_clean=$(echo "$log_cmd" | tr -d '\n' | tr -s ' ')
 
@@ -174,6 +197,8 @@ mutation addDebugCommands {
 }
 EOF
 )
+
+echo "debug_cmd: $debug_cmd"
 
 echo "Fetching tokens..."
 

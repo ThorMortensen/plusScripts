@@ -147,15 +147,15 @@ while true ; do
     if [ "$cmd" == "clear" ] 
     then
       start_spinner "Clearing log level for $selected_service_raw"
-      auth-wrapper ssh support@"$device" "sudo rm /data/env/$selected_service.env"
+      auth-wrapper ssh support@"$device" "rm /data/env/$selected_service.env"
     else 
       start_spinner "Setting log level $cmd for $selected_service_raw"
 
       if [ "$selected_service" == "ccapp" ] 
       then
-        auth-wrapper ssh support@"$device" "sudo mkdir -p /data/env/ &&   touch /data/conf/ccapp.env && echo \"LOG_LEVEL=$cmd\" > /data/conf/ccapp.env"
+        auth-wrapper ssh support@"$device" "sudo mkdir -p /data/env/ && sudo touch /data/conf/ccapp.env && echo \"LOG_LEVEL=$cmd\" > /data/conf/ccapp.env"
       else
-        auth-wrapper ssh support@"$device" "sudo mkdir -p /data/env/ &&   touch /data/env/$selected_service.env && echo \"RUST_LOG=$cmd\" > /data/env/$selected_service.env"
+        auth-wrapper ssh support@"$device" "sudo mkdir -p /data/env/ && sudo touch /data/env/$selected_service.env && echo \"RUST_LOG=$cmd\" > /data/env/$selected_service.env"
       fi
     fi
       # echo "service $selected_service $cmd"

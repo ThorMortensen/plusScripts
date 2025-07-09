@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Directory where all your projects are stored
-PROJECTS_DIR="/path/to/your/projects"
+# Current path with pwd 
+PROJECTS_DIR="$(pwd)"
 
 # Loop through each project directory
 for project in "$PROJECTS_DIR"/*; do

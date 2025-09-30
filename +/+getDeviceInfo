@@ -70,7 +70,15 @@ if [ "$tester_present" = "None" ]; then
   ')
 fi
 
-json_output=$(plus-lookup --bootloader "$bootloader" --app "$app" --kernel "$kernel" --rootfs "$rootfs" --device-id "$cpu_id")
+# Extract only the valid JSON block from the output
+json_output=$(plus-lookup --bootloader "$bootloader" --app "$app" --kernel "$kernel" --rootfs "$rootfs" --device-id "$cpu_id" | awk '/^{/,/}$/' | jq -c '.')
+
+# Check if the JSON extraction was successful
+if [ -z "$json_output" ]; then
+    echo "Error: Failed to extract valid JSON from plus-lookup output."
+    exit 1
+fi
+
 fw_id=$(echo "$json_output" | jq -r '.fw_id')
 rg_name=$(echo "$json_output" | jq -r '.rg_name')
 rg_id=$(echo "$json_output" | jq -r '.rg_id')

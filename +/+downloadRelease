@@ -1,11 +1,17 @@
+
 #!/bin/bash
+set -euo pipefail
+
 . plusScriptsPaths
-RELEASE_ID=$1
-RELEASE_NAME=$2
+RELEASE_ID=${1:-}
+RELEASE_NAME=${2:-}
+
+# Where to persist last target selection (mirrors how GLOBAL_RELEASE_SELECTED is used)
+DOWNLOAD_TARGET_SELECTED="${PS_DIR:-$HOME/.plus}/.download_target"
 
 lookup_release() {
   start_spinner "Fetching shas for release $RELEASE_ID"
-  json_output=$(plus-lookup --release-id $RELEASE_ID)
+  json_output=$(plus-lookup --release-id "$RELEASE_ID")
 
   app_sha=$(echo "$json_output" | jq -r '.app_sha')
   app_branch=$(echo "$json_output" | jq -r '.app_branch')
@@ -17,25 +23,40 @@ lookup_release() {
   kernel_branch=$(echo "$json_output" | jq -r '.kernel_branch')
 
   # if any is "null" exit
-  if [[ "$app_sha" == "null" || "$app_branch" == "null" || "$bootloader_sha" == "null" || "$bootloader_branch" == "null" || "$rootfs_sha" == "null" || "$rootfs_branch" == "null" || "$kernel_sha" == "null" || "$kernel_branch" == "null" ]]; then
+  if [[ "$app_sha" == "null" || "$app_branch" == "null" || \
+        "$bootloader_sha" == "null" || "$bootloader_branch" == "null" || \
+        "$rootfs_sha" == "null" || "$rootfs_branch" == "null" || \
+        "$kernel_sha" == "null" || "$kernel_branch" == "null" ]]; then
     stop_spinner
     echo "Release \"$RELEASE_ID\" not found"
     exit 1
   fi
 
-  release_info=$(cat << EOF 
-'{
-  "appSha":"$app_sha",
-  "appBranch":"$app_branch",
-  "rootfsSha":"$rootfs_sha",
-  "rootfsBranch":"$rootfs_branch",
-  "kernelSha":"$kernel_sha",
-  "kernelBranch":"$kernel_branch",
-  "bootloaderSha":"$bootloader_sha",
-  "bootloaderBranch":"$bootloader_branch"
-}'
-EOF
+  release_info=$(cat << 'JSON_EOF'
+{
+  "appSha":"__APP_SHA__",
+  "appBranch":"__APP_BRANCH__",
+  "rootfsSha":"__ROOTFS_SHA__",
+  "rootfsBranch":"__ROOTFS_BRANCH__",
+  "kernelSha":"__KERNEL_SHA__",
+  "kernelBranch":"__KERNEL_BRANCH__",
+  "bootloaderSha":"__BOOTLOADER_SHA__",
+  "bootloaderBranch":"__BOOTLOADER_BRANCH__"
+}
+JSON_EOF
 )
+  # Substitute placeholders safely
+  release_info=${release_info/__APP_SHA__/$app_sha}
+  release_info=${release_info/__APP_BRANCH__/$app_branch}
+  release_info=${release_info/__ROOTFS_SHA__/$rootfs_sha}
+  release_info=${release_info/__ROOTFS_BRANCH__/$rootfs_branch}
+  release_info=${release_info/__KERNEL_SHA__/$kernel_sha}
+  release_info=${release_info/__KERNEL_BRANCH__/$kernel_branch}
+  release_info=${release_info/__BOOTLOADER_SHA__/$bootloader_sha}
+  release_info=${release_info/__BOOTLOADER_BRANCH__/$bootloader_branch}
+
+  # Wrap as single-quoted string to match original npm usage
+  release_info="'$(printf '%s' "$release_info")'"
   stop_spinner
 }
 
@@ -43,82 +64,254 @@ save_release(){
   local release_name=$1
   local release_info=$2
   echo "Saving release $release_name"
-  echo "$release_info" > $PS_DIR_RELEASES/$release_name
+  printf '%s\n' "$release_info" > "$PS_DIR_RELEASES/$release_name"
 }
 
 download_release_on_nuc() {
   local release_name=$1
   local release_info=$2
-echo "Downloading release $release_name"
+  echo "Downloading release $release_name on nuc"
 
-auth-wrapper ssh nuc << EOF
+  # Keep remote flow identical to original
+  auth-wrapper ssh nuc << EOF
 rm -rf ./device-station/downloads/$release_name
-cd device-station &&  npm run download $release_info $release_name
+cd device-station && npm run download $release_info $release_name
 EOF
+}
+
+download_release_locally() {
+  local release_name=$1
+  local release_info=$2
+  # Must run from git root of current dir
+  local git_root
+  if ! git_root=$(git rev-parse --show-toplevel 2>/dev/null); then
+    echo "Error: not inside a git repository. Cannot determine git root."
+    exit 1
+  fi
+
+  echo "Downloading release $release_name locally at: $git_root"
+  (
+    cd "$git_root/device-station"
+    rm -rf "./downloads/$release_name"
+    # Quote release_info so it is passed as a single arg (it already includes outer single quotes)
+    npm run download "$release_info" "$release_name"
+  )
 }
 
 prompt_release_name() {
-  releasen_names=$(ls -A1 $PS_DIR_RELEASES | grep -v '~$' | tr '\n' ' ' | sed 's/ *$//')
-  selected_release=$(plus-menu --items "$releasen_names" --persist-path "$GLOBAL_RELEASE_SELECTED" --prompt-msg "$1") 
+  local prompt="$1"
+  # List releases (ignore backup files ending with ~)
+  local release_names
+  release_names=$(ls -A1 "$PS_DIR_RELEASES" | grep -v '~$' | tr '\n' ' ' | sed 's/ *$//')
+  local selected_release
+  selected_release=$(plus-menu --items "$release_names" --persist-path "$GLOBAL_RELEASE_SELECTED" --prompt-msg "$prompt")
   echo "$selected_release"
-  return "$selected_release"
 }
 
-release_info=""
+prompt_target() {
+  local selected
+  selected=$(plus-menu --items "local nuc" --persist-path "$DOWNLOAD_TARGET_SELECTED" --prompt-msg "Download where?")
+  echo "$selected"
+}
 
-if [[ "$1" == "--clean" ]]; then
+# --clean flow: remove saved releases
+if [[ "${1:-}" == "--clean" ]]; then
   while true; do
     dye red "Removes selected release!!!"
     RELEASE_NAME=$(prompt_release_name "Select release to REMOVE")
+    [[ -z "$RELEASE_NAME" ]] && continue
     echo "rm $PS_DIR_RELEASES/$RELEASE_NAME"
-    rm $PS_DIR_RELEASES/$RELEASE_NAME
+    rm -f "$PS_DIR_RELEASES/$RELEASE_NAME"
   done
 fi
 
-# If reelase name is empty use release id as name
-if [[ -z "$RELEASE_NAME" ]]; then
+# If release name is empty use release id as name
+if [[ -z "${RELEASE_NAME:-}" && -n "${RELEASE_ID:-}" ]]; then
   RELEASE_NAME=$RELEASE_ID
 fi
 
-if [[ "$RELEASE_NAME" == "master" ]]; then
+# Special: master
+if [[ "${RELEASE_NAME:-}" == "master" ]]; then
   yocto_master_sha=$(git ls-remote git@github.com:connectedcars/firmware_yocto.git master | awk '{ print $1 }')
   app_master_sha=$(git ls-remote git@github.com:connectedcars/firmware.git master | awk '{ print $1 }')
-  echo "Updateing master release"
+  echo "Updating master release"
   echo "Yocto master sha: $yocto_master_sha"
   echo "App master sha: $app_master_sha"
-  cat << EOF > $PS_DIR_RELEASES/master
-  '{
-    "appSha": "$app_master_sha",
-    "appBranch": "master",
-    "rootfsSha": "$yocto_master_sha",
-    "rootfsBranch": "master",
-    "kernelSha": "$yocto_master_sha",
-    "kernelBranch": "master",
-    "bootloaderSha": "$yocto_master_sha",
-    "bootloaderBranch": "master"
-  }'
+  cat > "$PS_DIR_RELEASES/master" << EOF
+'{
+  "appSha": "$app_master_sha",
+  "appBranch": "master",
+  "rootfsSha": "$yocto_master_sha",
+  "rootfsBranch": "master",
+  "kernelSha": "$yocto_master_sha",
+  "kernelBranch": "master",
+  "bootloaderSha": "$yocto_master_sha",
+  "bootloaderBranch": "master"
+}'
 EOF
 fi
 
-
+release_info=""
 
 # if no arguments serve release folder names
-if [[ -z "$RELEASE_ID" ]]; then
+if [[ -z "${RELEASE_ID:-}" ]]; then
   RELEASE_NAME=$(prompt_release_name "Select release to download")
-  release_info=$(cat $PS_DIR_RELEASES/$RELEASE_NAME)
+  [[ -z "$RELEASE_NAME" ]] && { echo "No release selected"; exit 1; }
+  release_info=$(cat "$PS_DIR_RELEASES/$RELEASE_NAME")
 fi
 
 # Check if release already exists
 if [[ -f "$PS_DIR_RELEASES/$RELEASE_NAME" ]]; then
   echo "Release $RELEASE_NAME already exists"
-  release_info=$(cat $PS_DIR_RELEASES/$RELEASE_NAME)
+  release_info=$(cat "$PS_DIR_RELEASES/$RELEASE_NAME")
 else
   lookup_release
-  save_release $RELEASE_NAME "$release_info"
+  save_release "$RELEASE_NAME" "$release_info"
 fi
 
-
-download_release_on_nuc $RELEASE_NAME "$release_info"
-
+# Ask where to download (local vs nuc)
+TARGET=$(prompt_target)
+case "$TARGET" in
+  local)
+    download_release_locally "$RELEASE_NAME" "$release_info"
+    ;;
+  nuc)
+    download_release_on_nuc "$RELEASE_NAME" "$release_info"
+    ;;
+  *)
+    echo "Invalid selection: $TARGET"
+    exit 1
+    ;;
+esac
 
 # node download.js '{"appSha":"value1","appBranch":"value2","rootfsSha":"value3","rootfsBranch":"value4","kernelSha":"value5","kernelBranch":"value6","bootloaderSha":"value7","bootloaderBranch":"value8"}'
+
+
+
+
+
+
+# #!/bin/bash
+# . plusScriptsPaths
+# RELEASE_ID=$1
+# RELEASE_NAME=$2
+
+# lookup_release() {
+#   start_spinner "Fetching shas for release $RELEASE_ID"
+#   json_output=$(plus-lookup --release-id $RELEASE_ID)
+
+#   app_sha=$(echo "$json_output" | jq -r '.app_sha')
+#   app_branch=$(echo "$json_output" | jq -r '.app_branch')
+#   bootloader_sha=$(echo "$json_output" | jq -r '.bootloader_sha')
+#   bootloader_branch=$(echo "$json_output" | jq -r '.bootloader_branch')
+#   rootfs_sha=$(echo "$json_output" | jq -r '.rootfs_sha')
+#   rootfs_branch=$(echo "$json_output" | jq -r '.rootfs_branch')
+#   kernel_sha=$(echo "$json_output" | jq -r '.kernel_sha')
+#   kernel_branch=$(echo "$json_output" | jq -r '.kernel_branch')
+
+#   # if any is "null" exit
+#   if [[ "$app_sha" == "null" || "$app_branch" == "null" || "$bootloader_sha" == "null" || "$bootloader_branch" == "null" || "$rootfs_sha" == "null" || "$rootfs_branch" == "null" || "$kernel_sha" == "null" || "$kernel_branch" == "null" ]]; then
+#     stop_spinner
+#     echo "Release \"$RELEASE_ID\" not found"
+#     exit 1
+#   fi
+
+#   release_info=$(cat << EOF 
+# '{
+#   "appSha":"$app_sha",
+#   "appBranch":"$app_branch",
+#   "rootfsSha":"$rootfs_sha",
+#   "rootfsBranch":"$rootfs_branch",
+#   "kernelSha":"$kernel_sha",
+#   "kernelBranch":"$kernel_branch",
+#   "bootloaderSha":"$bootloader_sha",
+#   "bootloaderBranch":"$bootloader_branch"
+# }'
+# EOF
+# )
+#   stop_spinner
+# }
+
+# save_release(){
+#   local release_name=$1
+#   local release_info=$2
+#   echo "Saving release $release_name"
+#   echo "$release_info" > $PS_DIR_RELEASES/$release_name
+# }
+
+# download_release_on_nuc() {
+#   local release_name=$1
+#   local release_info=$2
+# echo "Downloading release $release_name"
+
+# auth-wrapper ssh nuc << EOF
+# rm -rf ./device-station/downloads/$release_name
+# cd device-station &&  npm run download $release_info $release_name
+# EOF
+# }
+
+# prompt_release_name() {
+#   releasen_names=$(ls -A1 $PS_DIR_RELEASES | grep -v '~$' | tr '\n' ' ' | sed 's/ *$//')
+#   selected_release=$(plus-menu --items "$releasen_names" --persist-path "$GLOBAL_RELEASE_SELECTED" --prompt-msg "$1") 
+#   echo "$selected_release"
+#   return "$selected_release"
+# }
+
+# release_info=""
+
+# if [[ "$1" == "--clean" ]]; then
+#   while true; do
+#     dye red "Removes selected release!!!"
+#     RELEASE_NAME=$(prompt_release_name "Select release to REMOVE")
+#     echo "rm $PS_DIR_RELEASES/$RELEASE_NAME"
+#     rm $PS_DIR_RELEASES/$RELEASE_NAME
+#   done
+# fi
+
+# # If reelase name is empty use release id as name
+# if [[ -z "$RELEASE_NAME" ]]; then
+#   RELEASE_NAME=$RELEASE_ID
+# fi
+
+# if [[ "$RELEASE_NAME" == "master" ]]; then
+#   yocto_master_sha=$(git ls-remote git@github.com:connectedcars/firmware_yocto.git master | awk '{ print $1 }')
+#   app_master_sha=$(git ls-remote git@github.com:connectedcars/firmware.git master | awk '{ print $1 }')
+#   echo "Updateing master release"
+#   echo "Yocto master sha: $yocto_master_sha"
+#   echo "App master sha: $app_master_sha"
+#   cat << EOF > $PS_DIR_RELEASES/master
+#   '{
+#     "appSha": "$app_master_sha",
+#     "appBranch": "master",
+#     "rootfsSha": "$yocto_master_sha",
+#     "rootfsBranch": "master",
+#     "kernelSha": "$yocto_master_sha",
+#     "kernelBranch": "master",
+#     "bootloaderSha": "$yocto_master_sha",
+#     "bootloaderBranch": "master"
+#   }'
+# EOF
+# fi
+
+
+
+# # if no arguments serve release folder names
+# if [[ -z "$RELEASE_ID" ]]; then
+#   RELEASE_NAME=$(prompt_release_name "Select release to download")
+#   release_info=$(cat $PS_DIR_RELEASES/$RELEASE_NAME)
+# fi
+
+# # Check if release already exists
+# if [[ -f "$PS_DIR_RELEASES/$RELEASE_NAME" ]]; then
+#   echo "Release $RELEASE_NAME already exists"
+#   release_info=$(cat $PS_DIR_RELEASES/$RELEASE_NAME)
+# else
+#   lookup_release
+#   save_release $RELEASE_NAME "$release_info"
+# fi
+
+
+# download_release_on_nuc $RELEASE_NAME "$release_info"
+
+
+# # node download.js '{"appSha":"value1","appBranch":"value2","rootfsSha":"value3","rootfsBranch":"value4","kernelSha":"value5","kernelBranch":"value6","bootloaderSha":"value7","bootloaderBranch":"value8"}'

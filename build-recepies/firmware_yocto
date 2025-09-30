@@ -24,7 +24,7 @@ build() {
 deploy() {
     echo "Deploying to $2"
     build "$@"
-  ./ccupd-target.sh rootfs $2
+  ./ccupd-target.sh image $2
 }
 
 test() {

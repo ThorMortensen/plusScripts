@@ -359,8 +359,8 @@ pub async fn get_jwt(save_path: Option<PathBuf>) -> Result<String, Box<dyn Error
 
 #[main]
 async fn main() {
-    let args = Args::_make_debug_variant();
-    // let args = Args::parse();
+    // let args = Args::_make_debug_variant();
+    let args = Args::parse();
 
     let mut fw_id = None;
     let mut device_data = DeviceData::default();

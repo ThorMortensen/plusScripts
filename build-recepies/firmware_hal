@@ -8,6 +8,7 @@
 # }
 
 build() {
+  docker pull europe-west1-docker.pkg.dev/connectedcars-build/firmware-yocto-sdk/master
   CARGO_PROFILE=fast-release ./build-all.sh || exit 1
 }
 
@@ -54,6 +55,7 @@ clean() {
 
 
 install() {
+  docker pull europe-west1-docker.pkg.dev/connectedcars-build/firmware-yocto-sdk/master
   echo "Installing firmware-hal from $2"
   cargo +stable install --path $2
 }

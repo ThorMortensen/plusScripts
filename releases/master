@@ -1,10 +1,10 @@
-  '{
-    "appSha": "550e1df46758c8d7285df47e7b8ea5336096c6c5",
-    "appBranch": "master",
-    "rootfsSha": "d3343bae063975903807a7502814ca528fdec172",
-    "rootfsBranch": "master",
-    "kernelSha": "d3343bae063975903807a7502814ca528fdec172",
-    "kernelBranch": "master",
-    "bootloaderSha": "d3343bae063975903807a7502814ca528fdec172",
-    "bootloaderBranch": "master"
-  }'
+'{
+  "appSha": "35e843e769825677eb27fe01ba7f8d288cd4d725",
+  "appBranch": "master",
+  "rootfsSha": "c693633671f1283346eecc62fa4529a10122ac80",
+  "rootfsBranch": "master",
+  "kernelSha": "c693633671f1283346eecc62fa4529a10122ac80",
+  "kernelBranch": "master",
+  "bootloaderSha": "c693633671f1283346eecc62fa4529a10122ac80",
+  "bootloaderBranch": "master"
+}'

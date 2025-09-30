@@ -120,6 +120,7 @@ export EDITOR
 
 alias å="code ~/.common_rc"
 alias åå="code ~/plusScripts/config/zshrc_stuff"
+alias combine_audio="pactl load-module module-combine-sink" 
 
 # setopt correct
 

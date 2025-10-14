@@ -11,6 +11,7 @@ PS_DIR_WORKERS=$PS_DIR/workers
 PS_DIR_RELEASES=$PS_DIR/releases
 PS_DIR_BUILD_RES=$PS_DIR/build-recepies
 PS_DIR_PERSIST="$HOME/.plus-script-persist"
+GLOBAL_REMOTE_CLI_CMD_SELECTED="$PS_DIR_PERSIST/remote-cli-cmd-selected"
 PS_DIR_PERSIST_DEFAULT="$PS_DIR/persist-defaults"
 # GITROOT="$(git rev-parse --show-toplevel)"
 

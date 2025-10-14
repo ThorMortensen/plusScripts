@@ -10,6 +10,10 @@ struct Args {
     #[arg(short, long,  value_delimiter = ' ', num_args = 1..)]
     items: Vec<String>,
 
+    /// Items provided as delimited strings (newline, literal \n, or pipe)
+    #[arg(long = "item-strings", value_name = "ITEM_STRINGS")]
+    item_strings: Vec<String>,
+
     /// Persist path
     #[arg(short, long)]
     persist_path: Option<PathBuf>,
@@ -27,6 +31,12 @@ fn main() {
     let args = Args::parse();
     let mut last_used = 0;
     let mut save = None;
+
+    let items = collect_items(&args);
+    if items.is_empty() {
+        eprintln!("No menu items provided. Use --items or --item-strings.");
+        std::process::exit(1);
+    }
 
     let prompt_msg = match args.prompt_msg {
         Some(msg) => msg,
@@ -52,19 +62,40 @@ fn main() {
         save = Some(path);
     }
 
+    let default_index = last_used.min(items.len().saturating_sub(1));
+
     let select = Select::with_theme(&ColorfulTheme::default())
         .with_prompt(prompt_msg)
-        .default(0)
-        .items(&args.items)
-        .default(last_used)
+        .items(&items)
+        .default(default_index)
         .interact()
         .unwrap();
 
-    let selected = args.items[select].clone();
+    let selected = items[select].clone();
 
     if let Some(path) = save {
         std::fs::write(path, select.to_string()).unwrap();
     }
 
     print!("{}", selected);
+}
+
+fn collect_items(args: &Args) -> Vec<String> {
+    let mut items = args.items.clone();
+
+    for chunk in &args.item_strings {
+        items.extend(split_item_strings(chunk));
+    }
+
+    items.retain(|item| !item.trim().is_empty());
+    items
+}
+
+fn split_item_strings(raw: &str) -> Vec<String> {
+    let normalized = raw.replace("\\n", "\n").replace("||", "\n");
+
+    normalized
+        .lines()
+        .map(|line| line.trim_end_matches('\r').to_string())
+        .collect()
 }

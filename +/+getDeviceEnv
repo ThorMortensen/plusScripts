@@ -6,3 +6,7 @@ CLEAN_RPID="$(echo "$REOMTE_PID"|tr -d '\n\r')"
 
 auth-wrapper ssh -t $1 "sudo cat /proc/$CLEAN_RPID/environ"
 
+
+
+pid=$(systemctl show -p MainPID --value cc-hal-pm2)
+cat /proc/$pid/environ | tr '\0' '\n'

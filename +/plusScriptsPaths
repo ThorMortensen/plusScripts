@@ -114,38 +114,76 @@ JWT_TOKEN_PATH="/tmp/jwt-token"
 
 
 dye() {
-  local format=""
-  local color=""
   local text=""
+  local codes=()
+
+  color_code() {
+    case $1 in
+      black) echo 0 ;;
+      red) echo 1 ;;
+      green) echo 2 ;;
+      yellow) echo 3 ;;
+      blue) echo 4 ;;
+      magenta) echo 5 ;;
+      cyan) echo 6 ;;
+      white) echo 7 ;;
+      bright-black) echo 8 ;;
+      bright-red) echo 9 ;;
+      bright-green) echo 10 ;;
+      bright-yellow) echo 11 ;;
+      bright-blue) echo 12 ;;
+      bright-magenta) echo 13 ;;
+      bright-cyan) echo 14 ;;
+      bright-white) echo 15 ;;
+      *) return 1 ;;
+    esac
+  }
 
   for arg in "$@"; do
     case $arg in
-      bold|italic|blink)
+      bold|italic|blink|underline)
         case $arg in
-          bold) format=1 ;;
-          italic) format=3 ;;
-          blink) format=5 ;;
+          bold) codes+=(1) ;;
+          italic) codes+=(3) ;;
+          blink) codes+=(5) ;;
+          underline) codes+=(4) ;;
         esac
         ;;
-      black|red|green|yellow|blue|magenta|cyan|white)
-        case $arg in
-          black) color=30 ;;
-          red) color=31 ;;
-          green) color=32 ;;
-          yellow) color=33 ;;
-          blue) color=34 ;;
-          magenta) color=35 ;;
-          cyan) color=36 ;;
-          white) color=37 ;;
-        esac
+      fg=*|bg=*)
+        local type=${arg%%=*}
+        local value=${arg#*=}
+        if [[ $value =~ ^[0-9]+$ ]] && (( value >= 0 && value <= 255 )); then
+          if [ "$type" = "fg" ]; then
+            codes+=("38;5;$value")
+          else
+            codes+=("48;5;$value")
+          fi
+        fi
+        ;;
+      black|red|green|yellow|blue|magenta|cyan|white|bright-black|bright-red|bright-green|bright-yellow|bright-blue|bright-magenta|bright-cyan|bright-white)
+        local resolved
+        resolved=$(color_code "$arg") && codes+=("38;5;$resolved")
+        ;;
+      bg-black|bg-red|bg-green|bg-yellow|bg-blue|bg-magenta|bg-cyan|bg-white|bg-bright-black|bg-bright-red|bg-bright-green|bg-bright-yellow|bg-bright-blue|bg-bright-magenta|bg-bright-cyan|bg-bright-white)
+        local name=${arg#bg-}
+        local resolved
+        resolved=$(color_code "$name") && codes+=("48;5;$resolved")
         ;;
       *)
-        text="$arg"
+        if [ -z "$text" ]; then
+          text="$arg"
+        else
+          text+=" $arg"
+        fi
         ;;
     esac
   done
 
-  echo -e "\e[${format:-0};${color:-0}m${text}\e[0m"
+  if [ "${#codes[@]}" -eq 0 ]; then
+    codes=(0)
+  fi
+
+  printf '\e[%sm%s\e[0m\n' "$(IFS=';'; echo "${codes[*]}")" "$text"
 }
 
 

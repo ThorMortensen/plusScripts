@@ -1,12 +1,12 @@
 '{
-  "appSha":"550e1df46758c8d7285df47e7b8ea5336096c6c5",
-  "appBranch":"release-2025-1",
-  "rootfsSha":"18e9bb73c5cb0ef2172a3fbbdcdf2901ebff9bb4",
-  "rootfsBranch":"yocto-upgrade",
-  "kernelSha":"18e9bb73c5cb0ef2172a3fbbdcdf2901ebff9bb4",
-  "kernelBranch":"yocto-upgrade",
-  "bootloaderSha":"18e9bb73c5cb0ef2172a3fbbdcdf2901ebff9bb4",
-  "bootloaderBranch":"yocto-upgrade"
+  "appSha": "35e843e769825677eb27fe01ba7f8d288cd4d725",
+  "appBranch": "master",
+  "rootfsSha":"a0ea89e0ae82e890679e8ef2d055143c62141c81",
+  "rootfsBranch":"jtr/gps2",
+  "kernelSha":"a0ea89e0ae82e890679e8ef2d055143c62141c81",
+  "kernelBranch":"jtr/gps2",
+  "bootloaderSha":"a0ea89e0ae82e890679e8ef2d055143c62141c81",
+  "bootloaderBranch":"jtr/gps2"
 }'
 
 

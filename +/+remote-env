@@ -1,0 +1,172 @@
+#!/bin/bash
+. plusScriptsPaths
+
+ENV_FILE_BEGIN_MARK="__PLUS_ENV_FILE_BEGIN__"
+ENV_FILE_END_MARK="__PLUS_ENV_FILE_END__"
+
+print_env_files() {
+  local device="$1"
+  local service="$2"
+  local env_payload=""
+
+  env_payload=$(auth-wrapper ssh support@"$device" "sudo sh -lc 'svc=\"$service\"; \
+env_begin=\"$ENV_FILE_BEGIN_MARK\"; \
+env_end=\"$ENV_FILE_END_MARK\"; \
+variant=\$(hostname); \
+raw=\$(systemctl show -p EnvironmentFiles --value \"\$svc\" 2>/dev/null); \
+[ -z \"\$raw\" ] && exit 0; \
+for entry in \$raw; do \
+  path=\${entry%%\\(*}; \
+  path=\${path%;}; \
+  path=\${path#-}; \
+  path=\${path#+}; \
+  path=\${path#@}; \
+  [ -z \"\$path\" ] && continue; \
+  chosen=\"\$path\"; \
+  case \"\$path\" in \
+    /etc/env/*) \
+      base=\$(basename \"\$path\"); \
+      if [ -n \"\$variant\" ] && [ -f \"/etc/env/\$variant/\$base\" ]; then \
+        chosen=\"/etc/env/\$variant/\$base\"; \
+      fi; \
+      ;; \
+  esac; \
+  if [ -f \"\$chosen\" ]; then \
+    printf \"%s:%s\\n\" \"\$env_begin\" \"\$chosen\"; \
+    cat \"\$chosen\"; \
+    printf \"%s\\n\" \"\$env_end\"; \
+  fi; \
+done'" 2>/dev/null)
+  env_payload=${env_payload//$'\r'/}
+  [ -z "$env_payload" ] && return
+
+  local current_path=""
+  local current_content=""
+  local seen_paths=""
+  local output=""
+  local service_base="${service%.service}"
+  service_base=${service_base##*/}
+  while IFS= read -r line; do
+    case "$line" in
+      "$ENV_FILE_BEGIN_MARK":*)
+        current_path=${line#"$ENV_FILE_BEGIN_MARK":}
+        current_content=""
+        ;;
+      "$ENV_FILE_END_MARK")
+        if [ -n "$current_path" ]; then
+          if [[ " $seen_paths " != *" $current_path "* ]]; then
+            seen_paths+=" $current_path"
+            local header_style=(bold black bg-magenta)
+            if [[ "$current_path" == /data/env/"$service_base"* ]]; then
+              header_style=(bold black bg-yellow)
+            fi
+            local header
+            header=$(dye "${header_style[@]}" "ENV File: $current_path")
+            printf -v output '%s%s\n\n%s\n\n' "$output" "$header" "$current_content"
+          fi
+        fi
+        current_path=""
+        current_content=""
+        ;;
+      *)
+        [ -z "$current_path" ] && continue
+        if [ -z "$current_content" ]; then
+          current_content="$line"
+        else
+          current_content+=$'\n'"$line"
+        fi
+        ;;
+    esac
+  done <<< "$env_payload"
+
+  printf '%s' "$output"
+}
+
+device=$1
+selected_service=$2
+cmd=$3
+
+if [ $# -eq 1 ]
+then
+  device=""
+  selected_service=$1
+fi
+
+if [ $# -eq 2 ]
+then
+  device=$1
+  selected_service=$2
+fi
+
+if [ -z "$device" ] 
+then
+  select_port 
+  device="$SELECTED_DEVICE"
+fi
+
+while true ; do 
+  if [ -z "$selected_service" ] 
+  then
+    if [ -f "$REMOTE_SERVICE_CASH" ]; then
+      selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service get ENV from") 
+    else
+      echo "No cashed services found"
+      source "$PS_DIR"/+/+remote-services "$device" 
+      selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow") 
+    fi
+  fi
+
+  partition_selected="0"
+  selected_service_raw="$selected_service"
+  service_base="${selected_service_raw%.service}"
+  service_base=${service_base##*/}
+
+  start_spinner "service $selected_service_raw $cmd"
+  # status=$(auth-wrapper ssh support@"$device" "sudo cat /proc/$(systemctl show -p MainPID --value $selected_service_raw)/environ | tr '\0' '\n'")
+  status=$(auth-wrapper ssh support@"$device" 'sudo sh -lc '\''svc='"$selected_service_raw"'; \
+pid=$(systemctl show -p MainPID --value "$svc"); \
+[ "$pid" -gt 0 ] || pid=$(systemctl show -p ExecMainPID --value "$svc"); \
+[ "$pid" -gt 0 ] || pid=$(cat /sys/fs/cgroup$(systemctl show -p ControlGroup --value "$svc")/cgroup.procs 2>/dev/null | head -n1); \
+if [ "$pid" -gt 0 ] && [ -r "/proc/$pid/environ" ]; then tr "\0" "\n" < "/proc/$pid/environ"; \
+else printf "No running PID for %s\n" "$svc"; exit 1; fi'\'''
+)
+  status_rc=$?
+  env_section=$(print_env_files "$device" "$selected_service_raw")
+  debug_env_used=0
+  debug_env_path=""
+  regex=$'ENV File: (/data/env/'"$service_base"'[^[:space:]\x1b]*)'
+  if [[ $env_section =~ $regex ]]; then
+    debug_env_used=1
+    debug_env_path="${BASH_REMATCH[1]}"
+  fi
+  stop_spinner
+  
+  echo
+  if [ -n "$env_section" ]; then
+    printf '%s\n' "$env_section"
+    echo
+  fi
+
+  if [ $status_rc -eq 0 ]; then
+    dye bold black bg-green "ENV Running $selected_service_raw"
+    echo
+    echo "$status"
+    echo
+  else
+    dye bold black bg-green "ENV Running $selected_service_raw"
+    if [ -n "$status" ]; then
+      dye bold white bg-red "$status"
+    else
+      dye bold white bg-red "No running PID for $selected_service_raw"
+    fi
+  fi
+  echo
+
+  if [ "$debug_env_used" -eq 1 ]; then
+    dye bold black bg-yellow "WARNING: $service_base is using $debug_env_path (debug env file)"
+    echo
+  fi
+
+  selected_service="" # reset cmd to allow for another command
+
+done 

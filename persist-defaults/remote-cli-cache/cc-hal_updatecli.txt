@@ -1,0 +1,14 @@
+poll               Poll for firmware updates
+versions           Show current firmware version information
+checksums          Show current firmware checksums
+block-update       Block firmware update
+unblock-update     Install blocked updates
+manual-install     Manually install a .ccupd file, relative path does not work
+always-on          LED, always on
+always-off         LED, always off
+occulting          LED, occulting pattern
+isophase           LED, isophase pattern
+flashing           LED, flashing pattern
+device-registered  LED, device registered pattern
+config-received    LED, config received pattern
+missing-sim        LED, missing sim pattern

@@ -1,0 +1,14 @@
+agps                Load A-GPS data to GPS
+state               Get GPS state
+online              Set GPS online
+off                 Set GPS off
+persist             Persist state to disk
+restore             Restore state from disk
+location            Current location data
+firmware-version    Get GPS Firmware version
+signals
+most-recent-signal
+list-satellites
+heading
+follow
+tpv

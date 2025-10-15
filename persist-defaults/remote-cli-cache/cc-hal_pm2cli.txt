@@ -1,0 +1,31 @@
+state2                   Read PM2 new state
+get_extend_requests      See last X extend requests for deep_sleep & suspend
+debug_force_suspend      Do a suspend ignoring all criterias
+debug_force_deep_sleep   Do the currently configured deep sleep
+debug_down_modem         For debugging: down all modems
+debug_down_gps           For debugging: down all gps
+debug_down_net           For debugging: down a net interface
+available_interfaces     For debugging: shows all socs and net interfaces
+get_current_power_modes  See the currently running power_modes values
+get_default_power_modes  See the default power_modes values which are gathered from the env values
+get_diff_power_modes     See the diff between the current power modes, and the default from env
+append_power_modes       Set new power_modes values
+overwrite_power_modes    Set new power_modes values
+reset_power_modes        Reset the power_modes values to the env defaults
+extend_suspend           Same as the old "Extend", but with a better name
+extend_deep_sleep        Extends the timer for deep sleep
+demand_awake_in_seconds  Requests that the device is awake (so either already running, or gets woken up) in the "awake_in_s" value in seconds
+app_supports_deep_sleep  Allows the device to go into deep sleep on this boot (failsafe to make sure app hasn't rolled back)
+state                    Read PM state
+get_gpios                Read GPIO states
+reboot                   Reboot device now
+extend                   Extend PM reboot and suspend deadline
+extend_modem             Extend modem power off deadline
+extend_gps               Extend gps power off deadline
+extend_net               Extend network interfaces power offdeadline
+extend_bluetooth         Extend bluetooth power off deadline
+set_charging_mode        Set charging mode
+extend_soc               Extend a SoC by name (ex: bg96)
+get_wake_events          Get wake events
+set_wake_event           Set wake event
+v4_capacitor             Set V4 capacitor to [enable|disable] (enabled cap to use it when external power is lost)

@@ -1,0 +1,20 @@
+teardown                 Teardown Protocol Stack [CAN0, CAN1]
+teardown0                Teardown Protocol Stack CAN0
+teardown1                Teardown Protocol Stack CAN1
+get-vin-obd              Get VIN over OBD
+get-vin-uds              Get VIN over UDS
+get-vin-obd-functional   Get VIN over functional OBD
+get-fuel                 Get fuel level percentage over OBD without extended addressing
+get-rpm                  Get engine RPM UDS
+verify-ecu               Verify ECU protocol
+register-broadcast       Register a broadcast listener
+get-broadcast-value      Query the latest broadcast value (if any)
+start-interface          Start interface
+stop-interface           Stop interface
+set-conformance-profile  Change the active conformance profile
+poll-update
+info
+set-moving-state
+set-tester-detected
+remove-tester-detected
+get-testers-detected

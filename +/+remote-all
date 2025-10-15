@@ -1,0 +1,85 @@
+#!/bin/bash
+. plusScriptsPaths
+
+device=$1
+selected_service=$2
+
+if [ -z "$device" ]; then
+  select_port
+  device="$SELECTED_DEVICE"
+fi
+
+ensure_service_selected() {
+  if [ -n "$selected_service" ]; then
+    return
+  fi
+
+  if [ ! -f "$REMOTE_SERVICE_CASH" ] || [ ! -s "$REMOTE_SERVICE_CASH" ]; then
+    dye yellow "No cached services found – fetching from $device"
+    source "$PS_DIR"/+/+remote-services "$device"
+  fi
+
+  if [ -f "$REMOTE_SERVICE_CASH" ] && [ -s "$REMOTE_SERVICE_CASH" ]; then
+    selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC service to follow")
+  fi
+
+  if [ -z "$selected_service" ]; then
+    dye red "No service selected."
+    exit 1
+  fi
+}
+
+ensure_tmux_available() {
+  if ! command -v tmux >/dev/null 2>&1; then
+    dye red "tmux is required to run this script."
+    exit 1
+  fi
+}
+
+sanitize_for_name() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/_/g'
+}
+
+tmux_run_command() {
+  local target="$1"
+  shift
+  local command_string=""
+
+  for arg in "$@"; do
+    command_string+=$(printf '%q ' "$arg")
+  done
+  command_string=${command_string% }
+
+  tmux send-keys -t "$target" "cd $(printf '%q' "$PS_DIR/+")" C-m
+  tmux send-keys -t "$target" "clear" C-m
+  tmux send-keys -t "$target" "$command_string" C-m
+}
+
+ensure_tmux_available
+ensure_service_selected
+
+session_device=$(sanitize_for_name "$device")
+session_service=$(sanitize_for_name "$selected_service")
+session_name="remote_${session_device}_${session_service}"
+window_name="${session_service:-remote}"
+
+if tmux has-session -t "$session_name" 2>/dev/null; then
+  session_name="${session_name}_$(date +%s)"
+fi
+
+tmux new-session -d -s "$session_name" -n "$window_name" "bash"
+
+tmux split-window -t "${session_name}:0" -v -p 20
+tmux split-window -t "${session_name}:0.1" -h -p 30
+
+tmux_run_command "${session_name}:0.0" "./+remote-journalctl" "$device" "$selected_service"
+tmux_run_command "${session_name}:0.1" "./+remote-cli" "$device" "$selected_service"
+tmux_run_command "${session_name}:0.2" "./+remote-systemctl" "$device" "$selected_service"
+
+tmux select-pane -t "${session_name}:0.1"
+
+if [ -n "$TMUX" ]; then
+  tmux switch-client -t "$session_name"
+else
+  tmux attach-session -t "$session_name"
+fi

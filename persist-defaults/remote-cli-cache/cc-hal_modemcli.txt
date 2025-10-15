@@ -1,0 +1,10 @@
+online            Set modem online
+offline           Set modem offline
+state             Get modem state
+firmware-version  Get GPS Firmware version
+metrics           Show the 5 most recently collected Cellular Metrics
+transmit-gsm      Turn modem GSM900 transmit mode on
+transmit-gsm-off  Turn modem GSM transmit mode off
+transmit-lte      Turn modem LTE transmit mode on
+transmit-lte-off  Turn modem LTE transmit mode off
+guess-apn         Guesses which APN we should have used given our current state, and the input If no iccid is supplied we will take what's on the modem

@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+"""
+ANSI colour cheat sheet.
+
+Shows:
+  * The 16 standard foreground colours (normal + bright)
+  * The 16 standard background colours
+  * The full 256-colour palette (foreground and background)
+  * A quick reminder of useful escape sequences
+"""
+
+from textwrap import dedent
+
+
+def chunked(seq, size):
+    for idx in range(0, len(seq), size):
+        yield seq[idx : idx + size]
+
+
+def print_standard_colours():
+    print("Standard foreground colours")
+    for group in chunked(list(range(30, 38)) + list(range(90, 98)), 8):
+        row = " ".join(f"\033[{code}m{code:>4}\033[0m" for code in group)
+        print(row)
+    print()
+
+    print("Standard background colours")
+    for group in chunked(list(range(40, 48)) + list(range(100, 108)), 8):
+        row = " ".join(f"\033[{code}m {code:>3} \033[0m" for code in group)
+        print(row)
+    print()
+
+
+def print_extended_palette():
+    print("256-colour foreground palette (38;5;<n>)")
+    for group in chunked(list(range(256)), 16):
+        row = " ".join(f"\033[38;5;{code}m{code:>4}\033[0m" for code in group)
+        print(row)
+    print()
+
+    print("256-colour background palette (48;5;<n>)")
+    for group in chunked(list(range(256)), 16):
+        row = " ".join(f"\033[48;5;{code}m {code:>3} \033[0m" for code in group)
+        print(row)
+    print()
+
+
+def print_reference():
+    print("Common escape sequences")
+    print(
+        dedent(
+            r"""
+            \033[39m\033[49m   Reset foreground/background colour
+            \033[2K            Clear entire line
+            \033[<L>;<C>H      Move cursor to line L, column C
+            \033[<N>A          Cursor up N lines
+            \033[<N>B          Cursor down N lines
+            \033[<N>C          Cursor forward N columns
+            \033[<N>D          Cursor backward N columns
+            \033[2J            Clear screen, move to (0,0)
+            \033[K             Erase to end of line
+            \033[s             Save cursor position
+            \033[u             Restore cursor position
+            \033[4m / \033[24m Underline on / off
+            \033[1m / \033[21m Bold on / off
+            """.strip()
+        )
+    )
+
+
+def main():
+    print_standard_colours()
+    print_extended_palette()
+    print_reference()
+
+
+if __name__ == "__main__":
+    main()

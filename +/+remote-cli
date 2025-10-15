@@ -1,0 +1,198 @@
+#!/bin/bash
+. plusScriptsPaths
+
+REMOTE_CLI_CACHE_DIR="$PS_DIR_PERSIST_DEFAULT/remote-cli-cache"
+mkdir -p "$REMOTE_CLI_CACHE_DIR"
+
+device=$1
+selected_service=$2
+
+if [ -z "$device" ] 
+then
+  select_port 
+  device="$SELECTED_DEVICE"
+fi
+
+fetch_service_commands() {
+  local device="$1"
+  local service="$2"
+  local cache_file="$3"
+
+  if [ -f "$cache_file" ] && [ -s "$cache_file" ]; then
+    cat "$cache_file"
+    return 0
+  fi
+
+  start_spinner "Fetching commands for $service on $device" >&2
+  local service_interface
+  service_interface=$(auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=5 -o ServerAliveCountMax=2 support@"$device" "$service")
+  local fetch_status=$?
+  stop_spinner >&2
+
+  if [ $fetch_status -ne 0 ] && [ -z "$service_interface" ]; then
+    dye red "Failed to fetch interface for $service (exit $fetch_status)" >&2
+    return $fetch_status
+  fi
+
+  if [ -n "$service_interface" ]; then
+    echo "Interface: ${service_interface}" >&2
+  fi
+
+  local commands
+  commands=$(printf '%s\n' "$service_interface" | awk '
+    {
+      gsub(/\r/, "", $0);
+      gsub(/\033\[[0-9;]*[A-Za-z]/, "", $0);
+      line = gensub(/^[[:space:]]+/, "", "g", $0);
+      if (line ~ /^[[:alnum:]_-]+[[:space:]]{2,}.*$/) {
+        clean = gensub(/Example:.*$/, "", "g", line);
+        clean = gensub(/[[:space:]]+$/, "", "g", clean);
+        if (clean !~ /^help[[:space:]]{2,}/ && clean != "") {
+          print clean;
+        }
+      }
+    }
+  ')
+
+  if [ -z "$commands" ]; then
+    dye red "Failed to parse commands from interface output." >&2
+    return 1
+  fi
+
+  printf '%s\n' "$commands" > "$cache_file"
+  printf '%s\n' "$commands"
+}
+
+is_extend_command() {
+  local command="$1"
+  [[ "$command" == extend* ]]
+}
+
+prompt_extend_seconds() {
+  local prompt="$1"
+  local input
+
+  while true; do
+    read -r -p "$prompt" input
+    local status=$?
+    if [ $status -ne 0 ]; then
+      return $status
+    fi
+
+    if [[ "$input" =~ ^[0-9]+$ ]]; then
+      printf '%s' "$input"
+      return 0
+    fi
+
+    dye red "Please enter the number of seconds as a non-negative integer."
+  done
+}
+
+append_extend_argument() {
+  local prompt="$1"
+  local seconds
+
+  if ! seconds=$(prompt_extend_seconds "$prompt"); then
+    return 1
+  fi
+
+  printf ' %s' "$seconds"
+}
+
+
+while true; do
+  use_braek_signal=false
+  if [ -z "$selected_service" ] 
+  then
+    if [ -f "$REMOTE_SERVICE_CASH" ]; then
+      selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC cli service") 
+    else
+      echo "No cashed services found"
+      source "$PS_DIR"/+/+remote-services "$device" 
+      selected_service=$(plus-menu --items "$(cat "$REMOTE_SERVICE_CASH")" --persist-path "$GLOBAL_SERVICE_SELECTED" --prompt-msg "Select a CC cli service") 
+    fi
+  fi
+
+  if [ "$selected_service" == "ccapp" ] 
+  then
+    selected_service="$selected_service*"
+  fi
+
+  # Transform selected_service for cc-hal-* services
+  if [[ "$selected_service" == cc-hal-* ]]; then
+    # Extract the part after cc-hal-
+    hal_service="${selected_service#cc-hal-}"
+    selected_service="cc-hal ${hal_service}cli"
+  else
+    selected_service="${selected_service}cli"
+  fi
+
+
+  while true; do
+    trap 'stop_spinner; break_flag=true; break' SIGINT
+      cache_slug=$(printf '%s' "$selected_service" | sed 's/[^A-Za-z0-9._-]/_/g')
+      cache_file="$REMOTE_CLI_CACHE_DIR/${cache_slug}.txt"
+
+      if ! commands=$(fetch_service_commands "$device" "$selected_service" "$cache_file"); then
+        exit 1
+      fi
+
+      if [ -z "$commands" ]; then
+        dye red "No commands available for $selected_service"
+        exit 1
+      fi
+
+      menu_commands="$commands"$'\n'"refresh_cache  Refresh command cache"
+
+      selected_entry=$(plus-menu --item-strings "$menu_commands" --prompt-msg "Select command to run on $selected_service on $device" --persist-path "$GLOBAL_REMOTE_CLI_CMD_SELECTED-$selected_service-$device")
+
+      if [ -z "$selected_entry" ]; then
+        dye yellow "No command selected."
+        continue
+      fi
+
+      read -r selected_command _ <<<"$selected_entry"
+
+      if [ "$selected_command" = "refresh_cache" ]; then
+        rm -f "$cache_file"
+        dye yellow "Cache refreshed for $selected_service"
+        trap - SIGINT
+        continue
+      fi
+
+      command_args=""
+      if [ "$selected_command" = "v4_capacitor" ]; then
+        command_args=" disable"
+      elif is_extend_command "$selected_command"; then
+        if ! extend_args=$(append_extend_argument "Seconds to extend $selected_command: "); then
+          dye yellow "Extend cancelled."
+          trap - SIGINT
+          continue
+        fi
+        command_args="$extend_args"
+      elif [[ "$selected_service" == *"modemcli" ]] && { [ "$selected_command" = "online" ] || [ "$selected_command" = "offline" ]; }; then
+        if ! extend_args=$(append_extend_argument "Seconds to extend modem $selected_command: "); then
+          dye yellow "Extend cancelled."
+          trap - SIGINT
+          continue
+        fi
+        command_args="$extend_args"
+      fi
+
+      service_invocation="$selected_service $selected_command$command_args"
+      start_spinner "Running $service_invocation on $device"
+      command_output=$(auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=5 -o ServerAliveCountMax=2 support@"$device" "sudo $service_invocation")
+      stop_spinner
+
+      echo "Command output:"
+      printf '%s\n' "$command_output"
+
+      trap - SIGINT
+    if [ "$break_flag" = true ]; then
+      break_flag=false
+      break
+    fi
+  done
+  stop_spinner
+  selected_service=""
+done 

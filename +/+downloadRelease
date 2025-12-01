@@ -116,14 +116,11 @@ prompt_target() {
   local target_options="local deploy-v4 nuc"
 
   # Avoid offering deploy-v4 if release clearly isn't for v4 hardware.
-  if [[ "$release_name" != *v4* ]]; then
-    target_options="local nuc"
-    if [[ -f "$DOWNLOAD_TARGET_SELECTED" ]]; then
-      local current_default
-      current_default=$(cat "$DOWNLOAD_TARGET_SELECTED")
-      if [[ "$current_default" == "deploy-v4" ]]; then
-        printf '%s\n' "local" > "$DOWNLOAD_TARGET_SELECTED"
-      fi
+  if [[ -f "$DOWNLOAD_TARGET_SELECTED" ]]; then
+    local current_default
+    current_default=$(cat "$DOWNLOAD_TARGET_SELECTED")
+    if [[ "$current_default" == "deploy-v4" ]]; then
+      printf '%s\n' "local" > "$DOWNLOAD_TARGET_SELECTED"
     fi
   fi
 

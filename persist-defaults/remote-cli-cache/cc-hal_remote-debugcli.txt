@@ -1,0 +1,2 @@
+set-commands   Set a new command (overwrites the current command)
+list-commands  List current commands (cli and remote)

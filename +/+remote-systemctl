@@ -5,18 +5,6 @@ device=$1
 selected_service=$2
 cmd=$3
 
-if [ $# -eq 1 ]
-then
-  device=""
-  selected_service=$1
-fi
-
-if [ $# -eq 2 ]
-then
-  device=$1
-  selected_service=$2
-fi
-
 if [ -z "$device" ] 
 then
   select_port 

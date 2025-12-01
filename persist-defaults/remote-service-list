@@ -1,1 +1,1 @@
-cc-hal-accel2 cc-hal-can cc-hal-gps cc-hal-gps2 cc-hal-modem cc-hal-pm2 cc-hal-update cc-hal-remote-debug ccapp ofono gpsd cc-hal-fakegpsd cc-hal-remote-task-agent
+cc-hal-accel2 cc-hal-can cc-hal-gps cc-hal-gps2 cc-hal-modem cc-hal-pm2 cc-hal-update cc-hal-remote-debug ccapp ofono gpsd cc-hal-fakegpsd cc-hal-remote-task-agent cc-developer cc-hal-eol cc-cert

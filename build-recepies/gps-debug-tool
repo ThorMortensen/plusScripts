@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# The links in this folder is becouse the repos has been renamed 
+
+install() {
+  echo "Command not supported: $1"
+}
+
+build() {
+  echo "Command not supported: $1"
+}
+
+deploy() {
+  echo "Command not supported: $1"
+}
+
+test() {
+  echo "Command not supported: $1"
+}
+
+pre_push() {
+  echo "Command not supported: $1"
+}
+
+case "$1" in
+  install)
+    install "$@"
+    ;;
+  build)
+    build "$@"
+    ;;
+  deploy)
+    deploy "$@"
+    ;;
+  test)
+    test "$@"
+    ;;
+  pre_push)
+    pre_push "$@"
+    ;;
+  *)
+    echo "Command not supported: $1"
+    exit 1
+    ;;
+esac

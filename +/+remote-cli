@@ -7,6 +7,15 @@ mkdir -p "$REMOTE_CLI_CACHE_DIR"
 device=$1
 selected_service=$2
 
+SSH_COMMON_OPTS=(
+  -t
+  -o StrictHostKeyChecking=no
+  -o UserKnownHostsFile=/dev/null
+  -o TCPKeepAlive=no
+  -o ServerAliveInterval=5
+  -o ServerAliveCountMax=2
+)
+
 if [ -z "$device" ] 
 then
   select_port 
@@ -25,7 +34,7 @@ fetch_service_commands() {
 
   start_spinner "Fetching commands for $service on $device" >&2
   local service_interface
-  service_interface=$(auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=5 -o ServerAliveCountMax=2 support@"$device" "$service")
+  service_interface=$(auth-wrapper ssh "${SSH_COMMON_OPTS[@]}" support@"$device" "$service")
   local fetch_status=$?
   stop_spinner >&2
 
@@ -181,7 +190,7 @@ while true; do
 
       service_invocation="$selected_service $selected_command$command_args"
       start_spinner "Running $service_invocation on $device"
-      command_output=$(auth-wrapper ssh -t -o TCPKeepAlive=no -o ServerAliveInterval=5 -o ServerAliveCountMax=2 support@"$device" "sudo $service_invocation")
+      command_output=$(auth-wrapper ssh "${SSH_COMMON_OPTS[@]}" support@"$device" "sudo $service_invocation")
       stop_spinner
 
       echo "Command output:"
